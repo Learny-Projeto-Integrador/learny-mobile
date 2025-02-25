@@ -1,12 +1,12 @@
-import { ImageBackground, StyleSheet, } from 'react-native';
+import { ImageBackground, StyleSheet } from 'react-native';
 
 import React from 'react';
 
-export default function TabOneScreen() {
+export default function CadastroScreen() {
 
   return (
     <ImageBackground 
-      source={require('../../assets/images/fundo-gradiente.png')} 
+      source={require('../assets/images/fundo-gradiente.png')} 
       resizeMode="cover" 
       style={styles.container}
       >
