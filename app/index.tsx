@@ -1,10 +1,13 @@
-import { Alert, Image, ImageBackground, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, Image, ImageBackground, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 
 import { Text, View } from '@/components/Themed';
 import React from 'react';
 import { Link } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 
 export default function LoginScreen() {
+
+  const navigation = useNavigation();
 
   const [usuario, onChangeUsuario] = React.useState('');
   const [senha, onChangeSenha] = React.useState('');
@@ -23,26 +26,37 @@ export default function LoginScreen() {
         <Text style={styles.title}>Entre em sua conta Learny</Text>
         <Text style={styles.subTitle}>Faça login com suas informações de cadastro</Text>
       </View>
-      <TextInput
-          style={styles.input}
-          onChangeText={onChangeUsuario}
-          value={usuario}
-          placeholder='Usuário'
-          placeholderTextColor="#757575"
-        />
-      <TextInput
-          style={styles.input}
-          onChangeText={onChangeSenha}
-          value={senha}
-          placeholder='Senha'
-          placeholderTextColor="#757575"
-        />
-      <TouchableOpacity onPress={() => Alert.alert('Botão Clicado', 'Você pressionou o botão de confirmar!')}>
-        <Image
-          style={styles.btn}
-          source={require('../assets/images/icon-confirmar.png')}
-        />
-      </TouchableOpacity>
+      <View style={styles.viewInputs}>
+        <View style={styles.viewInput}>
+          <Text style={styles.text}>Usuário:</Text>
+          <View style={styles.divider}>|</View>
+          <TextInput
+              style={styles.input}
+              onChangeText={onChangeUsuario}
+              value={usuario}
+              placeholderTextColor="#757575"
+            />
+        </View>
+        <View style={styles.viewInput}>
+          <Text style={styles.text}>Senha:</Text>
+          <View style={styles.divider}>|</View>
+          <TextInput
+              style={styles.input}
+              onChangeText={onChangeSenha}
+              value={senha}
+              placeholderTextColor="#757575"
+            />
+        </View>
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={
+            // @ts-ignore
+            () => navigation.navigate('(tabs)')
+          }
+        >
+          <Text style={styles.buttonText}>Entrar</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.viewLink}>
         <Text style={styles.txt}>Sem uma Conta?</Text>
         <Link href="/cadastro" style={styles.link}>Começe aqui</Link>
@@ -51,60 +65,97 @@ export default function LoginScreen() {
   );
 }
 
+const { width, height } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 30,
+    gap: height * 0.025,
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: width * 0.3,
+    height: width * 0.3,
   },
   viewTitle: {
     width: '80%',
     backgroundColor: 'rgba(52, 52, 52, 0)',
     display: 'flex',
     alignItems: 'center',
-    gap: 8,
+    gap: height * 0.01,
   },
   title: {
     color: '#fff',
-    fontSize: 30,
+    fontSize: width * 0.055,
     fontWeight: 'bold',
   },
   subTitle: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 25,
+    fontSize: width * 0.04,
+  },
+  viewInputs: {
+    backgroundColor: 'rgba(52, 52, 52, 0)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '80%',
+    gap: height * 0.015,
+  },
+  viewInput: {
+    width: '100%',
+    height: height * 0.06,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  text: {
+    width: width * 0.22,
+    display: 'flex',
+    textAlign: 'center',
+    fontSize: width * 0.04,
+    fontWeight: 'bold',
+    color: '#547d98',
+  },
+  divider: {
+    width: 2,
+    height: '100%',
+    backgroundColor: '#a3a3a3'
   },
   input: {
     backgroundColor: '#fff',
-    width: '80%',
-    borderWidth: 2,
-    borderRadius: 8,
-    padding: 10,
-    borderColor: '#f0f0f0',
-    fontSize: 20,
+    fontSize: width * 0.05,
+    paddingLeft: width * 0.05, 
   },
-  btn: {
-    width: 60,
-    height: 60,
+  button: {
+    display: 'flex',
+    justifyContent: 'center',
+    backgroundColor: '#f0f0f0',
+    width: '100%',
+    height: height * 0.07,
+    borderRadius: 10,
+  },
+  buttonText: {
+    fontSize: width * 0.05,
+    fontWeight: 'bold',
+    color: '#547d98',
+    textAlign: 'center',
   },
   viewLink: {
     backgroundColor: 'rgba(52, 52, 52, 0)',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 25,
+    gap: width * 0.06,
   },
   txt: {
-    fontSize: 20,
+    fontSize: width * 0.04,
     color: '#fff'
   },
   link: {
-    fontSize: 20,
+    fontSize: width * 0.04,
     fontWeight: 'bold',
     textDecorationLine: 'underline',
     color: '#fff'
