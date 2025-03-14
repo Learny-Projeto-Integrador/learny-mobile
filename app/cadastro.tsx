@@ -7,14 +7,19 @@ import {
   Alert,
   TouchableOpacity,
   Pressable,
+  Button,
 } from "react-native";
 import { Text, View } from "@/components/Themed";
 import React from "react";
 import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import * as ImagePicker from 'expo-image-picker';
+import { Link } from "expo-router";
+
 
 export default function CadastroScreen() {
 
+  const [image, setImage] = useState<string | null>(null);
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
   const [email, setEmail] = useState("");
@@ -22,6 +27,22 @@ export default function CadastroScreen() {
 
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images', 'videos'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
@@ -59,15 +80,15 @@ export default function CadastroScreen() {
       resizeMode="cover"
       style={styles.container}
     >
-      <TouchableOpacity
-        onPress={() =>
-          Alert.alert("Botão Clicado", "Você pressionou o botão de confirmar!")
-        }
-      >
-        <Image
-          style={styles.btnImg}
-          source={require("../assets/images/icone-camera.png")}
-        />
+      <TouchableOpacity onPress={pickImage}>
+        {image ? (
+          <Image source={{ uri: image }} style={styles.btnImg} />
+        ) : (
+          <Image
+            style={styles.btnImg}
+            source={require("../assets/images/icone-camera.png")}
+          />
+        )}
       </TouchableOpacity>
 
       <View style={styles.viewText}>
@@ -124,6 +145,10 @@ export default function CadastroScreen() {
         >
           <Image style={styles.btn} source={require("../assets/images/icon-confirmar.png")} />
         </TouchableOpacity>
+      </View>
+      <View style={styles.viewLink}>
+        <Text style={styles.txt}>Já possui uma Conta?</Text>
+        <Link href="/" style={styles.link}>Entre aqui</Link>
       </View>
     </ImageBackground>
   );
@@ -194,4 +219,17 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
   },
+  viewLink: {
+    backgroundColor: 'rgba(52, 52, 52, 0)',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 30,
+  },
+  link: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+    color: '#fff'
+  }
 });
