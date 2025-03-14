@@ -1,16 +1,54 @@
-import { Alert, Image, ImageBackground, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import { Alert, Image, ImageBackground, StyleSheet, TextInput, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
 
 import { Text, View } from '@/components/Themed';
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
+
 
 export default function LoginScreen() {
 
   const navigation = useNavigation();
 
-  const [usuario, onChangeUsuario] = React.useState('');
-  const [senha, onChangeSenha] = React.useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [usuario, setUsuario] = useState('');
+  const [senha, setSenha] = useState('');
+
+  const handleLogin = async () => {
+    setLoading(true);
+    setError(null);
+  
+    try {
+      const res = await fetch("http://10.0.2.2:4000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          user: usuario,
+          password: senha
+        })
+      });
+  
+      const result = await res.json();
+      
+      if (res.ok) {
+        // @ts-ignore
+        navigation.navigate("(tabs)");
+      } else {
+        setError(result.error);
+      }
+  
+    } catch (err) {
+      // @ts-ignore
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ImageBackground 
@@ -27,22 +65,23 @@ export default function LoginScreen() {
         <Text style={styles.subTitle}>Faça login com suas informações de cadastro</Text>
       </View>
       <View style={styles.viewInputs}>
-        <View style={styles.viewInput}>
+      <View style={styles.viewInput}>
           <Text style={styles.text}>Usuário:</Text>
-          <View style={styles.divider}>|</View>
+          <View style={styles.divider}></View>
           <TextInput
               style={styles.input}
-              onChangeText={onChangeUsuario}
+              onChangeText={setUsuario}
               value={usuario}
               placeholderTextColor="#757575"
             />
         </View>
         <View style={styles.viewInput}>
           <Text style={styles.text}>Senha:</Text>
-          <View style={styles.divider}>|</View>
+          <View style={styles.divider}></View>
           <TextInput
+              secureTextEntry={true}
               style={styles.input}
-              onChangeText={onChangeSenha}
+              onChangeText={setSenha}
               value={senha}
               placeholderTextColor="#757575"
             />
@@ -51,15 +90,15 @@ export default function LoginScreen() {
           style={styles.button} 
           onPress={
             // @ts-ignore
-            () => navigation.navigate('(tabs)')
+            () => handleLogin()
           }
         >
-          <Text style={styles.buttonText}>Entrar</Text>
+          {loading ? <ActivityIndicator size="large" color="#547d98" /> : <Text style={styles.buttonText}>Entrar</Text>}
         </TouchableOpacity>
       </View>
       <View style={styles.viewLink}>
         <Text style={styles.txt}>Sem uma Conta?</Text>
-        <Link href="/cadastro" style={styles.link}>Começe aqui</Link>
+        <Link href="/cadastro"><Text style={styles.link}>Começe aqui</Text></Link>
       </View>
       </ImageBackground>
   );
@@ -125,9 +164,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#a3a3a3'
   },
   input: {
+    width: '66%',
     backgroundColor: '#fff',
-    fontSize: width * 0.05,
-    paddingLeft: width * 0.05, 
+    fontSize: width * 0.04,
+    paddingLeft: width * 0.04, 
   },
   button: {
     display: 'flex',

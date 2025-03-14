@@ -19,6 +19,9 @@ import { Link } from "expo-router";
 
 export default function CadastroScreen() {
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const [image, setImage] = useState<string | null>(null);
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
@@ -74,6 +77,41 @@ export default function CadastroScreen() {
     return `${day}/${month}/${year}`;
   };
 
+  const handleSubmit = async () => {
+    setLoading(true);
+    setError(null);
+  
+    try {
+      const res = await fetch("http://10.0.2.2:4000/pais", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          user: usuario,
+          password: senha,
+          email: email,
+          dataNasc: dataNasc,
+        })
+      });
+  
+      const result = await res.json();
+      
+      if (res.ok) {
+        // @ts-ignore
+        console.log(result);
+      } else {
+        setError(result.error);
+      }
+  
+    } catch (err) {
+      // @ts-ignore
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ImageBackground
       source={require("../assets/images/fundo-gradiente.png")}
@@ -113,7 +151,7 @@ export default function CadastroScreen() {
         <Text style={styles.txt}>E-mail:</Text>
         <TextInput 
           style={styles.input}
-          value={usuario}
+          value={email}
           onChangeText={setEmail}
         />
       </View>
@@ -136,12 +174,7 @@ export default function CadastroScreen() {
           <Image source={require("../assets/images/icon-data.png")} />
         </Pressable>
         <TouchableOpacity
-          onPress={() =>
-            Alert.alert(
-              "Botão Clicado",
-              "Você pressionou o botão de confirmar!"
-            )
-          }
+          onPress={() => handleSubmit()}
         >
           <Image style={styles.btn} source={require("../assets/images/icon-confirmar.png")} />
         </TouchableOpacity>
