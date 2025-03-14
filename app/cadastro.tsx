@@ -1,159 +1,197 @@
-import { ImageBackground, StyleSheet, TextInput, Image, Alert, TouchableOpacity } from 'react-native';
-import { Text, View } from '@/components/Themed';
-import React from 'react';
+import {
+  ImageBackground,
+  StyleSheet,
+  Platform,
+  TextInput,
+  Image,
+  Alert,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
+import { Text, View } from "@/components/Themed";
+import React from "react";
+import { useState } from "react";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function CadastroScreen() {
 
+  const [usuario, setUsuario] = useState("");
+  const [senha, setSenha] = useState("");
+  const [email, setEmail] = useState("");
+  const [dataNasc, setDataNasc] = useState("");
+
+  const [date, setDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
+
+  const toggleDatePicker = () => {
+    setShowPicker(!showPicker);
+  };
+
+  const onChange = ({ type }, selectedDate) => {
+    if (type == "set") {
+      const currentDate = selectedDate;
+      setDate(currentDate);
+
+      if (Platform.OS === "android") {
+        toggleDatePicker();
+        setDataNasc(formatDate(currentDate));
+      }
+    } else {
+      toggleDatePicker();
+    }
+  };
+
+  const formatDate = (rawDate) => {
+    let date = new Date(rawDate);
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+
+    month = month < 10 ? `0${month}` : month;
+    day = day < 10 ? `0${day}` : day;
+    
+    return `${day}/${month}/${year}`;
+  };
+
   return (
-    <ImageBackground 
-      source={require('../assets/images/fundo-gradiente.png')} 
-      resizeMode="cover" 
+    <ImageBackground
+      source={require("../assets/images/fundo-gradiente.png")}
+      resizeMode="cover"
       style={styles.container}
+    >
+      <TouchableOpacity
+        onPress={() =>
+          Alert.alert("Botão Clicado", "Você pressionou o botão de confirmar!")
+        }
       >
-        <TouchableOpacity onPress={() => Alert.alert('Botão Clicado', 'Você pressionou o botão de confirmar!')}>
-          <Image style={styles.btnImg} source={require('../assets/images/icone-camera.png')}/>
+        <Image
+          style={styles.btnImg}
+          source={require("../assets/images/icone-camera.png")}
+        />
+      </TouchableOpacity>
+
+      <View style={styles.viewText}>
+        <Text style={styles.txt}>Usuário:</Text>
+        <TextInput 
+          style={styles.input}
+          value={usuario}
+          onChangeText={setUsuario}
+        />
+      </View>
+
+      <View style={styles.viewText}>
+        <Text style={styles.txt}>Senha:</Text>
+        <TextInput 
+          style={styles.input}
+          value={senha}
+          onChangeText={setSenha}
+        />
+      </View>
+
+      <View style={styles.viewText}>
+        <Text style={styles.txt}>E-mail:</Text>
+        <TextInput 
+          style={styles.input}
+          value={usuario}
+          onChangeText={setEmail}
+        />
+      </View>
+
+      <View style={styles.viewBtn}>
+        {showPicker && (
+          <DateTimePicker
+            mode="date"
+            display="spinner"
+            value={date}
+            onChange={onChange}
+          />
+        )}
+        <Pressable onPress={toggleDatePicker} style={styles.datePicker}>
+          <TextInput
+            style={styles.inputDate}
+            value={dataNasc}
+            editable={false}
+          />
+          <Image source={require("../assets/images/icon-data.png")} />
+        </Pressable>
+        <TouchableOpacity
+          onPress={() =>
+            Alert.alert(
+              "Botão Clicado",
+              "Você pressionou o botão de confirmar!"
+            )
+          }
+        >
+          <Image style={styles.btn} source={require("../assets/images/icon-confirmar.png")} />
         </TouchableOpacity>
-        
-
-        <View style={styles.viewUsu}>
-          <Text style={styles.usuTxt}>Usuário:</Text>
-          <TextInput style={styles.usuInput}></TextInput>
-        </View>
-
-        <View style={styles.viewPword}>
-          <Text style={styles.pwordTxt}>Senha:</Text>
-          <TextInput style={styles.pwordInput}></TextInput>
-        </View>
-
-        <View style={styles.viewEmail}>
-          <Text style={styles.emailTxt}>E-mail:</Text>
-          <TextInput style={styles.emailInput}></TextInput>
-        </View>
-
-        <View style={styles.viewBtn}>
-          <TouchableOpacity onPress={() => Alert.alert('Botão Clicado', 'Você pressionou o botão de confirmar!')}>
-            <Image style={styles.btnCal} source={require('../assets/images/data.png')}/>
-          </TouchableOpacity>
-        
-          <TouchableOpacity onPress={() => Alert.alert('Botão Clicado', 'Você pressionou o botão de confirmar!')}>
-            <Image style={styles.btn} source={require('../assets/images/icon-confirmar.png')}/>
-          </TouchableOpacity>
-        </View>
-        
-
+      </View>
     </ImageBackground>
   );
-  
-  
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     gap: 30,
   },
   btnImg: {
     width: 165,
     height: 165,
   },
-  viewUsu: {
-    backgroundColor: 'rgba(52, 52, 52, 0)',
-    display: 'flex',
-    alignItems: 'center',
-    width: '80%',
-    height: '5%',
-    marginBottom: 33
+  viewText: {
+    backgroundColor: "rgba(52, 52, 52, 0)",
+    display: "flex",
+    alignItems: "center",
+    width: "75%",
+    height: "5%",
+    marginBottom: 33,
   },
-  usuTxt: {
-    color: '#fff',
-    fontWeight: 'bold',
+  txt: {
+    alignSelf: "flex-start",
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 20,
-    marginRight: '70%'
   },
-  usuInput: {
-    backgroundColor: '#fff',
-    width: '90%',
-    height: '100%',
-    borderWidth: 2,
+  input: {
+    backgroundColor: "#fff",
+    width: "100%",
+    height: 50,
     borderRadius: 8,
     padding: 10,
-    borderColor: '#f0f0f0',
+    borderColor: "#f0f0f0",
     fontSize: 20,
-    marginBlockStart: 5
-  },
-  viewPword: {
-    backgroundColor: 'rgba(52, 52, 52, 0)',
-    display: 'flex',
-    alignItems: 'center',
-    width: '80%',
-    height: '5%',
-    marginBottom: 33
-  },
-  pwordTxt: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 20,
-    marginRight: '73%',
-  },
-  pwordInput: {
-    backgroundColor: '#fff',
-    width: '90%',
-    height: '100%',
-    borderWidth: 2,
-    borderRadius: 8,
-    padding: 10,
-    borderColor: '#f0f0f0',
-    fontSize: 20,
-    marginBlockStart: 5
-  },
-  viewEmail: {
-    backgroundColor: 'rgba(52, 52, 52, 0)',
-    display: 'flex',
-    alignItems: 'center',
-    width: '80%',
-    height: '5%',
-    marginBottom: 33
-  },
-  emailTxt: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 20,
-    marginRight: '72%'
-  },
-  emailInput: {
-    backgroundColor: '#fff',
-    width: '90%',
-    height: '100%',
-    borderWidth: 2,
-    borderRadius: 8,
-    padding: 10,
-    borderColor: '#f0f0f0',
-    fontSize: 20,
-    marginBlockStart: 5
+    marginBlockStart: 5,
   },
   viewBtn: {
-    backgroundColor: 'rgba(52, 52, 52, 0)',
-    display: 'flex',
-    flexDirection: 'row', 
-    justifyContent: 'space-between',
-    alignItems: 'center', 
-    width: '100%',
-    height: '12%',
-    marginBlockStart: 10,
-    marginRight: '22%'
-
+    backgroundColor: "rgba(52, 52, 52, 0)",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    width: "75%",
+    height: "7%",
+    gap: 40,
+    marginBottom: 33,
   },
-  btnCal: {
-    marginLeft: '50%',
-    width: '90%',
-    height: '90%'
+  datePicker: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 10,
+    gap: 10,
+  },
+  inputDate: {
+    width: 250,
+    borderWidth: 2,
+    borderRadius: 8,
+    borderColor: "#999",
+    fontSize: 20,
   },
   btn: {
-    marginRight: '9%',
-    width: 70,
-    height: 70
-  }
-
+    width: 60,
+    height: 60,
+  },
 });
