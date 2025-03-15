@@ -14,6 +14,7 @@ export default function FormInput(props: FormInputProps) {
                 style={styles.input}
                 value={props.valor}
                 onChangeText={props.atualizar}
+                secureTextEntry={props.campo === "Senha"}
             />
         </View>
     );
@@ -37,11 +38,11 @@ const styles = StyleSheet.create({
       input: {
         backgroundColor: "#fff",
         width: "100%",
-        height: 50,
+        height: height * 0.05,
         borderRadius: 8,
         padding: 10,
         borderColor: "#f0f0f0",
-        fontSize: 20,
+        fontSize: width * 0.035,
         marginBlockStart: 5,
       },
 });

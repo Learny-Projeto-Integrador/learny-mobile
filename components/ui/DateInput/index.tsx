@@ -36,7 +36,7 @@ export default function DateInput({ valor, atualizar }: DateInputProps) {
         <Text style={styles.title}>Data de nascimento</Text>
       <Pressable onPress={toggleDatePicker} style={styles.datePicker}>
         <TextInput style={styles.inputDate} value={valor} editable={false} />
-        <Image source={require("../../../assets/images/icon-data.png")} />
+        <Image style={styles.iconDate} source={require("../../../assets/images/icon-data.png")} />
       </Pressable>
 
       {showPicker && (
@@ -66,12 +66,16 @@ title: {
     alignItems: "center",
     backgroundColor: "#fff",
     borderRadius: 8,
-    padding: 10,
+    padding: width * 0.02,
     marginBlockStart: 5,
   },
   inputDate: {
     width: width * 0.4,
     borderRadius: 8,
     fontSize: width * 0.035,
+  },
+  iconDate: {
+    width: width * 0.06,
+    height: width * 0.065,
   },
 });

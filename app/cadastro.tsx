@@ -18,6 +18,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Link } from "expo-router";
 import FormInput from "@/components/ui/FormInput";
 import DateInput from "@/components/ui/DateInput";
+import * as FileSystem from "expo-file-system";
 
 
 export default function CadastroScreen() {
@@ -35,22 +36,32 @@ export default function CadastroScreen() {
   const [showPicker, setShowPicker] = useState(false);
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const originalUri = result.assets[0].uri;
+      const filename = originalUri.split("/").pop(); // Obtém o nome do arquivo
+      const newPath = `${FileSystem.documentDirectory}${filename}`; // Novo caminho
+
+      try {
+        await FileSystem.copyAsync({
+          from: originalUri,
+          to: newPath,
+        });
+        setImage(newPath); // Atualiza o estado com a nova URI
+      } catch (error) {
+        console.error("Erro ao copiar a imagem:", error);
+      }
     }
   };
 
   const handleSubmit = async () => {
+    console.log(image, usuario, senha, email, dataNasc)
     setLoading(true);
     setError(null);
   
@@ -61,6 +72,7 @@ export default function CadastroScreen() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
+          image: image,
           user: usuario,
           password: senha,
           email: email,
@@ -107,10 +119,12 @@ export default function CadastroScreen() {
         <FormInput campo="Email" valor={email} atualizar={setEmail} />
         <View style={styles.viewBtn}>
           <DateInput valor={dataNasc} atualizar={setDataNasc} />
-          <Image
-            style={styles.btn}
-            source={require("../assets/images/icon-confirmar.png")}
-          />
+          <TouchableOpacity onPress={() => handleSubmit()}>
+            <Image
+              style={styles.btn}
+              source={require("../assets/images/icon-confirmar.png")}
+            />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -134,6 +148,7 @@ const styles = StyleSheet.create({
   btnImg: {
     width: width * 0.3,
     height: width * 0.3,
+    borderRadius: 20,
   },
   txt: {
     color: "#fff",
