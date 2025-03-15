@@ -38,7 +38,7 @@ export default function LoginScreen() {
       
       if (res.ok) {
         // @ts-ignore
-        navigation.navigate("(tabs)");
+        navigation.navigate("home");
       } else {
         setError(result.error);
       }

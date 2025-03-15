@@ -1,24 +1,25 @@
-import { ImageBackground, StyleSheet, } from 'react-native';
+import { ImageBackground, StyleSheet, Dimensions } from 'react-native';
 
 import React from 'react';
 
-export default function TabOneScreen() {
+export default function HomeScreen() {
 
   return (
     <ImageBackground 
-      source={require('../../assets/images/fundo-gradiente.png')} 
+      source={require('../assets/images/fundo-gradiente.png')} 
       resizeMode="cover" 
       style={styles.container}
       >
-    </ImageBackground>
+      </ImageBackground>
   );
 }
+
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 30,
   },
 });
