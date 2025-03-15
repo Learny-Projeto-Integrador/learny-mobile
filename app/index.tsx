@@ -5,6 +5,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
+import LoginInput from '@/components/ui/LoginInput';
 
 
 export default function LoginScreen() {
@@ -65,27 +66,8 @@ export default function LoginScreen() {
         <Text style={styles.subTitle}>Faça login com suas informações de cadastro</Text>
       </View>
       <View style={styles.viewInputs}>
-      <View style={styles.viewInput}>
-          <Text style={styles.text}>Usuário:</Text>
-          <View style={styles.divider}></View>
-          <TextInput
-              style={styles.input}
-              onChangeText={setUsuario}
-              value={usuario}
-              placeholderTextColor="#757575"
-            />
-        </View>
-        <View style={styles.viewInput}>
-          <Text style={styles.text}>Senha:</Text>
-          <View style={styles.divider}></View>
-          <TextInput
-              secureTextEntry={true}
-              style={styles.input}
-              onChangeText={setSenha}
-              value={senha}
-              placeholderTextColor="#757575"
-            />
-        </View>
+        <LoginInput campo="Usuário" valor={usuario} atualizar={setUsuario} />
+        <LoginInput campo="Senha" valor={senha} atualizar={setSenha} />
         <TouchableOpacity 
           style={styles.button} 
           onPress={
@@ -141,33 +123,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '80%',
     gap: height * 0.015,
-  },
-  viewInput: {
-    width: '100%',
-    height: height * 0.06,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 10,
-  },
-  text: {
-    width: width * 0.22,
-    display: 'flex',
-    textAlign: 'center',
-    fontSize: width * 0.04,
-    fontWeight: 'bold',
-    color: '#547d98',
-  },
-  divider: {
-    width: 2,
-    height: '100%',
-    backgroundColor: '#a3a3a3'
-  },
-  input: {
-    width: '66%',
-    backgroundColor: '#fff',
-    fontSize: width * 0.04,
-    paddingLeft: width * 0.04, 
   },
   button: {
     display: 'flex',

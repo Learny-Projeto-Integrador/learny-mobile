@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Pressable,
   Button,
+  Dimensions,
 } from "react-native";
 import { Text, View } from "@/components/Themed";
 import React from "react";
@@ -15,6 +16,8 @@ import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from 'expo-image-picker';
 import { Link } from "expo-router";
+import FormInput from "@/components/ui/FormInput";
+import DateInput from "@/components/ui/DateInput";
 
 
 export default function CadastroScreen() {
@@ -45,36 +48,6 @@ export default function CadastroScreen() {
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
-  };
-
-  const toggleDatePicker = () => {
-    setShowPicker(!showPicker);
-  };
-
-  const onChange = ({ type }, selectedDate) => {
-    if (type == "set") {
-      const currentDate = selectedDate;
-      setDate(currentDate);
-
-      if (Platform.OS === "android") {
-        toggleDatePicker();
-        setDataNasc(formatDate(currentDate));
-      }
-    } else {
-      toggleDatePicker();
-    }
-  };
-
-  const formatDate = (rawDate) => {
-    let date = new Date(rawDate);
-    let year = date.getFullYear();
-    let month = date.getMonth() + 1;
-    let day = date.getDate();
-
-    month = month < 10 ? `0${month}` : month;
-    day = day < 10 ? `0${day}` : day;
-    
-    return `${day}/${month}/${year}`;
   };
 
   const handleSubmit = async () => {
@@ -128,109 +101,59 @@ export default function CadastroScreen() {
           />
         )}
       </TouchableOpacity>
-
-      <View style={styles.viewText}>
-        <Text style={styles.txt}>Usuário:</Text>
-        <TextInput 
-          style={styles.input}
-          value={usuario}
-          onChangeText={setUsuario}
-        />
-      </View>
-
-      <View style={styles.viewText}>
-        <Text style={styles.txt}>Senha:</Text>
-        <TextInput 
-          style={styles.input}
-          value={senha}
-          onChangeText={setSenha}
-        />
-      </View>
-
-      <View style={styles.viewText}>
-        <Text style={styles.txt}>E-mail:</Text>
-        <TextInput 
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-        />
-      </View>
-
-      <View style={styles.viewBtn}>
-        {showPicker && (
-          <DateTimePicker
-            mode="date"
-            display="spinner"
-            value={date}
-            onChange={onChange}
+      <View style={styles.viewInputs}>
+        <FormInput campo="Usuário" valor={usuario} atualizar={setUsuario} />
+        <FormInput campo="Senha" valor={senha} atualizar={setSenha} />
+        <FormInput campo="Email" valor={email} atualizar={setEmail} />
+        <View style={styles.viewBtn}>
+          <DateInput valor={dataNasc} atualizar={setDataNasc} />
+          <Image
+            style={styles.btn}
+            source={require("../assets/images/icon-confirmar.png")}
           />
-        )}
-        <Pressable onPress={toggleDatePicker} style={styles.datePicker}>
-          <TextInput
-            style={styles.inputDate}
-            value={dataNasc}
-            editable={false}
-          />
-          <Image source={require("../assets/images/icon-data.png")} />
-        </Pressable>
-        <TouchableOpacity
-          onPress={() => handleSubmit()}
-        >
-          <Image style={styles.btn} source={require("../assets/images/icon-confirmar.png")} />
-        </TouchableOpacity>
+        </View>
       </View>
+
       <View style={styles.viewLink}>
-        <Text style={styles.txt}>Já possui uma Conta?</Text>
+        <Text style={styles.txtLink}>Já possui uma Conta?</Text>
         <Link href="/" style={styles.link}>Entre aqui</Link>
       </View>
     </ImageBackground>
   );
 }
 
+const { width, height } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: 30,
+    gap: height * 0.035,
   },
   btnImg: {
-    width: 165,
-    height: 165,
+    width: width * 0.3,
+    height: width * 0.3,
   },
-  viewText: {
+  txt: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: width * 0.04,
+  },
+  viewInputs: {
     backgroundColor: "rgba(52, 52, 52, 0)",
     display: "flex",
     alignItems: "center",
     width: "75%",
-    height: "5%",
-    marginBottom: 33,
-  },
-  txt: {
-    alignSelf: "flex-start",
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 20,
-  },
-  input: {
-    backgroundColor: "#fff",
-    width: "100%",
-    height: 50,
-    borderRadius: 8,
-    padding: 10,
-    borderColor: "#f0f0f0",
-    fontSize: 20,
-    marginBlockStart: 5,
+    gap: height * 0.01,
   },
   viewBtn: {
     backgroundColor: "rgba(52, 52, 52, 0)",
+    width: "100%",
     display: "flex",
     flexDirection: "row",
-    alignItems: "center",
-    width: "75%",
-    height: "7%",
-    gap: 40,
-    marginBottom: 33,
+    alignItems: "flex-end",
+    gap: width * 0.05,
   },
   datePicker: {
     display: "flex",
@@ -239,28 +162,31 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 8,
     padding: 10,
-    gap: 10,
+    gap: width * 0.02,
   },
   inputDate: {
-    width: 250,
-    borderWidth: 2,
+    width: width * 0.5,
     borderRadius: 8,
-    borderColor: "#999",
-    fontSize: 20,
+    fontSize: width * 0.04,
   },
   btn: {
-    width: 60,
-    height: 60,
+    width: width * 0.1,
+    height: width * 0.1,
+    marginBottom: width * 0.01,
   },
   viewLink: {
     backgroundColor: 'rgba(52, 52, 52, 0)',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 30,
+    gap: width * 0.06,
+  },
+  txtLink: {
+    color: "#fff",
+    fontSize: width * 0.04,
   },
   link: {
-    fontSize: 20,
+    fontSize: width * 0.04,
     fontWeight: 'bold',
     textDecorationLine: 'underline',
     color: '#fff'
