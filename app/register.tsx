@@ -15,13 +15,15 @@ import React from "react";
 import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from 'expo-image-picker';
-import { Link } from "expo-router";
+import { Link, useNavigation } from "expo-router";
 import FormInput from "@/components/ui/FormInput";
 import DateInput from "@/components/ui/DateInput";
 import * as FileSystem from "expo-file-system";
 
 
-export default function CadastroScreen() {
+export default function RegisterScreen() {
+  
+  const navigation = useNavigation();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -61,7 +63,6 @@ export default function CadastroScreen() {
   };
 
   const handleSubmit = async () => {
-    console.log(image, usuario, senha, email, dataNasc)
     setLoading(true);
     setError(null);
   
@@ -83,10 +84,18 @@ export default function CadastroScreen() {
       const result = await res.json();
       
       if (res.ok) {
-        // @ts-ignore
-        console.log(result);
+        Alert.alert(
+          "Sucesso!", 
+          result.message,
+          [
+            //@ts-ignore
+            { text: "Fazer Login", onPress: () => navigation.navigate('index') },
+            { text: "OK" },
+          ]
+        );
       } else {
         setError(result.error);
+        Alert.alert("Erro no cadastro", result.error);
       }
   
     } catch (err) {
@@ -105,7 +114,7 @@ export default function CadastroScreen() {
     >
       <TouchableOpacity onPress={pickImage}>
         {image ? (
-          <Image source={{ uri: image }} style={styles.btnImg} />
+          <Image source={{ uri: image }} style={styles.img} />
         ) : (
           <Image
             style={styles.btnImg}
@@ -150,17 +159,17 @@ const styles = StyleSheet.create({
     height: width * 0.3,
     borderRadius: 20,
   },
-  txt: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: width * 0.04,
+  img: {
+    width: width * 0.34,
+    height: width * 0.34,
+    borderRadius: 20,
   },
   viewInputs: {
     backgroundColor: "rgba(52, 52, 52, 0)",
     display: "flex",
     alignItems: "center",
     width: "75%",
-    gap: height * 0.01,
+    gap: height * 0.02,
   },
   viewBtn: {
     backgroundColor: "rgba(52, 52, 52, 0)",
@@ -199,10 +208,11 @@ const styles = StyleSheet.create({
   txtLink: {
     color: "#fff",
     fontSize: width * 0.04,
+    fontFamily: 'Montserrat_400Regular',
   },
   link: {
     fontSize: width * 0.04,
-    fontWeight: 'bold',
+    fontFamily: 'Montserrat_700Bold',
     textDecorationLine: 'underline',
     color: '#fff'
   }

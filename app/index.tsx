@@ -38,14 +38,16 @@ export default function LoginScreen() {
       
       if (res.ok) {
         // @ts-ignore
-        navigation.navigate("home");
+        navigation.navigate("transition", {name: usuario});
       } else {
         setError(result.error);
+        Alert.alert("Erro no login", result.error);
       }
   
     } catch (err) {
       // @ts-ignore
       setError(err.message);
+      Alert.alert("Erro inesperado", "Não foi possível conectar ao servidor. Verifique sua conexão.");
     } finally {
       setLoading(false);
     }
@@ -80,7 +82,7 @@ export default function LoginScreen() {
       </View>
       <View style={styles.viewLink}>
         <Text style={styles.txt}>Sem uma Conta?</Text>
-        <Link href="/cadastro"><Text style={styles.link}>Começe aqui</Text></Link>
+        <Link href="/register"><Text style={styles.link}>Começe aqui</Text></Link>
       </View>
       </ImageBackground>
   );
@@ -100,7 +102,7 @@ const styles = StyleSheet.create({
     height: width * 0.3,
   },
   viewTitle: {
-    width: '80%',
+    width: '78%',
     backgroundColor: 'rgba(52, 52, 52, 0)',
     display: 'flex',
     alignItems: 'center',
@@ -109,12 +111,14 @@ const styles = StyleSheet.create({
   title: {
     color: '#fff',
     fontSize: width * 0.055,
-    fontWeight: 'bold',
+    fontFamily: 'Montserrat_700Bold',
+    textAlign: 'center',
   },
   subTitle: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: width * 0.04,
+    fontSize: width * 0.045,
+    fontFamily: 'Montserrat_400Regular',
   },
   viewInputs: {
     backgroundColor: 'rgba(52, 52, 52, 0)',
@@ -134,7 +138,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: width * 0.05,
-    fontWeight: 'bold',
+    fontFamily: 'Montserrat_700Bold',
     color: '#547d98',
     textAlign: 'center',
   },
@@ -147,11 +151,12 @@ const styles = StyleSheet.create({
   },
   txt: {
     fontSize: width * 0.04,
-    color: '#fff'
+    fontFamily: 'Montserrat_400Regular',
+    color: '#fff',
   },
   link: {
     fontSize: width * 0.04,
-    fontWeight: 'bold',
+    fontFamily: 'Montserrat_700Bold',
     textDecorationLine: 'underline',
     color: '#fff'
   }

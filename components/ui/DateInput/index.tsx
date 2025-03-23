@@ -33,7 +33,7 @@ export default function DateInput({ valor, atualizar }: DateInputProps) {
 
   return (
     <View>
-        <Text style={styles.title}>Data de nascimento</Text>
+        <Text style={styles.title}>Data de nascimento:</Text>
       <Pressable onPress={toggleDatePicker} style={styles.datePicker}>
         <TextInput style={styles.inputDate} value={valor} editable={false} />
         <Image style={styles.iconDate} source={require("../../../assets/images/icon-data.png")} />
@@ -57,8 +57,8 @@ const styles = StyleSheet.create({
 title: {
     alignSelf: "flex-start",
     color: "#fff",
-    fontWeight: "bold",
     fontSize: width * 0.04,
+    fontFamily: 'Montserrat_700Bold',
     },
   datePicker: {
     display: "flex",
@@ -73,6 +73,7 @@ title: {
     width: width * 0.4,
     borderRadius: 8,
     fontSize: width * 0.035,
+    fontFamily: 'Montserrat_500Medium',
   },
   iconDate: {
     width: width * 0.06,

@@ -9,7 +9,7 @@ interface FormInputProps {
 export default function FormInput(props: FormInputProps) {
     return (
         <View style={styles.viewText}>
-            <Text style={styles.title}>{props.campo}</Text>
+            <Text style={styles.title}>{props.campo}:</Text>
             <TextInput 
                 style={styles.input}
                 value={props.valor}
@@ -32,17 +32,18 @@ const styles = StyleSheet.create({
       title: {
         alignSelf: "flex-start",
         color: "#fff",
-        fontWeight: "bold",
+        fontFamily: 'Montserrat_700Bold',
         fontSize: width * 0.04,
       },
       input: {
         backgroundColor: "#fff",
         width: "100%",
-        height: height * 0.05,
+        height: height * 0.055,
         borderRadius: 8,
         padding: 10,
         borderColor: "#f0f0f0",
         fontSize: width * 0.035,
-        marginBlockStart: 5,
+        fontFamily: 'Montserrat_500Medium',
+        marginBlockStart: 8,
       },
 });

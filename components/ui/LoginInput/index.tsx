@@ -10,7 +10,7 @@ export default function LoginInput(props: LoginInputProps) {
 
     return (
         <View style={styles.viewInput}>
-        <Text style={styles.title}>{props.campo}</Text>
+        <Text style={styles.title}>{props.campo}:</Text>
         <View style={styles.divider}></View>
         <TextInput
             style={styles.input}
@@ -37,10 +37,10 @@ const styles = StyleSheet.create({
   },
   title: {
     display: "flex",
-    width: "25%",
+    width: "30%",
     textAlign: "center",
-    fontSize: width * 0.04,
-    fontWeight: "bold",
+    fontSize: width * 0.038,
+    fontFamily: 'Montserrat_700Bold',
     color: "#547d98",
   },
   divider: {
@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
     width: "66%",
     backgroundColor: "#fff",
     fontSize: width * 0.04,
+    fontFamily: 'Montserrat_500Medium',
     paddingLeft: width * 0.04,
   },
 });

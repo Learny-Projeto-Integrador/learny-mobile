@@ -1,7 +1,12 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
-import { Montserrat_400Regular, Montserrat_700Bold } from '@expo-google-fonts/montserrat';
+import { 
+  Montserrat_400Regular, 
+  Montserrat_500Medium,
+  Montserrat_600SemiBold, 
+  Montserrat_700Bold,
+} from '@expo-google-fonts/montserrat';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
@@ -24,6 +29,8 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     Montserrat_400Regular,
+    Montserrat_500Medium,
+    Montserrat_600SemiBold,
     Montserrat_700Bold,
   });
 
@@ -51,10 +58,10 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="index" options={{ headerTitle: 'Login' }} />
-        <Stack.Screen name="cadastro" options={{ headerTitle: 'Cadastro' }} />
-        <Stack.Screen name="home" options={{ headerTitle: 'Home' }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="register" options={{ headerTitle: 'Cadastro' }} />
+        <Stack.Screen name="transition" options={{ headerShown: false }} />
+        <Stack.Screen name="home" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
   );
