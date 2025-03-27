@@ -1,5 +1,4 @@
 import { Alert, Image, ImageBackground, StyleSheet, TextInput, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
-
 import { Text, View } from '@/components/Themed';
 import React from 'react';
 import { useState, useEffect } from 'react';
@@ -23,26 +22,11 @@ export default function LoginScreen() {
     setError(null);
   
     try {
-      const res = await fetch("http://10.0.2.2:4000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          user: usuario,
-          password: senha
-        })
-      });
+     
   
-      const result = await res.json();
-      
-      if (res.ok) {
         // @ts-ignore
-        navigation.navigate("transition", {name: usuario});
-      } else {
-        setError(result.error);
-        Alert.alert("Erro no login", result.error);
-      }
+        navigation.navigate("home", {name: usuario});
+      
   
     } catch (err) {
       // @ts-ignore
