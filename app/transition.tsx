@@ -14,7 +14,7 @@ export default function TransitionScreen() {
   useEffect(() => {
     const timer = setTimeout(() => {
       //@ts-ignore
-      navigation.navigate('home');
+      navigation.navigate('profileParent');
     }, 2000);
 
     return () => clearTimeout(timer); // Limpa o timer ao desmontar a tela

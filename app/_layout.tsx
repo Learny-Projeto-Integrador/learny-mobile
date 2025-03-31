@@ -61,6 +61,7 @@ function RootLayoutNav() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="register" options={{ headerTitle: 'Cadastro' }} />
         <Stack.Screen name="transition" options={{ headerShown: false }} />
+        <Stack.Screen name="profileParent" options={{ headerShown: false }} />
         <Stack.Screen name="home" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>

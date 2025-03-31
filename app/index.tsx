@@ -19,38 +19,40 @@ export default function LoginScreen() {
   const [senha, setSenha] = useState('');
 
   const handleLogin = async () => {
-    setLoading(true);
-    setError(null);
+    // @ts-ignore
+    navigation.navigate("profileParent");
+    // setLoading(true);
+    // setError(null);
   
-    try {
-      const res = await fetch("http://10.0.2.2:4000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          user: usuario,
-          password: senha
-        })
-      });
+    // try {
+    //   const res = await fetch("http://10.0.2.2:4000/login", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json"
+    //     },
+    //     body: JSON.stringify({
+    //       user: usuario,
+    //       password: senha
+    //     })
+    //   });
   
-      const result = await res.json();
+    //   const result = await res.json();
       
-      if (res.ok) {
-        // @ts-ignore
-        navigation.navigate("transition", {name: usuario});
-      } else {
-        setError(result.error);
-        Alert.alert("Erro no login", result.error);
-      }
+    //   if (res.ok) {
+    //     // @ts-ignore
+    //     navigation.navigate("transition", {name: usuario});
+    //   } else {
+    //     setError(result.error);
+    //     Alert.alert("Erro no login", result.error);
+    //   }
   
-    } catch (err) {
-      // @ts-ignore
-      setError(err.message);
-      Alert.alert("Erro inesperado", "Não foi possível conectar ao servidor. Verifique sua conexão.");
-    } finally {
-      setLoading(false);
-    }
+    // } catch (err) {
+    //   // @ts-ignore
+    //   setError(err.message);
+    //   Alert.alert("Erro inesperado", "Não foi possível conectar ao servidor. Verifique sua conexão.");
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   return (
