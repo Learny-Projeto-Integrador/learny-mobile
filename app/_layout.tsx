@@ -15,6 +15,7 @@ import { RootStackParamList } from '../types';
 import LoginScreen from './screens';
 import RegisterScreen from './screens/register';
 import TransitionScreen from './screens/transition';
+import ProfileParentScreen from './screens/profileParent';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -55,6 +56,11 @@ export default function RootLayout() {
       <Stack.Screen
         name="transition"
         component={TransitionScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="profileParent"
+        component={ProfileParentScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
