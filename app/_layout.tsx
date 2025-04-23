@@ -10,13 +10,16 @@ import {
   Montserrat_700Bold,
 } from '@expo-google-fonts/montserrat';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { RootStackParamList } from '../types';
 
 import LoginScreen from './screens';
+import RegisterScreen from './screens/register';
+import TransitionScreen from './screens/transition';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>()
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -42,6 +45,16 @@ export default function RootLayout() {
       <Stack.Screen
         name="index"
         component={LoginScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="register"
+        component={RegisterScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="transition"
+        component={TransitionScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

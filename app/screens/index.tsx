@@ -1,13 +1,17 @@
 import LoginInput from "@/components/ui/LoginInput";
-import { Link, useNavigation } from "expo-router";
 import { useState } from "react";
 import { ImageBackground, Image, Text, StyleSheet, TouchableOpacity, View, ActivityIndicator, Dimensions, Alert } from "react-native";
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../types';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'index'>;
 
 export default function LoginScreen() {
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp>();
 
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null)
   
     const [usuario, setUsuario] = useState('');
     const [senha, setSenha] = useState('');
@@ -31,21 +35,24 @@ export default function LoginScreen() {
         const result = await res.json();
         
         if (res.ok) {
-          // @ts-ignore
           navigation.navigate("transition", {name: usuario});
         } else {
           setError(result.error);
           Alert.alert("Erro no login", result.error);
         }
     
-      } catch (err) {
-        // @ts-ignore
+      } catch (err: any) {
         setError(err.message);
         Alert.alert("Erro inesperado", "Não foi possível conectar ao servidor. Verifique sua conexão.");
       } finally {
         setLoading(false);
       }
     };
+
+    const handleRedirect = () => {
+        navigation.navigate('register');
+    }
+
     return (
         <ImageBackground 
           source={require('../../assets/images/fundo-gradiente.png')} 
@@ -75,7 +82,7 @@ export default function LoginScreen() {
           </View>
           <View style={styles.viewLink}>
             <Text style={styles.txt}>Sem uma Conta?</Text>
-            <Link href=""><Text style={styles.link}>Começe aqui</Text></Link>
+            <TouchableOpacity onPress={()=> handleRedirect()}><Text style={styles.link}>Começe aqui</Text></TouchableOpacity>
           </View>
           </ImageBackground>
       );
@@ -127,10 +134,10 @@ export default function LoginScreen() {
         backgroundColor: '#f0f0f0',
         width: '100%',
         height: height * 0.07,
-        borderRadius: 10,
+        borderRadius: 15,
       },
       buttonText: {
-        fontSize: width * 0.05,
+        fontSize: width * 0.04,
         fontFamily: 'Montserrat_700Bold',
         color: '#547d98',
         textAlign: 'center',
