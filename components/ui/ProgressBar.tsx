@@ -21,7 +21,7 @@ const ProgressBar = ({ progress }: any) => {
 
   return (
     <ImageBackground
-      source={require("../../assets/images/fundo-gradiente.png")}
+      source={require("../../assets/images/fundo-gradiente-claro.png")}
       style={styles.container}
     >
       <View style={styles.outerBar}>
@@ -37,7 +37,7 @@ const ProgressBar = ({ progress }: any) => {
           ]}
         >
           <Image
-            source={require("../../assets/images/fundo-gradiente.png")}
+            source={require("../../assets/images/fundo-gradiente-claro.png")}
             style={styles.gradientImage}
           />
         </Animated.View>

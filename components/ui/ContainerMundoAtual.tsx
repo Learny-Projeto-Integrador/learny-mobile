@@ -1,35 +1,41 @@
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Dimensions, ImageBackground } from "react-native";
 
 export default function ContainerMundoAtual() {
   return (
-    <View style={styles.container}>
+    <ImageBackground 
+    source={require("../../assets/images/teste.png")}
+    style={styles.container}>
       <Text style={styles.title}>Mundo Atual</Text>
-      <View style={styles.containerNumMundo}>
-        <Text style={styles.txtNumMundo}>10</Text>
+      <View style={styles.teste}>
+        <View style={styles.line} />
+        <View style={styles.containerNumMundo}>
+          <Text style={styles.txtNumMundo}>10</Text>
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
 const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
+  line: {
+    position: "absolute",
+    top: width * 0.07,
+    width: "70%",
+    borderWidth: 2,
+    borderColor: "#EF5B6A", // ou qualquer cor que você quiser
+    borderStyle: "dashed",
+  },
+  teste: {
+    width: "100%",
+    alignItems: "center",
+  },
   container: {
-    width: "60%",
-    height: width * 0.24,
+    width: width * 0.5,
+    aspectRatio: 199 / 108, // largura / altura da imagem original
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
-    borderRadius: 15,
-
-    // Sombras para iOS
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    // Sombra para Android
-    elevation: 5,
   },
   containerNumMundo: {
     backgroundColor: "#EF5B6A",

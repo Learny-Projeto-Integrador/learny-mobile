@@ -1,11 +1,14 @@
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Dimensions, ImageBackground } from "react-native";
 
 export default function ContainerFasesConcluidas() {
     return (
-        <View style={styles.container}>
+        <ImageBackground 
+        style={styles.container}
+        source={require("../../assets/images/teste2.png")}
+        >
             <Text style={styles.title}>Fases Concluidas</Text>
             <Text style={styles.txt}>10</Text>
-        </View>
+        </ImageBackground>
     );
 }
 
@@ -13,21 +16,10 @@ const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {
-        width: width * 0.28,
-        height: width * 0.24,
+        width: width * 0.27,
+        aspectRatio: 108 / 108, // largura / altura da imagem original
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#fff",
-        borderRadius: 15,   
-
-        // Sombras para iOS
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-    
-        // Sombra para Android
-        elevation: 5,
     },
     txt: {
         fontFamily: 'Montserrat_700Bold',

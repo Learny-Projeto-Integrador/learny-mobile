@@ -8,6 +8,7 @@ import {
   Montserrat_500Medium,
   Montserrat_600SemiBold, 
   Montserrat_700Bold,
+  Montserrat_800ExtraBold,
 } from '@expo-google-fonts/montserrat';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { RootStackParamList } from '../types';
@@ -29,6 +30,7 @@ export default function RootLayout() {
     Montserrat_500Medium,
     Montserrat_600SemiBold,
     Montserrat_700Bold,
+    Montserrat_800ExtraBold,
   });
 
   useEffect(() => {

@@ -11,7 +11,7 @@ import {
 const ContainerActions = () => {
   return (
     <ImageBackground
-      source={require("../../assets/images/fundo-gradiente.png")}
+      source={require("../../assets/images/fundo-gradiente-claro.png")}
       style={styles.container}
     >
       <View style={styles.containerFilho}>
