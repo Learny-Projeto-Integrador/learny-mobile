@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ProgressBar from "@/components/ui/ProgressBar";
 import ContainerFilhos from "@/components/ui/ContainerFilhos";
 import MaskedView from "@react-native-masked-view/masked-view";
@@ -18,12 +18,17 @@ import { LinearGradient } from "expo-linear-gradient"; // ou 'react-native-linea
 import ContainerActions from "@/components/ui/ContainerActions";
 import ContainerFasesConcluidas from "@/components/ui/ContainerFasesConcluidas";
 import ContainerMundoAtual from "@/components/ui/ContainerMundoAtual";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../types";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profileParent">;
 
+type ParentData = {
+  idParent: string;
+  nome: string;
+}
 
 const GradientText = ({ style, children }: any) => {
   return (
@@ -48,9 +53,59 @@ const GradientText = ({ style, children }: any) => {
 
 export default function ProfileParentScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const [data, setData] = useState<ParentData | undefined>(undefined);
+  const [id, setId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null)
+
+  const getToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      return token;
+    } catch (e) {
+      console.error('Erro ao buscar o token', e);
+    }
+  };
+
+  const loadData = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = await getToken();
+
+      const res = await fetch('http://10.0.2.2:5000/pais', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        setData(result);
+        setId(result._id.$oid)
+      } else {
+        setError(result.error);
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
 
   const handleRedirectCadastro = () => {
-    navigation.navigate("register")
+    if (!data) return;
+    navigation.navigate("register", { idParent: id })
   }
 
   const handleSair = () => {
@@ -69,8 +124,7 @@ export default function ProfileParentScreen() {
         />
         <View>
           <View style={styles.containerNameParent}>
-            <GradientText style={styles.nameText}>João</GradientText>
-            <GradientText style={styles.nameText}>Marcos</GradientText>
+            <GradientText style={styles.nameText}>{data ? data.nome : ""}</GradientText>
           </View>
           <View style={styles.containerRankParent}>
             <View>

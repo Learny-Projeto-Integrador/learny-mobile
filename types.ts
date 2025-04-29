@@ -1,7 +1,7 @@
 // types.ts
 export type RootStackParamList = {
     index: undefined;
-    register: undefined;
+    register: { idParent?: string };
     transition: { name: string };
     profileParent: undefined;
   };
