@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,33 +9,76 @@ import {
   FlatList,
   Dimensions,
 } from "react-native";
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+type Filho = {
+  usuario: string;
+  nome: string;
+  foto: any; // ou string se vier como URI remota
+};
 
 type ContainerFilhosProps = {
-  handleRedirect: () => void
-}
+  filhos: Filho[];
+  filhoSelecionado: Filho | null;
+  handleRedirect: () => void;
+};
 
-export default function ContainerFilhos({handleRedirect} : ContainerFilhosProps) {
-  const [selectedChild, setSelectedChild] = useState({
-    nome: "Laura",
-    imagem: require("../../assets/images/joana.png"),
-  });
-
+export default function ContainerFilhos({
+  filhos,
+  filhoSelecionado,
+  handleRedirect,
+}: ContainerFilhosProps) {
+  const [selectedChild, setSelectedChild] = useState<Filho | null>(null);
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const filhos = [
-    { id: 1, nome: "Laura", imagem: require("../../assets/images/joana.png") },
-    { id: 2, nome: "Lucas", imagem: require("../../assets/images/joana.png") },
-    { id: 3, nome: "Ana", imagem: require("../../assets/images/joana.png") },
-  ];
+  useEffect(() => {
+    if (filhoSelecionado && Object.keys(filhoSelecionado).length > 0) {
+      setSelectedChild(filhoSelecionado);
+    }
+  }, [filhoSelecionado]);
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
   };
 
-  const selectFilho = (filho: any) => {
+  const selectFilho = async (filho: Filho) => {
     setSelectedChild(filho);
     setDropdownVisible(false);
+    await fetchDadosFilho(filho);
+  };
+
+  const getToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      return token;
+    } catch (e) {
+      console.error("Erro ao buscar o token", e);
+    }
+  };
+
+  const fetchDadosFilho = async (filho: any) => {
+    setLoading(true);
+    setError(null);
+
+    const token = await getToken();
+
+    try {
+      const res = await fetch("http://10.0.2.2:5000/pais/filhoselecionado", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(filho),
+      });
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,38 +86,70 @@ export default function ContainerFilhos({handleRedirect} : ContainerFilhosProps)
       source={require("../../assets/images/fundo-gradiente-claro.png")}
       style={styles.container}
     >
-      <TouchableOpacity onPress={toggleDropdown} style={styles.containerFilho} activeOpacity={1}>
-        <Image source={selectedChild.imagem} style={styles.avatar} />
-        <View style={styles.info}>
-          <Text style={styles.label}>Filho:</Text>
-          <Text style={styles.nome}>{selectedChild.nome}</Text>
-        </View>
-        <Image
-          source={require("../../assets/images/icon-dropdown.png")}
-          style={styles.dropdownIcon}
-        />
-      </TouchableOpacity>
+      {selectedChild == null ? (
+        <TouchableOpacity
+          onPress={handleRedirect}
+          style={styles.containerFilho}
+          activeOpacity={1}
+        >
+          <View
+            style={[
+              styles.container,
+              {
+                paddingVertical: 10,
+                flexDirection: "row",
+                alignItems: "center",
+              },
+            ]}
+          >
+            <View style={styles.info}>
+              <Text style={[styles.nome, { marginTop: -5, fontSize: 25, fontFamily: "Montserrat_400Regular" }]}>
+                Cadastre um filho
+              </Text>
+            </View>
+            <Image
+              source={require("../../assets/images/icon-plus.png")}
+              style={styles.dropdownIcon}
+            />
+          </View>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={toggleDropdown}
+          style={styles.containerFilho}
+          activeOpacity={1}
+        >
+          <View style={styles.container}>
+            <Image source={{ uri: selectedChild.foto }} style={styles.avatar} />
+            <View style={styles.info}>
+              <Text style={styles.label}>Filho:</Text>
+              <Text style={styles.nome}>{selectedChild.nome}</Text>
+            </View>
+            <Image
+              source={require("../../assets/images/icon-dropdown.png")}
+              style={styles.dropdownIcon}
+            />
+          </View>
+        </TouchableOpacity>
+      )}
 
       {dropdownVisible && (
         <View style={styles.dropdown}>
           {filhos
-            .filter((f) => f.nome !== selectedChild.nome)
+            .filter((f) => f.usuario !== selectedChild.usuario)
             .map((filho) => (
               <TouchableOpacity
-                key={filho.id}
+                key={filho.usuario}
                 style={styles.item}
                 onPress={() => selectFilho(filho)}
               >
-                <Image source={filho.imagem} style={styles.avatarMini} />
+                <Image source={filho.foto} style={styles.avatarMini} />
                 <Text style={styles.nomeDropdown}>{filho.nome}</Text>
               </TouchableOpacity>
             ))}
-            <TouchableOpacity
-                style={styles.btnAdd}
-                onPress={handleRedirect}
-              >
-                <MaterialIcons name="add-circle" size={45} color="#fff" />
-              </TouchableOpacity>
+          <TouchableOpacity style={styles.btnAdd} onPress={handleRedirect}>
+            <MaterialIcons name="add-circle" size={45} color="#fff" />
+          </TouchableOpacity>
         </View>
       )}
     </ImageBackground>
@@ -141,9 +216,9 @@ const styles = StyleSheet.create({
     paddingVertical: width * 0.02,
   },
   btnAdd: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: width * 0.02,
   },
   nomeDropdown: {

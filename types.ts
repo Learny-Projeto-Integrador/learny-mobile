@@ -4,5 +4,6 @@ export type RootStackParamList = {
     register: { idParent?: string };
     transition: { name: string };
     profileParent: undefined;
+    edit: { idParent?: string }
   };
   

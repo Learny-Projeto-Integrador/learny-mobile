@@ -26,7 +26,6 @@ export default function DateInput({ valor, atualizar }: DateInputProps) {
     if (selectedDate) {
       setDate(selectedDate);
       atualizar(formatDate(selectedDate));
-      console.log(formatDate(selectedDate));
       if (Platform.OS === "android") toggleDatePicker();
     } else {
       toggleDatePicker();

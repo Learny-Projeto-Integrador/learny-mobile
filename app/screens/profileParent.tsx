@@ -28,6 +28,8 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profilePare
 type ParentData = {
   idParent: string;
   nome: string;
+  filhos: [{}]
+  filhoSelecionado: {}
 }
 
 const GradientText = ({ style, children }: any) => {
@@ -115,6 +117,10 @@ export default function ProfileParentScreen() {
     ]);
   }
 
+  const handleEdit = () => {
+    navigation.navigate("edit", {idParent: id})
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.containerDados}>
@@ -145,7 +151,7 @@ export default function ProfileParentScreen() {
       </View>
       <View style={styles.containerWidgets}>
         <ProgressBar progress="50" />
-        <ContainerFilhos handleRedirect={handleRedirectCadastro} />
+        <ContainerFilhos filhos={data ? data.filhos : [{}]} filhoSelecionado={data ? data.filhoSelecionado: {}} handleRedirect={handleRedirectCadastro} />
         <ContainerActions />
         <View style={styles.containerDadosFases}>
           <ContainerMundoAtual />
@@ -154,15 +160,26 @@ export default function ProfileParentScreen() {
         <View
           style={styles.divider}
         />
-        <TouchableOpacity 
-          style={styles.btnSair}
-          onPress={handleSair}
-          >
-          <Image
-            style={{ width: 40, height: 40 }}
-            source={require("../../assets/images/icon-sair.png")}
-          />
-        </TouchableOpacity>
+        <View style={{flexDirection: "row", gap: 40,}}>
+          <TouchableOpacity 
+            style={styles.btnSair}
+            onPress={handleSair}
+            >
+            <Image
+              style={{ width: 50, height: 50 }}
+              source={require("../../assets/images/icon-edit.png")}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.btnSair}
+            onPress={handleEdit}
+            >
+            <Image
+              style={{ width: 40, height: 40 }}
+              source={require("../../assets/images/icon-sair.png")}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
