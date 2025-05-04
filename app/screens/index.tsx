@@ -4,6 +4,7 @@ import { ImageBackground, Image, Text, StyleSheet, TouchableOpacity, View, Activ
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'index'>;
 
@@ -15,26 +16,35 @@ export default function LoginScreen() {
   
     const [usuario, setUsuario] = useState('');
     const [senha, setSenha] = useState('');
+
+    const saveToken = async (token: string) => {
+      try {
+        await AsyncStorage.setItem('token', token);
+      } catch (e) {
+        console.error('Erro ao salvar o token', e);
+      }
+    };
   
     const handleLogin = async () => {
       setLoading(true);
       setError(null);
     
       try {
-        const res = await fetch("http://10.0.2.2:4000/login", {
+        const res = await fetch("http://10.0.2.2:5000/pais/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            user: usuario,
-            password: senha
+            usuario: usuario,
+            senha: senha
           })
         });
     
         const result = await res.json();
         
         if (res.ok) {
+          saveToken(result.access_token);
           navigation.navigate("transition", {name: usuario});
         } else {
           setError(result.error);
@@ -50,7 +60,7 @@ export default function LoginScreen() {
     };
 
     const handleRedirect = () => {
-        navigation.navigate('register');
+        navigation.navigate('register', {idParent: undefined});
     }
 
     return (

@@ -11,13 +11,13 @@ type Props = NativeStackScreenProps<RootStackParamList, 'transition'>;
 export default function TransitionScreen({ route, navigation }: Props) {
   const { name } = route.params;
 
-//   useEffect(() => {
-//     const timer = setTimeout(() => {
-//       navigation.navigate('home');
-//     }, 2000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigation.navigate('profileParent');
+    }, 2000);
 
-//     return () => clearTimeout(timer); // Limpa o timer ao desmontar a tela
-//   }, [navigation]);
+    return () => clearTimeout(timer); // Limpa o timer ao desmontar a tela
+  }, [navigation]);
 
   return (
     <ImageBackground 
