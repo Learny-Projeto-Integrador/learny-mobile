@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 type Filho = {
   usuario: string;
   nome: string;
-  foto: any; // ou string se vier como URI remota
+  foto: any;
 };
 
 type ContainerFilhosProps = {
@@ -97,13 +97,20 @@ export default function ContainerFilhos({
               styles.container,
               {
                 paddingVertical: 10,
-                flexDirection: "row",
-                alignItems: "center",
               },
             ]}
           >
             <View style={styles.info}>
-              <Text style={[styles.nome, { marginTop: -5, fontSize: 25, fontFamily: "Montserrat_400Regular" }]}>
+              <Text
+                style={[
+                  styles.nome,
+                  {
+                    marginTop: -5,
+                    fontSize: 25,
+                    fontFamily: "Montserrat_400Regular",
+                  },
+                ]}
+              >
                 Cadastre um filho
               </Text>
             </View>
@@ -114,42 +121,50 @@ export default function ContainerFilhos({
           </View>
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity
-          onPress={toggleDropdown}
-          style={styles.containerFilho}
-          activeOpacity={1}
-        >
-          <View style={styles.container}>
-            <Image source={{ uri: selectedChild.foto }} style={styles.avatar} />
-            <View style={styles.info}>
-              <Text style={styles.label}>Filho:</Text>
-              <Text style={styles.nome}>{selectedChild.nome}</Text>
+        <View>
+          <TouchableOpacity
+            onPress={toggleDropdown}
+            style={styles.containerFilho}
+            activeOpacity={1}
+          >
+            <View style={styles.container}>
+              <Image
+                source={
+                  selectedChild.foto
+                    ? { uri: selectedChild.foto }
+                    : require("../../assets/images/avatar.png")
+                }
+                style={styles.avatar}
+              />
+              <View style={styles.info}>
+                <Text style={styles.label}>Filho:</Text>
+                <Text style={styles.nome}>{selectedChild.nome}</Text>
+              </View>
+              <Image
+                source={require("../../assets/images/icon-dropdown.png")}
+                style={styles.dropdownIcon}
+              />
             </View>
-            <Image
-              source={require("../../assets/images/icon-dropdown.png")}
-              style={styles.dropdownIcon}
-            />
-          </View>
-        </TouchableOpacity>
-      )}
-
-      {dropdownVisible && (
-        <View style={styles.dropdown}>
-          {filhos
-            .filter((f) => f.usuario !== selectedChild.usuario)
-            .map((filho) => (
-              <TouchableOpacity
-                key={filho.usuario}
-                style={styles.item}
-                onPress={() => selectFilho(filho)}
-              >
-                <Image source={filho.foto} style={styles.avatarMini} />
-                <Text style={styles.nomeDropdown}>{filho.nome}</Text>
-              </TouchableOpacity>
-            ))}
-          <TouchableOpacity style={styles.btnAdd} onPress={handleRedirect}>
-            <MaterialIcons name="add-circle" size={45} color="#fff" />
           </TouchableOpacity>
+          {dropdownVisible && selectedChild && (
+            <View style={styles.dropdown}>
+              {filhos
+                .filter((f) => f.usuario !== selectedChild.usuario)
+                .map((filho) => (
+                  <TouchableOpacity
+                    key={filho.usuario}
+                    style={styles.item}
+                    onPress={() => selectFilho(filho)}
+                  >
+                    <Image source={filho.foto ? {uri: filho.foto} : require("../../assets/images/avatar.png")} style={styles.avatarMini} />
+                    <Text style={styles.nomeDropdown}>{filho.nome}</Text>
+                  </TouchableOpacity>
+                ))}
+              <TouchableOpacity style={styles.btnAdd} onPress={handleRedirect}>
+                <MaterialIcons name="add-circle" size={45} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       )}
     </ImageBackground>
@@ -163,6 +178,8 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 20,
     overflow: "hidden",
+    flexDirection: "row",
+    alignItems: "center",
   },
   containerFilho: {
     width: "100%",
@@ -175,7 +192,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: width * 0.12,
     height: width * 0.12,
-    backgroundColor: "#fff",
+    aspectRatio: 62 / 62,
     borderRadius: 50,
   },
   avatarMini: {
@@ -206,8 +223,9 @@ const styles = StyleSheet.create({
     marginLeft: "auto",
   },
   dropdown: {
+    width: "100%",
     backgroundColor: "rgba(255,255,255,0.2)",
-    paddingVertical: width * 0.01,
+    paddingVertical: width * 0.02,
   },
   item: {
     flexDirection: "row",
@@ -219,7 +237,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: width * 0.02,
   },
   nomeDropdown: {
     fontSize: width * 0.04,

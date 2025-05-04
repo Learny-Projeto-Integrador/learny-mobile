@@ -60,7 +60,7 @@ export default function LoginScreen() {
     };
 
     const handleRedirect = () => {
-        navigation.navigate('register');
+        navigation.navigate('register', {idParent: undefined});
     }
 
     return (

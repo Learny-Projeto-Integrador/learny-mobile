@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Text, View } from "react-native";
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
@@ -18,15 +18,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'edit'>;
 
-type ParentData = {
-  idParent: string;
-  nome: string;
-  filhos: [{}]
-  filhoSelecionado: {}
-}
-
 import DateInput from "@/components/ui/DateInput";
 import LoginInput from "@/components/ui/LoginInput";
+import { useFocusEffect } from "expo-router";
 
 export default function EditScreen({ route, navigation }: Props) {
   const { idParent } = route.params ?? {};
@@ -34,14 +28,63 @@ export default function EditScreen({ route, navigation }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [data, setData] = useState<ParentData | undefined>(undefined);
 
+  const [id, setId] = useState("");
   const [image, setImage] = useState<string | null>("");
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [dataNasc, setDataNasc] = useState("");
+
+  const getToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      return token;
+    } catch (e) {
+      console.error('Erro ao buscar o token', e);
+    }
+  };
+
+  const loadData = async () => {
+      setLoading(true);
+      setError(null);
+  
+      try {
+        const token = await getToken();
+  
+        const res = await fetch('http://10.0.2.2:5000/pais', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        const result = await res.json();
+  
+        if (res.ok) {
+          setId(result._id.$oid)
+          setImage(result.foto)
+          setUsuario(result.usuario);
+          setNome(result.nome);
+          setEmail(result.email);
+          setDataNasc(result.dataNasc)
+        } else {
+          setError(result.error);
+        }
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    useFocusEffect(
+      useCallback(() => {
+        loadData();
+      }, [])
+    );
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -68,20 +111,9 @@ export default function EditScreen({ route, navigation }: Props) {
     }
   };
 
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      return token;
-    } catch (e) {
-      console.error('Erro ao buscar o token', e);
-    }
-  };
-
   const handleEdit = async () => {
     setLoading(true);
     setError(null);
-  
-    let editRoute = "pais";
   
     const body: any = {
       foto: image,
@@ -91,16 +123,11 @@ export default function EditScreen({ route, navigation }: Props) {
       email: email,
       dataNasc: dataNasc,
     };
-  
-    if (idParent) {
-      editRoute = "criancas";
-      body.responsavel = idParent;
-    }
-  
+
     try {
       const token = await getToken();
 
-      const res = await fetch(`http://10.0.2.2:5000/${editRoute}`, {
+      const res = await fetch(`http://10.0.2.2:5000/pais`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -112,7 +139,7 @@ export default function EditScreen({ route, navigation }: Props) {
       const result = await res.json();
   
       if (res.ok) {
-        Alert.alert("Sucesso!", result, [
+        Alert.alert("Sucesso!", result.message, [
           { text: "Voltar", onPress: () => navigation.navigate("profileParent") },
           { text: "OK" },
         ]);
@@ -128,8 +155,39 @@ export default function EditScreen({ route, navigation }: Props) {
     }
   };
 
+  const handleDelete = async () => {
+    setLoading(true);
+    setError(null);
+  
+    try {
+      const token = await getToken();
+
+      const res = await fetch(`http://10.0.2.2:5000/pais/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (res.status === 204) {
+        Alert.alert("Conta Excluída", "A conta foi excluída com sucesso.", [
+          { text: "Ok", onPress: () => navigation.navigate("index") },
+        ]);
+      } else {
+        const result = await res.json();
+        setError(result.error || "Erro desconhecido.");
+        Alert.alert("Erro ao excluir conta", result.error || "Erro desconhecido.");
+      }
+    } catch (err: any) {
+      setError(err.message);
+      Alert.alert("Erro inesperado", "Não foi possível conectar ao servidor. Verifique sua conexão.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleRedirect = () => {
-    navigation.navigate("index");
+    navigation.navigate("profileParent")
   };
 
   return (
@@ -138,24 +196,32 @@ export default function EditScreen({ route, navigation }: Props) {
       resizeMode="cover"
       style={styles.container}
     >
-      <TouchableOpacity onPress={pickImage}>
-        {image ? (
-          <Image source={{ uri: image }} style={styles.img} />
-        ) : (
-          <Image
-            style={styles.btnImg}
-            source={require("../../assets/images/icone-camera.png")}
+      <View style={styles.containerFoto}>
+        <TouchableOpacity style={styles.btnVoltar} onPress={handleRedirect}>
+          <Image 
+            style={styles.iconVoltar}
+            source={require("../../assets/images/icon-voltar.png")}
           />
-        )}
-      </TouchableOpacity>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={pickImage}>
+          {image ? (
+            <Image source={{ uri: image }} style={styles.img} />
+          ) : (
+            <Image
+              style={styles.btnImg}
+              source={require("../../assets/images/icone-camera.png")}
+            />
+          )}
+        </TouchableOpacity>
+      </View>
       <View style={styles.viewInputs}>
         <LoginInput campo="Usuário" valor={usuario} atualizar={setUsuario} />
-        <LoginInput campo="Senha" valor={senha} atualizar={setSenha} />
+        <LoginInput campo="Nova Senha" valor={senha} atualizar={setSenha} />
         <LoginInput campo="Nome" valor={nome} atualizar={setNome} />
         <LoginInput campo="Email" valor={email} atualizar={setEmail} />
         <DateInput valor={dataNasc} atualizar={setDataNasc} />
         <TouchableOpacity
-          style={styles.button}
+          style={styles.btn}
           onPress={
             // @ts-ignore
             () => handleEdit()
@@ -164,15 +230,21 @@ export default function EditScreen({ route, navigation }: Props) {
           {loading ? (
             <ActivityIndicator size="large" color="#547d98" />
           ) : (
-            <Text style={styles.buttonText}>Confirmar</Text>
+            <Text style={styles.btnText}>Confirmar</Text>
           )}
         </TouchableOpacity>
-      </View>
-
-      <View style={styles.viewLink}>
-        <Text style={styles.txtLink}>Já possui uma Conta?</Text>
-        <TouchableOpacity onPress={() => handleRedirect()}>
-          <Text style={styles.link}>Entre aqui</Text>
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={
+            // @ts-ignore
+            () => handleDelete()
+          }
+        >
+          {loading ? (
+            <ActivityIndicator size="large" color="#547d98" />
+          ) : (
+            <Text style={[styles.btnText, {color: "#EF5B6A",}]}>Excluir Conta</Text>
+          )}
         </TouchableOpacity>
       </View>
     </ImageBackground>
@@ -188,7 +260,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: height * 0.035,
   },
-  button: {
+  containerFoto: {
+    width: "100%", 
+    flexDirection: "row", 
+    justifyContent: "center"
+  },
+  btnVoltar: {
+    position: "absolute", 
+    top: 0, 
+    left: width * 0.13
+  },
+  iconVoltar: {
+    width: width * 0.08,
+    height: width * 0.08
+  },
+  btn: {
     display: "flex",
     justifyContent: "center",
     backgroundColor: "#f0f0f0",
@@ -196,7 +282,7 @@ const styles = StyleSheet.create({
     height: height * 0.07,
     borderRadius: 15,
   },
-  buttonText: {
+  btnText: {
     fontSize: width * 0.04,
     fontFamily: "Montserrat_700Bold",
     color: "#547d98",
@@ -240,28 +326,5 @@ const styles = StyleSheet.create({
     width: width * 0.5,
     borderRadius: 8,
     fontSize: width * 0.04,
-  },
-  btn: {
-    width: width * 0.1,
-    height: width * 0.1,
-    marginBottom: width * 0.01,
-  },
-  viewLink: {
-    backgroundColor: "rgba(52, 52, 52, 0)",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: width * 0.06,
-  },
-  txtLink: {
-    color: "#fff",
-    fontSize: width * 0.04,
-    fontFamily: "Montserrat_400Regular",
-  },
-  link: {
-    fontSize: width * 0.04,
-    fontFamily: "Montserrat_700Bold",
-    textDecorationLine: "underline",
-    color: "#fff",
   },
 });

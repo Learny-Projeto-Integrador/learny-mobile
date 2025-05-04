@@ -21,16 +21,20 @@ import ContainerMundoAtual from "@/components/ui/ContainerMundoAtual";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../types";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profileParent">;
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "profileParent"
+>;
 
 type ParentData = {
   idParent: string;
+  foto: string;
   nome: string;
-  filhos: [{}]
-  filhoSelecionado: {}
-}
+  filhos: [{}];
+  filhoSelecionado: {};
+};
 
 const GradientText = ({ style, children }: any) => {
   return (
@@ -52,20 +56,19 @@ const GradientText = ({ style, children }: any) => {
   );
 };
 
-
 export default function ProfileParentScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [data, setData] = useState<ParentData | undefined>(undefined);
   const [id, setId] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null);
 
   const getToken = async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
+      const token = await AsyncStorage.getItem("token");
       return token;
     } catch (e) {
-      console.error('Erro ao buscar o token', e);
+      console.error("Erro ao buscar o token", e);
     }
   };
 
@@ -76,10 +79,10 @@ export default function ProfileParentScreen() {
     try {
       const token = await getToken();
 
-      const res = await fetch('http://10.0.2.2:5000/pais', {
-        method: 'GET',
+      const res = await fetch("http://10.0.2.2:5000/pais", {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
@@ -88,7 +91,7 @@ export default function ProfileParentScreen() {
 
       if (res.ok) {
         setData(result);
-        setId(result._id.$oid)
+        setId(result._id.$oid);
       } else {
         setError(result.error);
       }
@@ -107,34 +110,44 @@ export default function ProfileParentScreen() {
 
   const handleRedirectCadastro = () => {
     if (!data) return;
-    navigation.navigate("register", { idParent: id })
-  }
+    navigation.navigate("register", { idParent: id });
+  };
 
   const handleSair = () => {
     Alert.alert("Alerta", "Deseja mesmo sair?", [
       { text: "Cancelar" },
       { text: "Sair", onPress: () => navigation.navigate("index") },
     ]);
-  }
+  };
 
   const handleEdit = () => {
-    navigation.navigate("edit", {idParent: id})
-  }
+    navigation.navigate("edit", { idParent: id });
+  };
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.containerDados}>
         <Image
-          style={styles.logo}
-          source={require("../../assets/images/logo.png")}
+          style={styles.foto}
+          source={
+            data && data.foto
+              ? { uri: data.foto }
+              : require("../../assets/images/logo.png")
+          }
         />
         <View>
           <View style={styles.containerNameParent}>
-            <GradientText style={styles.nameText}>{data ? data.nome : ""}</GradientText>
+            {data
+              ? data.nome.split(" ").map((nome, index) => (
+                  <GradientText key={index} style={styles.nameText}>
+                    {nome}
+                  </GradientText>
+                ))
+              : ""}
           </View>
           <View style={styles.containerRankParent}>
             <View>
-              <GradientText style={styles.txt}>You're a</GradientText>
+              <Text style={styles.txt}>You're a</Text>
               <GradientText style={styles.txtRankParent}>
                 SUPER PARENT
               </GradientText>
@@ -151,32 +164,30 @@ export default function ProfileParentScreen() {
       </View>
       <View style={styles.containerWidgets}>
         <ProgressBar progress="50" />
-        <ContainerFilhos filhos={data ? data.filhos : [{}]} filhoSelecionado={data ? data.filhoSelecionado: {}} handleRedirect={handleRedirectCadastro} />
+        <ContainerFilhos
+          //@ts-ignore
+          filhos={data ? data.filhos : [{}]}
+          //@ts-ignore
+          filhoSelecionado={data ? data.filhoSelecionado : {}}
+          handleRedirect={handleRedirectCadastro}
+        />
         <ContainerActions />
         <View style={styles.containerDadosFases}>
           <ContainerMundoAtual />
           <ContainerFasesConcluidas />
         </View>
-        <View
-          style={styles.divider}
-        />
-        <View style={{flexDirection: "row", gap: 40,}}>
-          <TouchableOpacity 
-            style={styles.btnSair}
-            onPress={handleSair}
-            >
+        <View style={styles.divider} />
+        <View style={{ flexDirection: "row", gap: 40 }}>
+          <TouchableOpacity onPress={handleEdit}>
             <Image
-              style={{ width: 50, height: 50 }}
-              source={require("../../assets/images/icon-edit.png")}
+              style={styles.btn}
+              source={require("../../assets/images/btn-editar.png")}
             />
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.btnSair}
-            onPress={handleEdit}
-            >
+          <TouchableOpacity onPress={handleSair}>
             <Image
-              style={{ width: 40, height: 40 }}
-              source={require("../../assets/images/icon-sair.png")}
+              style={styles.btn}
+              source={require("../../assets/images/btn-sair.png")}
             />
           </TouchableOpacity>
         </View>
@@ -197,7 +208,7 @@ const styles = StyleSheet.create({
     display: "flex",
     height: "auto",
     flexDirection: "row",
-    marginTop: height * 0.05,
+    marginTop: height * 0.04,
     gap: width * 0.05,
   },
   containerRankParent: {
@@ -208,9 +219,10 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     gap: width * 0.02,
   },
-  logo: {
-    width: width * 0.3,
-    height: width * 0.3,
+  foto: {
+    width: width * 0.33,
+    height: width * 0.33,
+    borderRadius: 20,
   },
   stackContainer: {
     position: "relative",
@@ -231,6 +243,7 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat_800ExtraBold",
   },
   txt: {
+    color: "#4c4c4c",
     fontSize: width * 0.04,
     fontFamily: "Montserrat_400Regular",
   },
@@ -260,25 +273,13 @@ const styles = StyleSheet.create({
   },
   divider: {
     width: "100%",
-    height: width * 0.02,
+    height: width * 0.01,
     borderRadius: 15,
     backgroundColor: "#a5a5a5",
   },
-  btnSair: {
+  btn: {
     width: width * 0.15,
     height: width * 0.15,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 100,
-
-    // Sombras para iOS
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    // Sombra para Android
-    elevation: 5,
+    aspectRatio: 62 / 62,
   },
 });

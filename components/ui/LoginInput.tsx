@@ -12,11 +12,11 @@ export default function LoginInput(props: LoginInputProps) {
         <View style={styles.viewInput}>
         <Text style={styles.title}>{props.campo}:</Text>
         <TextInput
-            style={styles.input}
+            style={props.campo === "Nova Senha" ? [styles.input, {width: "60%"}] : styles.input}
             onChangeText={props.atualizar}
             value={props.valor}
             placeholderTextColor="#757575"
-            secureTextEntry={props.campo === "Senha"}
+            secureTextEntry={props.campo === "Senha" || props.campo === "Nova Senha"}
         />
         </View>
     );

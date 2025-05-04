@@ -17,30 +17,15 @@ const ContainerActions = () => {
       <View style={styles.containerFilho}>
         <Image
         source={require("../../assets/images/icon-notificacao.png")}
-          style={{
-            width: 80,
-            height: 80,
-            backgroundColor: "#fff",
-            borderRadius: 50,
-          }}
+        style={styles.icon}
         />
         <Image
         source={require("../../assets/images/icon-atv.png")}
-          style={{
-            width: 80,
-            height: 80,
-            backgroundColor: "#fff",
-            borderRadius: 50,
-          }}
+        style={styles.icon}
         />
         <Image
         source={require("../../assets/images/icon-chat.png")}
-          style={{
-            width: 80,
-            height: 80,
-            backgroundColor: "#fff",
-            borderRadius: 50,
-          }}
+        style={styles.icon}
         />
       </View>
     </ImageBackground>
@@ -55,6 +40,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 60,
     overflow: 'hidden',
+  },
+  icon: {
+    width: 80,
+    height: 80,
+    aspectRatio: 62 / 62,
   },
   containerFilho: {
     width: "70%",

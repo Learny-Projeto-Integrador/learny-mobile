@@ -17,6 +17,7 @@ import LoginScreen from './screens';
 import RegisterScreen from './screens/register';
 import TransitionScreen from './screens/transition';
 import ProfileParentScreen from './screens/profileParent';
+import EditScreen from './screens/edit';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -63,6 +64,11 @@ export default function RootLayout() {
       <Stack.Screen
         name="profileParent"
         component={ProfileParentScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="edit"
+        component={EditScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

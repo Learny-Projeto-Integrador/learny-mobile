@@ -12,11 +12,11 @@ import React from "react";
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../../types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'register'>;
+type Props = NativeStackScreenProps<RootStackParamList, "register">;
 
 import DateInput from "@/components/ui/DateInput";
 import LoginInput from "@/components/ui/LoginInput";
@@ -61,19 +61,19 @@ export default function RegisterScreen({ route, navigation }: Props) {
 
   const getToken = async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
+      const token = await AsyncStorage.getItem("token");
       return token;
     } catch (e) {
-      console.error('Erro ao buscar o token', e);
+      console.error("Erro ao buscar o token", e);
     }
   };
 
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
-  
+
     let registerRoute = "pais";
-  
+
     const body: any = {
       foto: image,
       usuario: usuario,
@@ -82,7 +82,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
       email: email,
       dataNasc: dataNasc,
     };
-  
+
     if (idParent) {
       registerRoute = "criancas";
       const token = await getToken();
@@ -102,7 +102,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
 
       body.responsavel = idParent;
     }
-  
+
     try {
       const res = await fetch(`http://10.0.2.2:5000/${registerRoute}`, {
         method: "POST",
@@ -111,28 +111,52 @@ export default function RegisterScreen({ route, navigation }: Props) {
         },
         body: JSON.stringify(body),
       });
-  
+
       const result = await res.json();
-  
+
       if (res.ok) {
-        Alert.alert("Sucesso!", result, [
-          { text: "Fazer Login", onPress: () => navigation.navigate("index") },
-          { text: "OK" },
-        ]);
+        {
+          idParent
+            ? Alert.alert("Sucesso!", result, [
+                {
+                  text: "Voltar",
+                  onPress: () => {
+                    navigation.navigate("profileParent");
+                  },
+                },
+                { text: "OK" },
+              ])
+            : Alert.alert("Sucesso!", result, [
+                {
+                  text: "Fazer Login",
+                  onPress: () => {
+                    navigation.navigate("index");
+                  },
+                },
+                { text: "OK" },
+              ]);
+        }
       } else {
         setError(result.error);
         Alert.alert("Erro no cadastro", result.error);
       }
     } catch (err: any) {
       setError(err.message);
-      Alert.alert("Erro inesperado", "Não foi possível conectar ao servidor. Verifique sua conexão.");
+      Alert.alert(
+        "Erro inesperado",
+        "Não foi possível conectar ao servidor. Verifique sua conexão."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleRedirect = () => {
-    navigation.navigate("index");
+    {
+      idParent
+        ? navigation.navigate("profileParent")
+        : navigation.navigate("index");
+    }
   };
 
   return (
@@ -173,9 +197,13 @@ export default function RegisterScreen({ route, navigation }: Props) {
       </View>
 
       <View style={styles.viewLink}>
-        <Text style={styles.txtLink}>Já possui uma Conta?</Text>
+        {idParent ? (
+          <Text style={styles.txtLink}>Deseja voltar?</Text>
+        ) : (
+          <Text style={styles.txtLink}>Já possui uma Conta?</Text>
+        )}
         <TouchableOpacity onPress={() => handleRedirect()}>
-          <Text style={styles.link}>Entre aqui</Text>
+          <Text style={styles.link}>{idParent ? "Voltar" : "Entre aqui"}</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
