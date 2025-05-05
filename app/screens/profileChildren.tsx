@@ -22,6 +22,8 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ContainerActionChildren from "@/components/ui/ContainerActionChildren";
+import ContainerAcessibilidade from "@/components/ui/ContainerAcessibilidade";
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -56,7 +58,7 @@ const GradientText = ({ style, children }: any) => {
   );
 };
 
-export default function ProfileParentScreen() {
+export default function ProfileChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [data, setData] = useState<ParentData | undefined>(undefined);
   const [id, setId] = useState("");
@@ -132,65 +134,46 @@ export default function ProfileParentScreen() {
           source={
             data && data.foto
               ? { uri: data.foto }
-              : require("../../assets/images/logo.png")
+              : require("../../assets/images/joana.png")
           }
         />
-        <View>
-          <View style={styles.containerNameParent}>
-            {data
+        <View style={{ height: 180, justifyContent: "center", gap: 10 }}>
+          <View style={styles.containerNameChildren}>
+            {/* {data
               ? data.nome.split(" ").map((nome, index) => (
                   <GradientText key={index} style={styles.nameText}>
                     {nome}
                   </GradientText>
                 ))
-              : ""}
+              : ""} */}
+
+            <GradientText style={styles.nameText}>Joana</GradientText>
           </View>
-          <View style={styles.containerRankParent}>
-            <View>
-              <Text style={styles.txt}>You're a</Text>
-              <GradientText style={styles.txtRankParent}>
-                SUPER PARENT
-              </GradientText>
-            </View>
-            <View style={styles.stackContainer}>
-              <Image
-                style={styles.fireIcon}
-                source={require("../../assets/images/icon-fogo.png")}
-              />
-              <Text style={styles.txtRankNumber}>5</Text>
-            </View>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.txt}>lvl 100</Text>
           </View>
+        </View>
+        <View style={styles.viewVoltar}>
+          <Image
+            style={styles.iconVoltar}
+            source={require("../../assets/images/icon-voltar2.png")}
+          />
         </View>
       </View>
       <View style={styles.containerWidgets}>
         <ProgressBarLvl progresso="50" />
-        <ContainerFilhos
-          //@ts-ignore
-          filhos={data ? data.filhos : [{}]}
-          //@ts-ignore
-          filhoSelecionado={data ? data.filhoSelecionado : {}}
-          handleRedirect={handleRedirectCadastro}
-        />
-        <ContainerActions />
-        <View style={styles.containerDadosFases}>
-          <ContainerMundoAtual />
-          <ContainerFasesConcluidas />
+        <View style={{ gap: 10 }}>
+          <ContainerAcessibilidade />
+          <ContainerActionChildren icon={require("../../assets/images/icon-estatisticas.png")} title="Estatísticas" />
+          <ContainerActionChildren icon={require("../../assets/images/icon-quests.png")} title="Quests" />
+          <ContainerActionChildren icon={require("../../assets/images/icon-notificacoes.png")} title="Notificações" />
         </View>
-        <View style={styles.divider} />
-        <View style={{ flexDirection: "row", gap: 40 }}>
-          <TouchableOpacity onPress={handleEdit}>
-            <Image
-              style={styles.btn}
-              source={require("../../assets/images/btn-editar.png")}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleSair}>
+          <TouchableOpacity style={styles.viewBtn} onPress={handleSair}>
             <Image
               style={styles.btn}
               source={require("../../assets/images/btn-sair.png")}
             />
           </TouchableOpacity>
-        </View>
       </View>
     </ScrollView>
   );
@@ -212,31 +195,22 @@ const styles = StyleSheet.create({
     marginTop: height * 0.04,
     gap: width * 0.05,
   },
-  containerRankParent: {
-    marginTop: width * 0.1,
-    display: "flex",
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-end",
-    gap: width * 0.02,
-  },
   foto: {
     width: width * 0.33,
     height: width * 0.33,
     borderRadius: 20,
   },
-  stackContainer: {
+  viewVoltar: {
     position: "relative",
     alignItems: "center",
-    justifyContent: "center",
-    paddingBottom: width * 0.01,
+    paddingLeft: width * 0.09,
+    paddingTop: height * 0.01
   },
-  fireIcon: {
-    width: width * 0.09,
-    height: width * 0.09,
-    tintColor: "orange",
+  iconVoltar: {
+    width: width * 0.075,
+    height: width * 0.075,
   },
-  containerNameParent: {
+  containerNameChildren: {
     height: width * 0.08,
   },
   nameText: {
@@ -248,35 +222,16 @@ const styles = StyleSheet.create({
     fontSize: width * 0.04,
     fontFamily: "Montserrat_400Regular",
   },
-  txtRankParent: {
-    fontSize: width * 0.045,
-    fontFamily: "Montserrat_600SemiBold",
-  },
-  txtRankNumber: {
-    position: "absolute",
-    top: height * 0.012,
-    fontSize: width * 0.045,
-    color: "#fff",
-    fontFamily: "Montserrat_700Bold",
-  },
   containerWidgets: {
     width: "100%",
     marginTop: height * 0.03,
     gap: width * 0.04,
     alignItems: "center",
   },
-  containerDadosFases: {
-    width: "100%",
-    flexDirection: "row",
-    gap: width * 0.05,
-    marginTop: width * 0.02,
-    marginBottom: width * 0.02,
-  },
-  divider: {
-    width: "100%",
-    height: width * 0.01,
-    borderRadius: 15,
-    backgroundColor: "#a5a5a5",
+  viewBtn: {
+    flexDirection: "row", 
+    marginTop: height * 0.02, 
+    marginBottom: height * 0.04, 
   },
   btn: {
     width: width * 0.15,

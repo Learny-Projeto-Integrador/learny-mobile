@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   iconDate: {
     width: width * 0.064,
-    height: height * 0.04,
+    aspectRatio: 30 / 33,
   },
   datePicker: {
     display: "flex",

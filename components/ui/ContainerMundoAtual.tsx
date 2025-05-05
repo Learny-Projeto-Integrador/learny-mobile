@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Dimensions, ImageBackground } from "react-nativ
 export default function ContainerMundoAtual() {
   return (
     <ImageBackground 
-    source={require("../../assets/images/teste.png")}
+    source={require("../../assets/images/retangulo-sombra1.png")}
     style={styles.container}>
       <Text style={styles.title}>Mundo Atual</Text>
       <View style={styles.teste}>

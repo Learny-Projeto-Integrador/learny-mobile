@@ -4,7 +4,7 @@ export default function ContainerFasesConcluidas() {
     return (
         <ImageBackground 
         style={styles.container}
-        source={require("../../assets/images/teste2.png")}
+        source={require("../../assets/images/retangulo-sombra2.png")}
         >
             <Text style={styles.title}>Fases Concluidas</Text>
             <Text style={styles.txt}>10</Text>

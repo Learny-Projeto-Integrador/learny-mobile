@@ -26,37 +26,38 @@ export default function LoginScreen() {
     };
   
     const handleLogin = async () => {
-      setLoading(true);
-      setError(null);
-    
-      try {
-        const res = await fetch("http://10.0.2.2:5000/pais/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            usuario: usuario,
-            senha: senha
-          })
-        });
-    
-        const result = await res.json();
-        
-        if (res.ok) {
-          saveToken(result.access_token);
-          navigation.navigate("transition", {name: usuario});
-        } else {
-          setError(result.error);
-          Alert.alert("Erro no login", result.error);
-        }
-    
-      } catch (err: any) {
-        setError(err.message);
-        Alert.alert("Erro inesperado", "Não foi possível conectar ao servidor. Verifique sua conexão.");
-      } finally {
-        setLoading(false);
-      }
+        navigation.navigate("world");
+        // setLoading(true);
+        // setError(null);
+      
+        // try {
+        //   const res = await fetch("http://10.0.2.2:5000/pais/login", {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "application/json"
+        //     },
+        //     body: JSON.stringify({
+        //       usuario: usuario,
+        //       senha: senha
+        //     })
+        //   });
+      
+        //   const result = await res.json();
+          
+        //   if (res.ok) {
+        //     saveToken(result.access_token);
+        //     navigation.navigate("transition", {name: usuario});
+        //   } else {
+        //     setError(result.error);
+        //     Alert.alert("Erro no login", result.error);
+        //   }
+      
+        // } catch (err: any) {
+        //   setError(err.message);
+        //   Alert.alert("Erro inesperado", "Não foi possível conectar ao servidor. Verifique sua conexão.");
+        // } finally {
+        //   setLoading(false);
+        // }
     };
 
     const handleRedirect = () => {

@@ -6,24 +6,28 @@ import {
   Image,
   StyleSheet,
   ImageBackground,
+  Dimensions,
 } from "react-native";
 
-const ProgressBar = ({ progress }: any) => {
+const ProgressBarLvl = ({ progresso }: any) => {
   const [widthAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
     Animated.timing(widthAnim, {
-      toValue: progress,
+      toValue: progresso,
       duration: 500, // Duração da animação
       useNativeDriver: false,
     }).start();
-  }, [progress]);
+  }, [progresso]);
 
   return (
     <ImageBackground
       source={require("../../assets/images/fundo-gradiente-claro.png")}
       style={styles.container}
     >
+      <View style={styles.containerNumProgresso}>
+        <Text style={styles.txtProgresso}>exp: 100</Text>
+      </View>
       <View style={styles.outerBar}>
         <Animated.View
           style={[
@@ -46,24 +50,39 @@ const ProgressBar = ({ progress }: any) => {
   );
 };
 
+const { width, height } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "#fff",
     width: "100%",
-    justifyContent: "center",
+    flexDirection: "row",
     alignItems: "center",
-    height: 55,
-    borderRadius: 15,
-    overflow: 'hidden',
+    height: height * 0.045,
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  containerNumProgresso: {
+    width: width * 0.16, 
+    height: "100%",
+    backgroundColor: "#4C4C4C",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 5,
+  },
+  txtProgresso: {
+    color: "#fff",
+    fontSize: width * 0.025,
+    fontFamily: 'Montserrat_700Bold',
   },
   outerBar: {
-    width: "97%",
-    height: 40,
-    borderRadius: 10,
     backgroundColor: "#fff",
+    width: width * 0.67,
+    height: height * 0.035,
     overflow: "hidden",
     justifyContent: "center",
-    paddingLeft: 5,
-    paddingRight: 5,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
   },
   innerBar: {
     height: "100%",
@@ -74,8 +93,7 @@ const styles = StyleSheet.create({
   gradientImage: {
     width: "100%",
     height: 30,
-    borderRadius: 10,
   },
 });
 
-export default ProgressBar;
+export default ProgressBarLvl;

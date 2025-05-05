@@ -5,5 +5,9 @@ export type RootStackParamList = {
     transition: { name: string };
     profileParent: undefined;
     edit: { idParent?: string }
+    home: undefined;
+    profileChildren: undefined;
+    iconChildren: undefined;
+    world: undefined;
   };
   
