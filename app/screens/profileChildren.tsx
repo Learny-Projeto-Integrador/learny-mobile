@@ -20,25 +20,18 @@ import ContainerActionChildren from "@/components/ui/ContainerActionChildren";
 import ContainerAcessibilidade from "@/components/ui/ContainerAcessibilidade";
 import GradientText from "@/components/ui/GradientText";
 
-type NavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "profileParent"
->;
-
-type ParentData = {
-  idParent: string;
-  foto: string;
-  nome: string;
-  filhos: [{}];
-  filhoSelecionado: {};
-};
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function ProfileChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const [data, setData] = useState<ParentData | undefined>(undefined);
-  const [id, setId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [foto, setFoto] = useState("");
+  const [nome, setNome] = useState("");
+  const [pontos, setPontos] = useState(0);
+  const [nivel, setNivel] = useState(0);
+  const [progressoNivel, setProgressoNivel] = useState(0);
+  const [audio, setAudio] = useState(false);
 
   const getToken = async () => {
     try {
@@ -56,7 +49,7 @@ export default function ProfileChildrenScreen() {
     try {
       const token = await getToken();
 
-      const res = await fetch("http://10.0.2.2:5000/pais", {
+      const res = await fetch("http://10.0.2.2:5000/criancas", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -67,8 +60,12 @@ export default function ProfileChildrenScreen() {
       const result = await res.json();
 
       if (res.ok) {
-        setData(result);
-        setId(result._id.$oid);
+        setFoto(result.foto);
+        setNome(result.nome)
+        setPontos(result.pontos);
+        setNivel(Math.floor(pontos/100))
+        setProgressoNivel(pontos % 100)
+        setAudio(result.audio)
       } else {
         setError(result.error);
       }
@@ -85,9 +82,21 @@ export default function ProfileChildrenScreen() {
     }, [])
   );
 
-  const handleRedirectCadastro = () => {
-    if (!data) return;
-    navigation.navigate("register", { idParent: id });
+  const atualizarAudio = async (audio: boolean, novoValor: boolean) => {
+    const token = await getToken();
+    try {
+      await fetch("http://10.0.2.2:5000/criancas", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ audio: novoValor }),
+      });
+      setAudio(novoValor);
+    } catch (e) {
+      console.error("Erro ao atualizar o audio", e);
+    }
   };
 
   const handleSair = () => {
@@ -97,34 +106,31 @@ export default function ProfileChildrenScreen() {
     ]);
   };
 
-  const handleEdit = () => {
-    navigation.navigate("edit", { idParent: id });
-  };
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.containerDados}>
-        <Image
-          style={styles.foto}
-          source={
-            data && data.foto
-              ? { uri: data.foto }
-              : require("../../assets/images/joana.png")
-          }
-        />
-        <View style={{ height: 180, justifyContent: "center", gap: 10 }}>
+        <TouchableOpacity onPress={()=> navigation.navigate("iconChildren")} style={{flexDirection: "row"}}>
+          <Image
+            style={styles.foto}
+            source={
+              foto
+                ? { uri: foto }
+                : require("../../assets/images/joana.png")
+            }
+          />
+        </TouchableOpacity>
+        <View style={{ justifyContent: "center", gap: 10 }}>
           <View style={styles.containerNameChildren}>
-            {/* {data
-              ? data.nome.split(" ").map((nome, index) => (
-                  <GradientText key={index} style={styles.nameText}>
+            {nome
+              ? nome.split(" ").map((nome, index) => (
+                  <GradientText color1="#EF5B6A" color2="#6CD2FF" key={index} style={styles.nameText}>
                     {nome}
                   </GradientText>
                 ))
-              : ""} */}
-            <GradientText color1="#EF5B6A" color2="#6CD2FF" style={styles.nameText}>Joana</GradientText>
+              : ""}
           </View>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.txt}>lvl 100</Text>
+          <View style={{ marginTop: width * 0.1, flexDirection: "row" }}>
+            <Text style={styles.txt}>lvl {nivel}</Text>
           </View>
         </View>
         <View style={styles.viewVoltar}>
@@ -135,9 +141,9 @@ export default function ProfileChildrenScreen() {
         </View>
       </View>
       <View style={styles.containerWidgets}>
-        <ProgressBarLvl progresso="50" />
+        <ProgressBarLvl pontos={pontos} progresso={progressoNivel} />
         <View style={{ gap: 10 }}>
-          <ContainerAcessibilidade />
+          <ContainerAcessibilidade audioAtivo={audio} onChangeAudio={(novoValor) => atualizarAudio(audio, novoValor)} />
           <ContainerActionChildren icon={require("../../assets/images/icon-estatisticas.png")} title="Estatísticas" />
           <ContainerActionChildren icon={require("../../assets/images/icon-quests.png")} title="Quests" />
           <ContainerActionChildren icon={require("../../assets/images/icon-notificacoes.png")} title="Notificações" />

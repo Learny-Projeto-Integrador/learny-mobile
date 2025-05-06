@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from "react-native";
 
-const ProgressBarLvl = ({ progresso }: any) => {
+const ProgressBarLvl = ({ pontos, progresso }: any) => {
   const [widthAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const ProgressBarLvl = ({ progresso }: any) => {
       style={styles.container}
     >
       <View style={styles.containerNumProgresso}>
-        <Text style={styles.txtProgresso}>exp: 100</Text>
+        <Text style={styles.txtProgresso}>exp: {pontos}</Text>
       </View>
       <View style={styles.outerBar}>
         <Animated.View

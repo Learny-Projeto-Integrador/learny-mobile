@@ -5,8 +5,14 @@ import {
   View,
   Dimensions,
   ImageBackground,
+  TouchableOpacity,
 } from "react-native";
 import ProgressBarMundo from "./ProgressBarMundo";
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../types';
+import { useNavigation } from "expo-router";
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 type ContainerMundoProps = {
   imagem: string;
@@ -18,8 +24,9 @@ type ContainerMundoProps = {
 }
 
 export default function ContainerMundo({imagem, nome, nomeIngles, num, progresso, cor} : ContainerMundoProps) {
+  const navigation = useNavigation<NavigationProp>();
   return (
-    <View style={styles.container}>
+    <TouchableOpacity onPress={()=> navigation.navigate("world")} activeOpacity={1} style={styles.container}>
       <ImageBackground
         style={styles.container}
         //@ts-ignore
@@ -32,7 +39,7 @@ export default function ContainerMundo({imagem, nome, nomeIngles, num, progresso
           <ProgressBarMundo progresso={progresso} cor={cor} />
         </View>
       </ImageBackground>
-    </View>
+    </TouchableOpacity>
   );
 }
 

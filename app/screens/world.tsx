@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   ImageBackground,
   Image,
@@ -11,7 +11,7 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -28,20 +28,55 @@ export default function WorldScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [usuario, setUsuario] = useState("");
-  const [senha, setSenha] = useState("");
+  const [pontos, setPontos] = useState(0);
+  const [numMedalhas, setNumMedalhas] = useState(0);
+  const [rankingAtual, setRankingAtual] = useState(0);
 
-  const saveToken = async (token: string) => {
+  const getToken = async () => {
     try {
-      await AsyncStorage.setItem("token", token);
+      const token = await AsyncStorage.getItem("token");
+      return token;
     } catch (e) {
-      console.error("Erro ao salvar o token", e);
+      console.error("Erro ao buscar o token", e);
     }
   };
 
-  const handleRedirect = () => {
-    navigation.navigate("register", { idParent: undefined });
+  const loadData = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = await getToken();
+
+      const res = await fetch("http://10.0.2.2:5000/criancas", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        setPontos(result.pontos);
+        setNumMedalhas(result.medalhas.length);
+        setRankingAtual(result.rankingAtual)
+      } else {
+        setError(result.error);
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
@@ -52,7 +87,7 @@ export default function WorldScreen() {
           style={styles.fundoVerde}/>
         </View>
         <View style={styles.containerDados}>
-          <Header pontos={1000} medalhas={10} ranking={1} />
+          <Header pontos={pontos} medalhas={numMedalhas} ranking={rankingAtual} />
           <View style={{flexDirection: "row", alignItems: "center", gap: 50}}>
             <ImageBackground
               source={require("../../assets/images/circulo-sombra.png")}

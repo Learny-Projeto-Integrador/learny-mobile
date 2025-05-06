@@ -2,7 +2,7 @@
 export type RootStackParamList = {
     index: undefined;
     register: { idParent?: string };
-    transition: { name: string };
+    transition: { name: string, type: string };
     profileParent: undefined;
     edit: { idParent?: string }
     home: undefined;

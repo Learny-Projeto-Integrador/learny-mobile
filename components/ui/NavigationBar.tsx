@@ -1,20 +1,32 @@
-import { Dimensions, Image, StyleSheet, View } from "react-native";
+import { Dimensions, Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { useNavigation } from "expo-router";
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../types';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function NavigationBar() {
+    const navigation = useNavigation<NavigationProp>();
     return(
         <View style={styles.container}>
-            <Image
-            style={styles.icon}
-                source={require("../../assets/images/icon-perfil.png")}
-            />
-            <Image
-            style={styles.iconHome}
-                source={require("../../assets/images/icon-home.png")}
-            />
-            <Image
-            style={styles.icon}
-                source={require("../../assets/images/icon-menu.png")}
-            />
+            <TouchableOpacity onPress={() => navigation.navigate("profileChildren")} style={{flexDirection: "row"}}>  
+                <Image
+                style={styles.icon}
+                    source={require("../../assets/images/icon-perfil.png")}
+                />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("home")} style={{flexDirection: "row"}}>
+                <Image
+                style={styles.iconHome}
+                    source={require("../../assets/images/icon-home.png")}
+                />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("menu")} style={{flexDirection: "row"}}>
+                <Image
+                style={styles.icon}
+                    source={require("../../assets/images/icon-menu.png")}
+                />
+            </TouchableOpacity>
         </View>
     );
 }

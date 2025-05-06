@@ -19,7 +19,8 @@ import Header from "@/components/ui/Header";
 import ContainerMundo from "@/components/ui/ContainerMundo";
 import ContainerTimeAttack from "@/components/ui/ContainerTimeAttack";
 import NavigationBar from "@/components/ui/NavigationBar";
-import RankingCard from "@/components/ui/RankingCard";
+import PodiumCard from "@/components/ui/PodiumCard";
+import OtherRanking from "@/components/ui/OtherRanking";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
@@ -58,15 +59,44 @@ export default function RankingScreen() {
           <View style={styles.containerTitle}>
             <Image
               source={require("../../assets/images/icon-info.png")}
-              style={styles.iconFechar}
+              style={styles.icon}
             />
             <Text style={styles.title}>Ranking</Text>
             <Image
               source={require("../../assets/images/icon-voltar2.png")}
-              style={styles.iconFechar}
+              style={styles.icon}
             />
           </View>
-          <RankingCard name="Joana" rank="1" points="100" />
+          <View style={{gap: 40}}>
+            <PodiumCard name="Joana" rank="1" points="100" />
+            <PodiumCard name="Joana" rank="1" points="100" />
+            <PodiumCard name="Joana" rank="1" points="100" />
+          </View>
+          <ImageBackground 
+          source={require("../../assets/images/fundo-planeta.png")}
+          style={{
+            width: "100%",
+            height: height * 0.5,
+            alignItems: "center",
+            marginBottom: -height * 0.035,
+          }}
+          >
+            <View style={{
+              backgroundColor: "rgba(0,0,0,0.35)",
+              width: width * 0.74,
+              marginTop: height * 0.02,
+              borderRadius: 40,
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 20,
+              paddingVertical: height * 0.04,
+            }}>
+              <OtherRanking name="Joana" rank="4" points="100" />
+              <OtherRanking name="Joana" rank="5" points="100" />
+              <OtherRanking name="Joana" rank="6" points="100" />
+              <OtherRanking name="Joana" rank="7" points="100" />
+            </View>
+          </ImageBackground>
         </View>
       </ScrollView>
       <View style={styles.navigationBarWrapper}>
@@ -103,10 +133,10 @@ const styles = StyleSheet.create({
   title: {
     color: "#4C4C4C",
     fontFamily: "Montserrat_700Bold",
-    fontSize: width * 0.07,
+    fontSize: width * 0.06,
   },
-  iconFechar: {
-    width: width * 0.07,
+  icon: {
+    width: width * 0.06,
     aspectRatio: 1 / 1,
   },
   navigationBarWrapper: {

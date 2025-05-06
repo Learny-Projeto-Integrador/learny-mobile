@@ -1,5 +1,5 @@
 // CustomSwitch.tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   TouchableWithoutFeedback,
   Animated,
@@ -10,36 +10,36 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface CustomSwitchProps {
-  initialValue?: boolean;
+  value: boolean;
   onToggle?: (value: boolean) => void;
 }
 
 export const CustomSwitch: React.FC<CustomSwitchProps> = ({
-  initialValue = false,
+  value,
   onToggle,
 }) => {
-  const [isOn, setIsOn] = useState(initialValue);
-  const animation = useRef(new Animated.Value(initialValue ? 1 : 0)).current;
+  const animation = useRef(new Animated.Value(value ? 1 : 0)).current;
 
-  const toggleSwitch = () => {
-    const newValue = !isOn;
+  useEffect(() => {
     Animated.timing(animation, {
-      toValue: newValue ? 1 : 0,
+      toValue: value ? 1 : 0,
       duration: 200,
       useNativeDriver: false,
     }).start();
-    setIsOn(newValue);
-    onToggle?.(newValue);
-  };
+  }, [value]);
 
   const translateX = animation.interpolate({
     inputRange: [0, 1],
     outputRange: [2, 28], // posição do botão
   });
 
-  const gradientColors = isOn
-    ? ['#da6171', '#69bbe3'] // ligado
-    : ['#417e99', '#7b4a57']; // desligado
+  const gradientColors = value
+    ? ['#da6171', '#69bbe3']
+    : ['#417e99', '#7b4a57'];
+
+  const toggleSwitch = () => {
+    onToggle?.(!value);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={toggleSwitch}>

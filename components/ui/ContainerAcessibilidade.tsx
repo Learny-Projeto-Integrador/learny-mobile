@@ -10,7 +10,15 @@ import { CustomSwitch } from "./CutsomSwitch";
 import GradientText from "./GradientText";
 
 
-export default function ContainerAcessibilidade() {
+type Props = {
+  audioAtivo: boolean;
+  onChangeAudio: (val: boolean) => void;
+}
+
+export default function ContainerAcessibilidade({
+  audioAtivo,
+  onChangeAudio,
+}: Props) {
   return (
     <ImageBackground
       source={require("../../assets/images/retangulo-sombra3.png")}
@@ -26,11 +34,11 @@ export default function ContainerAcessibilidade() {
         </View>
         <View style={styles.containerAction}>
             <Text style={styles.txtAction}>Desligar Audio</Text>
-            <CustomSwitch initialValue={true} onToggle={(val) => console.log(val)} />
+            <CustomSwitch value={audioAtivo} onToggle={onChangeAudio} />
         </View>
         <View style={styles.containerAction}>
             <Text style={styles.txtAction}>Mudar Cores</Text>
-            <CustomSwitch initialValue={true} onToggle={(val) => console.log(val)} />
+            <CustomSwitch value={true} />
         </View>
     </View>
     </ImageBackground>

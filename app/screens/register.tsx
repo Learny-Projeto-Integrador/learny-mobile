@@ -72,7 +72,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
     setLoading(true);
     setError(null);
 
-    let registerRoute = "pais";
+    let registerRoute;
 
     const body: any = {
       foto: image,
@@ -81,29 +81,14 @@ export default function RegisterScreen({ route, navigation }: Props) {
       senha: senha,
       email: email,
       dataNasc: dataNasc,
+      responsavel: idParent,
     };
 
-    if (idParent) {
-      registerRoute = "criancas";
-      const token = await getToken();
-
-      // Fazendo uma cópia do body sem a senha
-      const { senha, ...bodyWithoutPassword } = body;
-
-      // Adicionando a criança na lista de filhos do responsável
-      await fetch(`http://10.0.2.2:5000/pais/addcrianca`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(bodyWithoutPassword),
-      });
-
-      body.responsavel = idParent;
-    }
+    idParent ? (registerRoute = "criancas") : (registerRoute = "pais");
 
     try {
+      const token = await getToken();
+
       const res = await fetch(`http://10.0.2.2:5000/${registerRoute}`, {
         method: "POST",
         headers: {
@@ -115,6 +100,18 @@ export default function RegisterScreen({ route, navigation }: Props) {
       const result = await res.json();
 
       if (res.ok) {
+        // Fazendo uma cópia do body sem a senha
+        const { senha, responsavel, ...bodyWithoutPassword } = body;
+
+        // Adicionando a criança na lista de filhos do responsável
+        await fetch(`http://10.0.2.2:5000/pais/addcrianca`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(bodyWithoutPassword),
+        });
         {
           idParent
             ? Alert.alert("Sucesso!", result, [

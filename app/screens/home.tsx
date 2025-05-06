@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   ImageBackground,
   Image,
@@ -11,7 +11,7 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -27,23 +27,57 @@ const { width, height } = Dimensions.get("window");
 export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp>();
 
+  const [pontos, setPontos] = useState(0);
+  const [numMedalhas, setNumMedalhas] = useState(0);
+  const [rankingAtual, setRankingAtual] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [usuario, setUsuario] = useState("");
-  const [senha, setSenha] = useState("");
-
-  const saveToken = async (token: string) => {
+  const getToken = async () => {
     try {
-      await AsyncStorage.setItem("token", token);
+      const token = await AsyncStorage.getItem("token");
+      return token;
     } catch (e) {
-      console.error("Erro ao salvar o token", e);
+      console.error("Erro ao buscar o token", e);
     }
   };
 
-  const handleRedirect = () => {
-    navigation.navigate("register", { idParent: undefined });
+  const loadData = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = await getToken();
+
+      const res = await fetch("http://10.0.2.2:5000/criancas", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        setPontos(result.pontos);
+        setNumMedalhas(result.medalhas.length);
+        setRankingAtual(result.rankingAtual)
+      } else {
+        setError(result.error);
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
 
   return (
     <View style={{ flex: 1 }}>
@@ -54,7 +88,11 @@ export default function HomeScreen() {
           style={styles.gradiente}
         >
           <View style={{ alignItems: "center" }}>
-            <Header pontos={1000} medalhas={10} ranking={1} />
+              <Header
+                pontos={pontos}
+                medalhas={numMedalhas}
+                ranking={rankingAtual}
+              />
           </View>
           <View style={styles.containerTitulo}>
             <Text style={styles.txtTitulo}>Mundos</Text>
@@ -94,7 +132,9 @@ export default function HomeScreen() {
             progresso="50"
             cor="#B82A38"
           />
-          <View style={{alignItems: "center", paddingVertical: height * 0.03,}}>
+          <View
+            style={{ alignItems: "center", paddingVertical: height * 0.03 }}
+          >
             <View style={styles.divider} />
           </View>
           <ContainerTimeAttack />
@@ -112,12 +152,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   navigationBarWrapper: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     height: height * 0.07, // ajuste conforme o tamanho da sua barra
-    backgroundColor: 'transparent', // ou a cor de fundo da barra
+    backgroundColor: "transparent", // ou a cor de fundo da barra
   },
   gradiente: {
     flex: 1,
