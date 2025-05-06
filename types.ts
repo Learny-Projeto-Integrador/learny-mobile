@@ -9,5 +9,8 @@ export type RootStackParamList = {
     profileChildren: undefined;
     iconChildren: undefined;
     world: undefined;
+    menu: undefined;
+    diary: undefined;
+    ranking: undefined;
   };
   

@@ -8,30 +8,11 @@ import {
   Image,
   ImageBackground,
 } from "react-native";
+import GradientText from "./GradientText";
 
 type ContainerActionChildrenProps = {
   icon: any;
   title: string;
-};
-
-const GradientText = ({ style, children }: any) => {
-  return (
-    <MaskedView
-      maskElement={
-        <Text style={[style, { backgroundColor: "transparent" }]}>
-          {children}
-        </Text>
-      }
-    >
-      <LinearGradient
-        colors={["#d57388", "#8fb3d7"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-      >
-        <Text style={[style, { opacity: 0 }]}>{children}</Text>
-      </LinearGradient>
-    </MaskedView>
-  );
 };
 
 export default function ContainerActionChildren({
@@ -48,7 +29,7 @@ export default function ContainerActionChildren({
         {title == "Notificações" ? (
             <Text style={[styles.txtGradient, {color: "#4C4C4C"}]}>{title}</Text>
         ) : (
-            <GradientText style={styles.txtGradient}>{title}</GradientText>
+            <GradientText color1="#d57388" color2="#8fb3d7" style={styles.txtGradient}>{title}</GradientText>
         )  
         }
       </View>

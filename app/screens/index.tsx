@@ -26,7 +26,7 @@ export default function LoginScreen() {
     };
   
     const handleLogin = async () => {
-        navigation.navigate("world");
+        navigation.navigate("ranking");
         // setLoading(true);
         // setError(null);
       

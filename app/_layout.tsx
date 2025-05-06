@@ -25,6 +25,9 @@ import HomeScreen from './screens/home';
 import ProfileChildrenScreen from './screens/profileChildren';
 import IconChildrenScreen from './screens/iconChildren';
 import WorldScreen from './screens/world';
+import MenuScreen from './screens/menu';
+import DiaryScreen from './screens/diary';
+import RankingScreen from './screens/ranking';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -99,6 +102,21 @@ export default function RootLayout() {
       <Stack.Screen
         name="world"
         component={WorldScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="menu"
+        component={MenuScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="diary"
+        component={DiaryScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="ranking"
+        component={RankingScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

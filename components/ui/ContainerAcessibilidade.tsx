@@ -1,5 +1,3 @@
-import MaskedView from "@react-native-masked-view/masked-view";
-import { LinearGradient } from "expo-linear-gradient";
 import {
   View,
   Text,
@@ -9,26 +7,8 @@ import {
   ImageBackground,
 } from "react-native";
 import { CustomSwitch } from "./CutsomSwitch";
+import GradientText from "./GradientText";
 
-const GradientText = ({ style, children }: any) => {
-  return (
-    <MaskedView
-      maskElement={
-        <Text style={[style, { backgroundColor: "transparent" }]}>
-          {children}
-        </Text>
-      }
-    >
-      <LinearGradient
-        colors={["#946274", "#5c94b3"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-      >
-        <Text style={[style, { opacity: 0 }]}>{children}</Text>
-      </LinearGradient>
-    </MaskedView>
-  );
-};
 
 export default function ContainerAcessibilidade() {
   return (
@@ -42,7 +22,7 @@ export default function ContainerAcessibilidade() {
             style={styles.icon}
             source={require("../../assets/images/icon-acessibilidade.png")}
             />
-            <GradientText style={styles.txtGradient}>Acessibilidade</GradientText>
+            <GradientText color1="#946274" color2="#5c94b3" style={styles.txtGradient}>Acessibilidade</GradientText>
         </View>
         <View style={styles.containerAction}>
             <Text style={styles.txtAction}>Desligar Audio</Text>

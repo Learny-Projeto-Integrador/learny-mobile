@@ -22,6 +22,8 @@ import NavigationBar from "@/components/ui/NavigationBar";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
+const { width, height } = Dimensions.get("window");
+
 export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp>();
 
@@ -92,6 +94,9 @@ export default function HomeScreen() {
             progresso="50"
             cor="#B82A38"
           />
+          <View style={{alignItems: "center", paddingVertical: height * 0.03,}}>
+            <View style={styles.divider} />
+          </View>
           <ContainerTimeAttack />
         </ImageBackground>
       </ScrollView>
@@ -101,8 +106,6 @@ export default function HomeScreen() {
     </View>
   );
 }
-
-const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
@@ -139,5 +142,11 @@ const styles = StyleSheet.create({
     fontSize: width * 0.04,
     fontFamily: "Montserrat_500Medium",
     textAlign: "center",
+  },
+  divider: {
+    backgroundColor: "rgba(55,55,55,0.5)",
+    width: "80%",
+    height: width * 0.015,
+    borderRadius: 15,
   },
 });

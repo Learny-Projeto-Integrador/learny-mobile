@@ -12,18 +12,13 @@ import {
 
 import React, { useCallback, useEffect, useState } from "react";
 import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
-import ContainerFilhos from "@/components/ui/ContainerFilhos";
-import MaskedView from "@react-native-masked-view/masked-view";
-import { LinearGradient } from "expo-linear-gradient"; // ou 'react-native-linear-gradient' se não for Expo
-import ContainerActions from "@/components/ui/ContainerActions";
-import ContainerFasesConcluidas from "@/components/ui/ContainerFasesConcluidas";
-import ContainerMundoAtual from "@/components/ui/ContainerMundoAtual";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ContainerActionChildren from "@/components/ui/ContainerActionChildren";
 import ContainerAcessibilidade from "@/components/ui/ContainerAcessibilidade";
+import GradientText from "@/components/ui/GradientText";
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -36,26 +31,6 @@ type ParentData = {
   nome: string;
   filhos: [{}];
   filhoSelecionado: {};
-};
-
-const GradientText = ({ style, children }: any) => {
-  return (
-    <MaskedView
-      maskElement={
-        <Text style={[style, { backgroundColor: "transparent" }]}>
-          {children}
-        </Text>
-      }
-    >
-      <LinearGradient
-        colors={["#EF5B6A", "#6CD2FF"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-      >
-        <Text style={[style, { opacity: 0 }]}>{children}</Text>
-      </LinearGradient>
-    </MaskedView>
-  );
 };
 
 export default function ProfileChildrenScreen() {
@@ -146,8 +121,7 @@ export default function ProfileChildrenScreen() {
                   </GradientText>
                 ))
               : ""} */}
-
-            <GradientText style={styles.nameText}>Joana</GradientText>
+            <GradientText color1="#EF5B6A" color2="#6CD2FF" style={styles.nameText}>Joana</GradientText>
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.txt}>lvl 100</Text>

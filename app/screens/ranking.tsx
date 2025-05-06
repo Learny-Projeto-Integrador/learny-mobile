@@ -19,10 +19,11 @@ import Header from "@/components/ui/Header";
 import ContainerMundo from "@/components/ui/ContainerMundo";
 import ContainerTimeAttack from "@/components/ui/ContainerTimeAttack";
 import NavigationBar from "@/components/ui/NavigationBar";
+import RankingCard from "@/components/ui/RankingCard";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
-export default function WorldScreen() {
+export default function RankingScreen() {
   const navigation = useNavigation<NavigationProp>();
 
   const [loading, setLoading] = useState(false);
@@ -46,46 +47,26 @@ export default function WorldScreen() {
   return (
     <View style={styles.container}>
       <ScrollView>
-        <View style={{flexDirection: "row"}}>
+        <View style={{ flexDirection: "row" }}>
           <Image
-            source={require("../../assets/images/teste.png")}
-          style={styles.fundoVerde}/>
+            source={require("../../assets/images/teste3.png")}
+            style={styles.fundoVerde}
+          />
         </View>
         <View style={styles.containerDados}>
           <Header pontos={1000} medalhas={10} ranking={1} />
-          <View style={{flexDirection: "row", alignItems: "center", gap: 50}}>
-            <ImageBackground
-              source={require("../../assets/images/circulo-sombra.png")}
-              style={styles.fundoMedalha}
-            >
-              <Image
-                source={require("../../assets/images/medalha.png")}
-                style={styles.medalha}
-              />
-            </ImageBackground>
-            <ImageBackground
-              source={require("../../assets/images/img-mundo1.png")}
-              style={styles.fundoMundo}
-            >
-              <Text style={styles.txtNumMundo}>Mundo-1</Text>
-              <Text style={styles.txtNomeMundo}>Dino's World</Text>
-            </ImageBackground>
-          </View>
-          <View style={{flexDirection: "row", alignItems: "center", paddingLeft: 30,}}>
-          <Image
-              source={require("../../assets/images/trilha.png")}
-              style={styles.trilha}
-            />
-          </View>
-          <Text style={[styles.fase, styles.fase1]}>01</Text>
-          <Text style={[styles.fase, styles.fase2]}>02</Text>
-          <Text style={[styles.fase, styles.fase3]}>03</Text>
-          <View style={styles.viewIconBoss}>
+          <View style={styles.containerTitle}>
             <Image
-              source={require("../../assets/images/icon-boss.png")}
-              style={styles.boss}
+              source={require("../../assets/images/icon-info.png")}
+              style={styles.iconFechar}
+            />
+            <Text style={styles.title}>Ranking</Text>
+            <Image
+              source={require("../../assets/images/icon-voltar2.png")}
+              style={styles.iconFechar}
             />
           </View>
+          <RankingCard name="Joana" rank="1" points="100" />
         </View>
       </ScrollView>
       <View style={styles.navigationBarWrapper}>
@@ -104,7 +85,7 @@ const styles = StyleSheet.create({
   },
   fundoVerde: {
     width: "100%",
-    aspectRatio: 390/124
+    aspectRatio: 390 / 124,
   },
   containerDados: {
     width: "100%",
@@ -112,6 +93,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     top: -height * 0.08,
     gap: height * 0.04,
+  },
+  containerTitle: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: width * 0.12,
+    paddingLeft: width * 0.05,
+  },
+  title: {
+    color: "#4C4C4C",
+    fontFamily: "Montserrat_700Bold",
+    fontSize: width * 0.07,
+  },
+  iconFechar: {
+    width: width * 0.07,
+    aspectRatio: 1 / 1,
   },
   navigationBarWrapper: {
     position: "absolute",
@@ -126,15 +122,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: width * 0.17,
-    aspectRatio: 1/1
+    aspectRatio: 1 / 1,
   },
   medalha: {
-      width: width * 0.09,
-      aspectRatio: 36 / 45,
+    width: width * 0.09,
+    aspectRatio: 36 / 45,
   },
   fundoMundo: {
     width: width * 0.55,
-    aspectRatio: 233/103,
+    aspectRatio: 233 / 103,
     justifyContent: "center",
     paddingHorizontal: width * 0.05,
     gap: height * 0.01,
@@ -152,7 +148,7 @@ const styles = StyleSheet.create({
   trilha: {
     width: width * 0.6,
     aspectRatio: 281 / 537,
-    marginBottom: height * 0.1
+    marginBottom: height * 0.1,
   },
   fase: {
     position: "absolute",
@@ -180,6 +176,6 @@ const styles = StyleSheet.create({
   },
   boss: {
     width: width * 0.15,
-    aspectRatio: 73/70,
-  }
+    aspectRatio: 73 / 70,
+  },
 });
