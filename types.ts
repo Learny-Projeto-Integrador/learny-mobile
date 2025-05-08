@@ -12,5 +12,11 @@ export type RootStackParamList = {
     menu: undefined;
     diary: undefined;
     ranking: undefined;
+    atvFeeling: undefined;
+    atvMatch: undefined;
+    atvListening: undefined;
+    atvListeningArduino: undefined;
+    atvMemory: undefined;
+    atvConnect: undefined;
   };
   

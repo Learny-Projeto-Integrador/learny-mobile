@@ -28,6 +28,12 @@ import WorldScreen from './screens/world';
 import MenuScreen from './screens/menu';
 import DiaryScreen from './screens/diary';
 import RankingScreen from './screens/ranking';
+import AtvFeelingScreen from './screens/activities/atvFeeling';
+import AtvMatchScreen from './screens/activities/atvMatch';
+import AtvListeningScreen from './screens/activities/atvListening';
+import AtvListeningArduinoScreen from './screens/activities/atvListeningArduino';
+import AtvMemoryScreen from './screens/activities/atvMemory';
+import AtvConnectScreen from './screens/activities/atvConnect';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -117,6 +123,36 @@ export default function RootLayout() {
       <Stack.Screen
         name="ranking"
         component={RankingScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="atvFeeling"
+        component={AtvFeelingScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="atvMatch"
+        component={AtvMatchScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="atvListening"
+        component={AtvListeningScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="atvListeningArduino"
+        component={AtvListeningArduinoScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="atvMemory"
+        component={AtvMemoryScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="atvConnect"
+        component={AtvConnectScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
