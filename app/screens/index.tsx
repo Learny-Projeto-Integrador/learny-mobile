@@ -26,7 +26,7 @@ export default function LoginScreen() {
     };
   
     const handleLogin = async () => {
-      navigation.navigate("atvConnect")
+      navigation.navigate("atvListening")
         // setLoading(true);
         // setError(null);
       

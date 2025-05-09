@@ -139,7 +139,7 @@ export default function AtvListeningArduinoScreen() {
       </View>
       <View style={{ flexDirection: "row", marginTop: height * 0.01 }}>
         <ImageBackground
-          source={require("../../../assets/images/a.png")}
+          source={require("../../../assets/images/retangulo-sombra-preto.png")}
           style={styles.retangulo}
         >
           <Text style={styles.txtTipoFase}>

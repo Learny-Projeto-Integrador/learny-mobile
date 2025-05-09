@@ -20,6 +20,8 @@ import ContainerActionChildren from "@/components/ui/ContainerActionChildren";
 import ContainerAcessibilidade from "@/components/ui/ContainerAcessibilidade";
 import GradientText from "@/components/ui/GradientText";
 import ContainerEmotion from "@/components/ui/ContainerEmotion";
+import HeaderFase from "@/components/ui/HeaderFase";
+import SoundCard from "@/components/ui/SoundCard";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -100,90 +102,38 @@ export default function AtvListeningScreen() {
     }
   };
 
-  const handleSair = () => {
-    Alert.alert("Alerta", "Deseja mesmo sair?", [
-      { text: "Cancelar" },
-      { text: "Sair", onPress: () => navigation.navigate("index") },
-    ]);
-  };
-
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.containerDados}>
-        <View style={{ flexDirection: "row" }}>
-          <Image
-            style={styles.foto}
-            source={
-              foto ? { uri: foto } : require("../../../assets/images/watch.png")
-            }
-          />
-        </View>
-        <View style={{ justifyContent: "center", gap: 10 }}>
-          <View style={styles.containerNamePhase}>
-            <Text style={styles.txt}>Listen &</Text>
-            <Text style={[styles.txt, { marginTop: -height * 0.01 }]}>
-              Answer
-            </Text>
-          </View>
-        </View>
-        <View style={styles.viewVoltar}>
-          <Image
-            style={styles.iconVoltar}
-            source={require("../../../assets/images/icon-voltar2.png")}
-          />
-          <Image
-            style={styles.iconInfo}
-            source={require("../../../assets/images/icon-info-transparente.png")}
-          />
-        </View>
-      </View>
-      <View style={{ flexDirection: "row", marginTop: height * 0.01 }}>
-        <ImageBackground
-          source={require("../../../assets/images/a.png")}
-          style={styles.retangulo}
-        >
-          <Text style={styles.txtTipoFase}>
-          Ouça o nome e encontre ele escrito
-          </Text>
-        </ImageBackground>
+      <HeaderFase
+        image={require("../../../assets/images/listen.png")}
+        title="Listen & Answer"
+        description="Ouça o nome e encontre ele escrito"
+        color="#EF5B6A"
+        onReturn={() => navigation.navigate("world")}
+      />
+      <View style={styles.containerSounds}>
+        <SoundCard
+          id="1"
+          image={require("../../../assets/images/som-vermelho.png")}
+          source={require("../../../assets/audios/monkey.wav")}
+        />
+        <SoundCard
+          id="2"
+          image={require("../../../assets/images/som-amarelo.png")}
+          source={require("../../../assets/audios/bird.wav")}
+        />
+        <SoundCard
+          id="3"
+          image={require("../../../assets/images/som-azul.png")}
+          source={require("../../../assets/audios/monkey.wav")}
+        />
       </View>
       <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          gap: width * 0.05,
-          marginVertical: height * 0.02,
-        }}
+        style={styles.viewQuadrados}
       >
-        <View style={{flexDirection: "row"}}>
-          <Image
-            source={require("../../../assets/images/som-vermelho.png")}
-            style={styles.som}
-          />
-        </View>
-        <View style={{flexDirection: "row"}}>
-        <Image
-            source={require("../../../assets/images/som-amarelo.png")}
-            style={styles.som}
-          />
-        </View>
-        <View style={{flexDirection: "row"}}>
-        <Image
-            source={require("../../../assets/images/som-azul.png")}
-            style={styles.som}
-          />
-        </View>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          gap: width * 0.05,
-        }}
-      >
-        <View style={styles.retanguloColocar}/>
-        <View style={styles.retanguloColocar} />
-        <View style={styles.retanguloColocar} />
+        <View style={[styles.quadradoColocar, {borderColor: "#EF5B6A"}]} />
+        <View style={[styles.quadradoColocar, {borderColor: "#FFB300"}]} />
+        <View style={[styles.quadradoColocar, {borderColor: "#6CD2FF"}]} />
       </View>
       <View
         style={{
@@ -195,14 +145,14 @@ export default function AtvListeningScreen() {
       >
         <Text style={styles.txtPergunta}>Mova o animal do som</Text>
         <View style={{ flexDirection: "row", gap: width * 0.05 }}>
-          <View style={styles.retanguloAnimal}>
-            <Text style={styles.txtEmocao}>Dog</Text>
+          <View style={styles.quadradoAnimal}>
+            <Text style={styles.txtAnimal}>Dog</Text>
           </View>
-          <View style={styles.retanguloAnimal}>
-            <Text style={styles.txtEmocao}>Cat</Text>
+          <View style={styles.quadradoAnimal}>
+            <Text style={styles.txtAnimal}>Cat</Text>
           </View>
-          <View style={styles.retanguloAnimal}>
-            <Text style={styles.txtEmocao}>Bird</Text>
+          <View style={styles.quadradoAnimal}>
+            <Text style={styles.txtAnimal}>Bird</Text>
           </View>
         </View>
       </View>
@@ -231,70 +181,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: width * 0.08,
     gap: width * 0.5,
   },
-  containerDados: {
-    display: "flex",
-    height: "auto",
+  containerSounds: {
     flexDirection: "row",
-    marginTop: height * 0.03,
+    justifyContent: "center",
     gap: width * 0.05,
+    marginVertical: height * 0.02,
   },
-  foto: {
-    width: width * 0.33,
-    aspectRatio: 139 / 129,
-  },
-  viewVoltar: {
-    position: "relative",
-    alignItems: "center",
-    paddingLeft: width * 0.01,
-    paddingTop: height * 0.01,
-    gap: height * 0.015,
-  },
-  iconVoltar: {
-    width: width * 0.075,
-    height: width * 0.075,
-  },
-  iconInfo: {
-    width: width * 0.06,
-    height: width * 0.06,
-  },
-  containerNamePhase: {
+  viewQuadrados: {
+    flexDirection: "row",
     justifyContent: "center",
+    gap: width * 0.06,
   },
-  txt: {
-    color: "#EF5B6A",
-    fontSize: width * 0.075,
-    fontFamily: "Montserrat_800ExtraBold",
-  },
-  retangulo: {
-    width: width * 0.87,
-    aspectRatio: 350 / 85,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: width * 0.03,
-  },
-  txtTipoFase: {
-    color: "#fff",
-    textAlign: "center",
-    fontSize: width * 0.055,
-    fontFamily: "Montserrat_500Medium",
-  },
-  img: {
-    marginTop: height * 0.02,
-    width: width * 0.8,
-    aspectRatio: 350 / 257,
-  },
-  retanguloAnimal: {
-    borderWidth: 5,
-    borderColor: "#4c4c4c",
-    padding: width * 0.06,
-    borderRadius: 20,
-  },
-  retanguloColocar: {
+  quadradoColocar: {
     borderWidth: 5,
     borderColor: "#4c4c4c",
     width: width * 0.23,
     height: width * 0.23,
-    borderRadius: 20,
+    borderRadius: 30,
   },
   txtPergunta: {
     color: "#4c4c4c",
@@ -302,7 +205,16 @@ const styles = StyleSheet.create({
     fontSize: width * 0.05,
     fontFamily: "Montserrat_700Bold",
   },
-  txtEmocao: {
+  quadradoAnimal: {
+    borderWidth: 5,
+    borderColor: "#4c4c4c",
+    width: width * 0.23,
+    height: width * 0.23,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 30,
+  },
+  txtAnimal: {
     color: "#4c4c4c",
     fontSize: width * 0.05,
     fontFamily: "Montserrat_700Bold",
@@ -311,8 +223,4 @@ const styles = StyleSheet.create({
     width: width * 0.1,
     aspectRatio: 49 / 67,
   },
-  som: {
-    width: width * 0.24,
-    aspectRatio: 1/1
-  }
 });

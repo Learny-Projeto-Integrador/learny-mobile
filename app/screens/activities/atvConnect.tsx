@@ -1,235 +1,205 @@
+import React, { useState } from "react";
 import {
+  ScrollView,
+  View,
+  Dimensions,
   Image,
   StyleSheet,
-  Dimensions,
-  View,
-  Text,
-  ImageBackground,
-  ScrollView,
-  Alert,
   TouchableOpacity,
 } from "react-native";
-
-import React, { useCallback, useEffect, useState } from "react";
-import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import Svg, { Line } from "react-native-svg";
+import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../../types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import ContainerActionChildren from "@/components/ui/ContainerActionChildren";
-import ContainerAcessibilidade from "@/components/ui/ContainerAcessibilidade";
-import GradientText from "@/components/ui/GradientText";
-import ContainerEmotion from "@/components/ui/ContainerEmotion";
+import AnimalCard from "@/components/ui/AnimalCard"; // ajuste o caminho conforme necessário
+import HeaderFase from "@/components/ui/HeaderFase";
+
+const { width, height } = Dimensions.get("window");
+
+type CardInfo = {
+  id: string;
+  type: string;
+  x: number;
+  y: number;
+  column: "left" | "right";
+};
+
+type Connection = {
+  from: CardInfo;
+  to: CardInfo;
+  isCorrect: boolean;
+  color: string;
+};
+
+const animalColors: Record<string, string> = {
+  monkey: "#FFB300", // amarelo
+  bird: "#6CD2FF", // azul
+  horse: "#EF5B6A", // marrom
+  snake: "#80D25B", // verde
+};
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function AtvConnectScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [foto, setFoto] = useState("");
-  const [nome, setNome] = useState("");
-  const [pontos, setPontos] = useState(0);
-  const [nivel, setNivel] = useState(0);
-  const [progressoNivel, setProgressoNivel] = useState(0);
-  const [audio, setAudio] = useState(false);
+  const [selected, setSelected] = useState<CardInfo[]>([]);
+  const [connections, setConnections] = useState<Connection[]>([]);
 
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      return token;
-    } catch (e) {
-      console.error("Erro ao buscar o token", e);
-    }
-  };
+  const handleSelect = (card: CardInfo) => {
+    if (connections.some((c) => c.from.id === card.id || c.to.id === card.id))
+      return;
 
-  const loadData = async () => {
-    setLoading(true);
-    setError(null);
+    if (selected.length === 1) {
+      const from = selected[0];
+      const to = card;
 
-    try {
-      const token = await getToken();
-
-      const res = await fetch("http://10.0.2.2:5000/criancas", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        setFoto(result.foto);
-        setNome(result.nome);
-        setPontos(result.pontos);
-        setNivel(Math.floor(pontos / 100));
-        setProgressoNivel(pontos % 100);
-        setAudio(result.audio);
-      } else {
-        setError(result.error);
+      const isCorrect =
+        from.type === to.type && from.id !== to.id && from.column !== to.column;
+      if (from.column === to.column) {
+        setSelected([]);
+        return;
       }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      const color = isCorrect
+        ? animalColors[from.type] || "#00C853"
+        : "#9E9E9E";
+
+      setConnections((prev) => [...prev, { from, to, isCorrect, color }]);
+      setSelected([]);
+    } else {
+      setSelected([card]);
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      loadData();
-    }, [])
-  );
-
-  const atualizarAudio = async (audio: boolean, novoValor: boolean) => {
-    const token = await getToken();
-    try {
-      await fetch("http://10.0.2.2:5000/criancas", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ audio: novoValor }),
-      });
-      setAudio(novoValor);
-    } catch (e) {
-      console.error("Erro ao atualizar o audio", e);
-    }
+  const handleClearConnections = () => {
+    setConnections([]);
+    setSelected([]);
   };
 
-  const handleSair = () => {
-    Alert.alert("Alerta", "Deseja mesmo sair?", [
-      { text: "Cancelar" },
-      { text: "Sair", onPress: () => navigation.navigate("index") },
-    ]);
+  const handleConfirm = () => {
+    const correctCount = connections.filter(c => c.isCorrect).length;
+    const total = connections.length;
+  
+    console.log(`Acertos: ${correctCount} de ${total}`);
+    // Aqui você pode atualizar pontuação, enviar pro backend, mostrar feedback, etc.
   };
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.containerDados}>
-        <View style={{ flexDirection: "row" }}>
-          <Image
-            style={styles.foto}
-            source={
-              foto ? { uri: foto } : require("../../../assets/images/watch.png")
-            }
+      <HeaderFase
+        image={require("../../../assets/images/watch.png")}
+        title="Look & Connect"
+        description="Ligue os animais"
+        color="#6CD2FF"
+        onReturn={() => navigation.navigate("world")}
+      />
+
+      {/* Camada das linhas */}
+      <Svg style={StyleSheet.absoluteFill}>
+        {connections.map((conn, idx) => (
+          <Line
+            key={idx}
+            x1={conn.from.x}
+            y1={conn.from.y}
+            x2={conn.to.x}
+            y2={conn.to.y}
+            stroke={conn.color}
+            strokeWidth={4}
+          />
+        ))}
+      </Svg>
+
+      <View style={styles.containerCards}>
+        <View style={{ gap: height * 0.03 }}>
+          <AnimalCard
+            id="1"
+            title="monkey"
+            image={require("../../../assets/images/cards/connect/card-macaco.png")}
+            source={require("../../../assets/audios/monkey.wav")}
+            column="left"
+            onSelect={handleSelect}
+          />
+          <AnimalCard
+            id="2"
+            title="horse"
+            image={require("../../../assets/images/cards/connect/card-cavalo.png")}
+            source={require("../../../assets/audios/horse.wav")}
+            column="left"
+            onSelect={handleSelect}
+          />
+          <AnimalCard
+            id="3"
+            title="snake"
+            image={require("../../../assets/images/cards/connect/card-cobra.png")}
+            source={require("../../../assets/audios/snake.wav")}
+            column="left"
+            onSelect={handleSelect}
+          />
+          <AnimalCard
+            id="4"
+            title="bird"
+            image={require("../../../assets/images/cards/connect/card-passaro.png")}
+            source={require("../../../assets/audios/bird.wav")}
+            column="left"
+            onSelect={handleSelect}
           />
         </View>
-        <View style={{ justifyContent: "center", gap: 10 }}>
-          <View style={styles.containerNamePhase}>
-            <Text style={styles.txt}>Watch &</Text>
-            <Text style={[styles.txt, { marginTop: -height * 0.01 }]}>
-            Match
-            </Text>
-          </View>
-        </View>
-        <View style={styles.viewVoltar}>
-          <Image
-            style={styles.iconVoltar}
-            source={require("../../../assets/images/icon-voltar2.png")}
+        <View style={{ gap: height * 0.03 }}>
+          <AnimalCard
+            id="5"
+            title="horse"
+            image={require("../../../assets/images/cards/connect/card-cavalo.png")}
+            source={require("../../../assets/audios/horse.wav")}
+            column="right"
+            onSelect={handleSelect}
           />
-          <Image
-            style={styles.iconInfo}
-            source={require("../../../assets/images/icon-info-transparente.png")}
+          <AnimalCard
+            id="6"
+            title="bird"
+            image={require("../../../assets/images/cards/connect/card-passaro.png")}
+            source={require("../../../assets/audios/bird.wav")}
+            column="right"
+            onSelect={handleSelect}
+          />
+          <AnimalCard
+            id="7"
+            title="monkey"
+            image={require("../../../assets/images/cards/connect/card-macaco.png")}
+            source={require("../../../assets/audios/monkey.wav")}
+            column="right"
+            onSelect={handleSelect}
+          />
+          <AnimalCard
+            id="8"
+            title="snake"
+            image={require("../../../assets/images/cards/connect/card-cobra.png")}
+            source={require("../../../assets/audios/snake.wav")}
+            column="right"
+            onSelect={handleSelect}
           />
         </View>
       </View>
-      <View style={{ flexDirection: "row", marginTop: height * 0.01 }}>
-        <ImageBackground
-          source={require("../../../assets/images/a.png")}
-          style={styles.retangulo}
-        >
-          <Text style={styles.txtTipoFase}>Ache as cartas correspondentes</Text>
-        </ImageBackground>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          flexWrap: "wrap",
-          gap: width * 0.3,
-          justifyContent: "center",
-          marginTop: height * 0.02,
-        }}
-      >
-        <View style={{gap: height * 0.03}}>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../../assets/images/cards/card-macaco-connect.png")}
-              style={styles.card}
-            />
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../../assets/images/cards/card-cavalo-connect.png")}
-              style={styles.card}
-            />
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../../assets/images/cards/card-cobra-connect.png")}
-              style={styles.card}
-            />
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../../assets/images/cards/card-passaro-connect.png")}
-              style={styles.card}
-            />
-          </View>
-        </View>
-        <View style={{gap: height * 0.03}}>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../../assets/images/cards/card-macaco-connect.png")}
-              style={styles.card}
-            />
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../../assets/images/cards/card-cavalo-connect.png")}
-              style={styles.card}
-            />
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../../assets/images/cards/card-cobra-connect.png")}
-              style={styles.card}
-            />
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../../assets/images/cards/card-passaro-connect.png")}
-              style={styles.card}
-            />
-          </View>
-        </View>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          marginTop: height * 0.01,
-          gap: width * 0.02
-        }}
-      >
+
+      <View style={styles.viewButtons}>
         <Image
           source={require("../../../assets/images/icon-dica.png")}
-          style={styles.iconConfirmar}
+          style={styles.icon}
         />
-        <Image
-          source={require("../../../assets/images/icon-confirmar-vermelho.png")}
-          style={styles.iconConfirmar}
-        />
+        <TouchableOpacity style={{flexDirection: "row"}} onPress={handleConfirm}>
+          <Image
+            source={require("../../../assets/images/icon-confirmar-vermelho.png")}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity style={{flexDirection: "row"}} onPress={handleClearConnections}>
+          <Image
+            source={require("../../../assets/images/icon-limpar.png")}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
 }
-
-const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
@@ -238,58 +208,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: width * 0.08,
     gap: width * 0.5,
   },
-  containerDados: {
-    display: "flex",
-    height: "auto",
+  containerCards: {
     flexDirection: "row",
-    marginTop: height * 0.03,
-    gap: width * 0.05,
-  },
-  foto: {
-    width: width * 0.33,
-    aspectRatio: 139 / 129,
-  },
-  viewVoltar: {
-    position: "relative",
-    alignItems: "center",
-    paddingLeft: width * 0.01,
-    paddingTop: height * 0.01,
-    gap: height * 0.015,
-  },
-  iconVoltar: {
-    width: width * 0.075,
-    height: width * 0.075,
-  },
-  iconInfo: {
-    width: width * 0.06,
-    height: width * 0.06,
-  },
-  containerNamePhase: {
+    flexWrap: "wrap",
+    gap: width * 0.3,
     justifyContent: "center",
+    marginTop: height * 0.01,
   },
-  txt: {
-    color: "#6CD2FF",
-    fontSize: width * 0.075,
-    fontFamily: "Montserrat_800ExtraBold",
-  },
-  retangulo: {
-    width: width * 0.87,
-    aspectRatio: 350 / 85,
+  viewButtons: {
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    marginTop: height * 0.02,
+    gap: width * 0.02,
   },
-  txtTipoFase: {
-    color: "#fff",
-    textAlign: "center",
-    fontSize: width * 0.058,
-    fontFamily: "Montserrat_500Medium",
-  },
-  iconConfirmar: {
+  icon: {
     width: width * 0.1,
-    aspectRatio: 1 / 1,
-  },
-  card: {
-    width: width * 0.2,
     aspectRatio: 1 / 1,
   },
 });
