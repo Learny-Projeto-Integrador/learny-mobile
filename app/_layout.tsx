@@ -34,6 +34,7 @@ import AtvListeningScreen from './screens/activities/atvListening';
 import AtvListeningArduinoScreen from './screens/activities/atvListeningArduino';
 import AtvMemoryScreen from './screens/activities/atvMemory';
 import AtvConnectScreen from './screens/activities/atvConnect';
+import AtvMatchAnswerScreen from './screens/activities/atvMatchAnswer';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -133,6 +134,11 @@ export default function RootLayout() {
       <Stack.Screen
         name="atvMatch"
         component={AtvMatchScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="atvMatchAnswer"
+        component={AtvMatchAnswerScreen}
         options={{headerShown: false}}
       />
       <Stack.Screen

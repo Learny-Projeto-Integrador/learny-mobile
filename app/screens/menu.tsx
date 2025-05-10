@@ -56,10 +56,12 @@ export default function MenuScreen() {
         <View style={styles.containerDados}>
             <View style={styles.containerTitle}>
                 <Text style={styles.title}>Atalhos</Text>
-                <Image
-                    source={require("../../assets/images/icon-fechar.png")}
-                    style={styles.iconFechar}
-                    />
+                <TouchableOpacity onPress={() => navigation.navigate("home")} style={{flexDirection: "row"}}>
+                  <Image
+                      source={require("../../assets/images/icon-fechar.png")}
+                      style={styles.iconFechar}
+                      />
+                </TouchableOpacity>
             </View>
             <ContainerActions/>
             <ContainerMissoes />

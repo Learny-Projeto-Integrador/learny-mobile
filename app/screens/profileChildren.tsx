@@ -133,12 +133,12 @@ export default function ProfileChildrenScreen() {
             <Text style={styles.txt}>lvl {nivel}</Text>
           </View>
         </View>
-        <View style={styles.viewVoltar}>
+        <TouchableOpacity onPress={() => navigation.navigate("home")} style={styles.viewVoltar}>
           <Image
             style={styles.iconVoltar}
             source={require("../../assets/images/icon-voltar2.png")}
           />
-        </View>
+        </TouchableOpacity>
       </View>
       <View style={styles.containerWidgets}>
         <ProgressBarLvl pontos={pontos} progresso={progressoNivel} />

@@ -20,157 +20,137 @@ import ContainerActionChildren from "@/components/ui/ContainerActionChildren";
 import ContainerAcessibilidade from "@/components/ui/ContainerAcessibilidade";
 import GradientText from "@/components/ui/GradientText";
 import ContainerEmotion from "@/components/ui/ContainerEmotion";
+import HeaderFase from "@/components/ui/HeaderFase";
+import SoundCard from "@/components/ui/SoundCard";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
+type DinoOption = {
+  id: string;
+  image: string;
+  emotion: string;
+  source: string;
+};
+
+const dinoOptions: DinoOption[] = [
+  {
+    id: "dino1",
+    image: require("../../../assets/images/dinos/dino1-grande.png"),
+    emotion: "Sad",
+    source: require("../../../assets/audios/sad.wav"),
+  },
+  {
+    id: "dino2",
+    image: require("../../../assets/images/dinos/dino2-grande.png"),
+    emotion: "Angry",
+    source: require("../../../assets/audios/angry.wav"),
+  },
+  {
+    id: "dino3",
+    image: require("../../../assets/images/dinos/dino3-grande.png"),
+    emotion: "Happy",
+    source: require("../../../assets/audios/happy.wav"),
+  },
+];
+
 export default function AtvMatchScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [foto, setFoto] = useState("");
-  const [nome, setNome] = useState("");
-  const [pontos, setPontos] = useState(0);
-  const [nivel, setNivel] = useState(0);
-  const [progressoNivel, setProgressoNivel] = useState(0);
-  const [audio, setAudio] = useState(false);
+  const [selectedDino, setSelectedDino] = useState<DinoOption | null>(null);
+  const [shuffledOptions, setShuffledOptions] = useState<DinoOption[]>([]);
 
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      return token;
-    } catch (e) {
-      console.error("Erro ao buscar o token", e);
+  useEffect(() => {
+    // Escolhe um dino aleatoriamente
+    const randomDino =
+      dinoOptions[Math.floor(Math.random() * dinoOptions.length)];
+    setSelectedDino(randomDino);
+
+    // Embaralha as opções
+    const shuffled = shuffleArray([...dinoOptions]);
+    setShuffledOptions(shuffled);
+  }, []);
+
+  function shuffleArray<T>(array: T[]): T[] {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
     }
+    return array;
+  }
+
+  const handleConfirm = () => {
+    alert("Sucesso! Você acertou!");
   };
 
-  const loadData = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const token = await getToken();
-
-      const res = await fetch("http://10.0.2.2:5000/criancas", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        setFoto(result.foto);
-        setNome(result.nome);
-        setPontos(result.pontos);
-        setNivel(Math.floor(pontos / 100));
-        setProgressoNivel(pontos % 100);
-        setAudio(result.audio);
-      } else {
-        setError(result.error);
-      }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+  const handleError = (dino: DinoOption) => {
+    navigation.navigate("atvMatchAnswer", {
+      answer: {
+        image: dino.image,
+        emotion: dino.emotion,
+      },
+    });
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      loadData();
-    }, [])
-  );
-
-  const atualizarAudio = async (audio: boolean, novoValor: boolean) => {
-    const token = await getToken();
-    try {
-      await fetch("http://10.0.2.2:5000/criancas", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ audio: novoValor }),
-      });
-      setAudio(novoValor);
-    } catch (e) {
-      console.error("Erro ao atualizar o audio", e);
-    }
-  };
-
-  const handleSair = () => {
-    Alert.alert("Alerta", "Deseja mesmo sair?", [
-      { text: "Cancelar" },
-      { text: "Sair", onPress: () => navigation.navigate("index") },
-    ]);
-  };
+  
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.containerDados}>
-        <View style={{ flexDirection: "row" }}>
+      <HeaderFase
+        image={require("../../../assets/images/eye.png")}
+        title="Look & Match"
+        description="Veja a imagem e ligue a emoção correta"
+        color="#6CD2FF"
+        onReturn={() => navigation.navigate("world")}
+      />
+
+      <View
+        style={{
+          alignItems: "center",
+          gap: height * 0.02,
+          marginTop: height * 0.02,
+        }}
+      >
+        <Text style={styles.txtPergunta}>Como ele está?</Text>
+
+        {selectedDino && (
           <Image
-            style={styles.foto}
-            source={
-              foto ? { uri: foto } : require("../../../assets/images/watch.png")
-            }
+          //@ts-ignore
+            source={selectedDino.image}
+            style={{ width: width * 0.75, aspectRatio: 350 / 257 }}
           />
-        </View>
-        <View style={{ justifyContent: "center", gap: 10 }}>
-          <View style={styles.containerNamePhase}>
-            <Text style={styles.txt}>Watch &</Text>
-            <Text style={[styles.txt, { marginTop: -height * 0.01 }]}>
-              Match
-            </Text>
-          </View>
-        </View>
-        <View style={styles.viewVoltar}>
-          <Image
-            style={styles.iconVoltar}
-            source={require("../../../assets/images/icon-voltar2.png")}
-          />
-          <Image
-            style={styles.iconInfo}
-            source={require("../../../assets/images/icon-info-transparente.png")}
-          />
+        )}
+
+        <View style={{ flexDirection: "row", gap: width * 0.05 }}>
+          {shuffledOptions.map((option, index) => (
+            <SoundCard
+              key={option.id}
+              id={String(index + 1)}
+              text={
+                option.emotion.charAt(0).toUpperCase() + option.emotion.slice(1)
+              }
+              source={option.source}
+              type="grande"
+              onPress={() => {
+                if (option.emotion === selectedDino?.emotion) {
+                  handleConfirm();
+                } else {
+                  //@ts-ignore
+                  handleError(selectedDino);
+                }
+              }}
+            />
+          ))}
         </View>
       </View>
-      <View style={{ flexDirection: "row", marginTop: height * 0.01 }}>
-        <ImageBackground
-          source={require("../../../assets/images/retangulo-sombra-preto.png")}
-          style={styles.retangulo}
-        >
-          <Text style={styles.txtTipoFase}>
-            Veja a imagem e ligue a emoção correta
-          </Text>
-        </ImageBackground>
-      </View>
-      <View style={{ flexDirection: "row", justifyContent: "center" }}>
+
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          marginTop: height * 0.015,
+        }}
+      >
         <Image
-          source={require("../../../assets/images/dinos/dino1-grande.png")}
-          style={styles.img}
-        />
-      </View>
-      <View style={{alignItems: "center", justifyContent: "center", gap: height * 0.02, marginTop: height * 0.02}}>
-        <Text style={styles.txtPergunta}>Como ele esta?</Text>
-        <View style={{flexDirection: "row", gap: width * 0.05}}>
-          <View style={styles.retanguloEmocao}>
-            <Text style={styles.txtEmocao}>Sad</Text>
-          </View>
-          <View style={styles.retanguloEmocao}>
-            <Text style={styles.txtEmocao}>Sad</Text>
-          </View>
-          <View style={styles.retanguloEmocao}>
-            <Text style={styles.txtEmocao}>Sad</Text>
-          </View>
-        </View>
-      </View>
-      <View style={{flexDirection:"row", justifyContent: "center", marginTop: height * 0.015}}>
-        <Image
-            source={require("../../../assets/images/icon-dica.png")}
-            style={styles.iconDica}
+          source={require("../../../assets/images/icon-dica.png")}
+          style={styles.iconDica}
         />
       </View>
     </ScrollView>
@@ -238,25 +218,14 @@ const styles = StyleSheet.create({
     width: width * 0.8,
     aspectRatio: 350 / 257,
   },
-  retanguloEmocao: {
-    backgroundColor: "#EF5B6A",
-    padding: width * 0.06,
-    borderRadius: 20,
-    elevation: 5,
-  },
   txtPergunta: {
     color: "#4c4c4c",
     textAlign: "center",
     fontSize: width * 0.05,
-    fontFamily: "Montserrat_700Bold"
-  },
-  txtEmocao: {
-    color: "#fff",
-    fontSize: width * 0.05,
-    fontFamily: "Montserrat_700Bold"
+    fontFamily: "Montserrat_700Bold",
   },
   iconDica: {
     width: width * 0.1,
-    aspectRatio: 49/67
-  }
+    aspectRatio: 49 / 67,
+  },
 });

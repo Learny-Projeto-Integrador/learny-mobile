@@ -26,7 +26,8 @@ export default function LoginScreen() {
     };
   
     const handleLogin = async () => {
-      navigation.navigate("atvListening")
+      // navigation.navigate("atvMatchAnswer", {answer: {}})
+      navigation.navigate("world");
         // setLoading(true);
         // setError(null);
       

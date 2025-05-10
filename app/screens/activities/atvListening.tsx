@@ -1,105 +1,77 @@
+import React, { useState } from "react";
 import {
+  View,
+  ScrollView,
+  Text,
+  Dimensions,
   Image,
   StyleSheet,
-  Dimensions,
-  View,
-  Text,
-  ImageBackground,
-  ScrollView,
-  Alert,
   TouchableOpacity,
 } from "react-native";
-
-import React, { useCallback, useEffect, useState } from "react";
-import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../../types";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import ContainerActionChildren from "@/components/ui/ContainerActionChildren";
-import ContainerAcessibilidade from "@/components/ui/ContainerAcessibilidade";
-import GradientText from "@/components/ui/GradientText";
-import ContainerEmotion from "@/components/ui/ContainerEmotion";
+
 import HeaderFase from "@/components/ui/HeaderFase";
 import SoundCard from "@/components/ui/SoundCard";
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type SoundItem = {
+  id: string;
+  source: any;
+  image: any;
+  expectedLabel: string;
+};
+
+const sounds: SoundItem[] = [
+  {
+    id: "1",
+    source: require("../../../assets/audios/cow.wav"),
+    image: require("../../../assets/images/som-vermelho.png"),
+    expectedLabel: "Cow",
+  },
+  {
+    id: "2",
+    source: require("../../../assets/audios/bird.wav"),
+    image: require("../../../assets/images/som-amarelo.png"),
+    expectedLabel: "Bird",
+  },
+  {
+    id: "3",
+    source: require("../../../assets/audios/dog.wav"),
+    image: require("../../../assets/images/som-azul.png"),
+    expectedLabel: "Dog",
+  },
+];
+
+const { width, height } = Dimensions.get("window");
 
 export default function AtvListeningScreen() {
-  const navigation = useNavigation<NavigationProp>();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [foto, setFoto] = useState("");
-  const [nome, setNome] = useState("");
-  const [pontos, setPontos] = useState(0);
-  const [nivel, setNivel] = useState(0);
-  const [progressoNivel, setProgressoNivel] = useState(0);
-  const [audio, setAudio] = useState(false);
+  const navigation = useNavigation<NavigationProp<any>>();
 
-  const getToken = async () => {
+  const [assignments, setAssignments] = useState<{ [soundId: string]: string }>(
+    {}
+  );
+
+  const getToken = async (): Promise<string | null> => {
     try {
       const token = await AsyncStorage.getItem("token");
       return token;
     } catch (e) {
       console.error("Erro ao buscar o token", e);
+      return null;
     }
   };
 
-  const loadData = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const token = await getToken();
-
-      const res = await fetch("http://10.0.2.2:5000/criancas", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        setFoto(result.foto);
-        setNome(result.nome);
-        setPontos(result.pontos);
-        setNivel(Math.floor(pontos / 100));
-        setProgressoNivel(pontos % 100);
-        setAudio(result.audio);
-      } else {
-        setError(result.error);
-      }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+  const handleAssign = (soundId: string, label: string) => {
+    setAssignments((prev) => ({ ...prev, [soundId]: label }));
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      loadData();
-    }, [])
-  );
+  const handleConfirm = () => {
+    let correct = 0;
+    sounds.forEach((sound) => {
+      if (assignments[sound.id] === sound.expectedLabel) correct++;
+    });
 
-  const atualizarAudio = async (audio: boolean, novoValor: boolean) => {
-    const token = await getToken();
-    try {
-      await fetch("http://10.0.2.2:5000/criancas", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ audio: novoValor }),
-      });
-      setAudio(novoValor);
-    } catch (e) {
-      console.error("Erro ao atualizar o audio", e);
-    }
+    alert(`Você acertou ${correct} de ${sounds.length}`);
   };
 
   return (
@@ -111,30 +83,37 @@ export default function AtvListeningScreen() {
         color="#EF5B6A"
         onReturn={() => navigation.navigate("world")}
       />
+
       <View style={styles.containerSounds}>
-        <SoundCard
-          id="1"
-          image={require("../../../assets/images/som-vermelho.png")}
-          source={require("../../../assets/audios/monkey.wav")}
-        />
-        <SoundCard
-          id="2"
-          image={require("../../../assets/images/som-amarelo.png")}
-          source={require("../../../assets/audios/bird.wav")}
-        />
-        <SoundCard
-          id="3"
-          image={require("../../../assets/images/som-azul.png")}
-          source={require("../../../assets/audios/monkey.wav")}
-        />
+        {sounds.map((sound) => (
+          <SoundCard
+            key={sound.id}
+            id={sound.id}
+            image={sound.image}
+            source={sound.source}
+          />
+        ))}
       </View>
-      <View
-        style={styles.viewQuadrados}
-      >
-        <View style={[styles.quadradoColocar, {borderColor: "#EF5B6A"}]} />
-        <View style={[styles.quadradoColocar, {borderColor: "#FFB300"}]} />
-        <View style={[styles.quadradoColocar, {borderColor: "#6CD2FF"}]} />
+
+      <View style={styles.viewQuadrados}>
+        {sounds.map((sound, index) => {
+          const borderColors = ["#EF5B6A", "#FFB300", "#6CD2FF"]; // vermelho, amarelo, azul
+          return (
+            <View
+              key={sound.id}
+              style={[
+                styles.quadradoColocar,
+                { borderColor: borderColors[index] || "#ccc" },
+              ]}
+            >
+              <Text style={styles.txtAnimal}>
+                {assignments[sound.id] || "?"}
+              </Text>
+            </View>
+          );
+        })}
       </View>
+
       <View
         style={{
           alignItems: "center",
@@ -143,36 +122,42 @@ export default function AtvListeningScreen() {
           marginTop: height * 0.02,
         }}
       >
-        <Text style={styles.txtPergunta}>Mova o animal do som</Text>
+        <Text style={styles.txtPergunta}>Selecione a ordem correta</Text>
         <View style={{ flexDirection: "row", gap: width * 0.05 }}>
-          <View style={styles.quadradoAnimal}>
-            <Text style={styles.txtAnimal}>Dog</Text>
-          </View>
-          <View style={styles.quadradoAnimal}>
-            <Text style={styles.txtAnimal}>Cat</Text>
-          </View>
-          <View style={styles.quadradoAnimal}>
-            <Text style={styles.txtAnimal}>Bird</Text>
-          </View>
+          {["Dog", "Cow", "Bird"].map((label) => (
+            <TouchableOpacity
+              key={label}
+              onPress={() => {
+                // Simula mover para a primeira posição vazia (para fins de teste)
+                const firstEmpty = sounds.find((s) => !assignments[s.id]);
+                if (firstEmpty) handleAssign(firstEmpty.id, label);
+              }}
+              style={styles.quadradoAnimal}
+            >
+              <Text style={styles.txtAnimal}>{label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          marginTop: height * 0.015,
-        }}
-      >
+
+      <View style={styles.viewButtons}>
         <Image
           source={require("../../../assets/images/icon-dica.png")}
-          style={styles.iconDica}
+          style={styles.icon}
         />
+        <TouchableOpacity
+          style={{ flexDirection: "row" }}
+          onPress={handleConfirm}
+        >
+          <Image
+            source={require("../../../assets/images/icon-confirmar-vermelho.png")}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
 }
-
-const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
@@ -198,6 +183,8 @@ const styles = StyleSheet.create({
     width: width * 0.23,
     height: width * 0.23,
     borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
   },
   txtPergunta: {
     color: "#4c4c4c",
@@ -219,8 +206,14 @@ const styles = StyleSheet.create({
     fontSize: width * 0.05,
     fontFamily: "Montserrat_700Bold",
   },
-  iconDica: {
+  viewButtons: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: height * 0.03,
+    gap: width * 0.02,
+  },
+  icon: {
     width: width * 0.1,
-    aspectRatio: 49 / 67,
+    aspectRatio: 1 / 1,
   },
 });

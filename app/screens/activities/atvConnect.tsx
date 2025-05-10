@@ -94,7 +94,7 @@ export default function AtvConnectScreen() {
       />
 
       {/* Camada das linhas */}
-      <Svg style={StyleSheet.absoluteFill}>
+      <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
         {connections.map((conn, idx) => (
           <Line
             key={idx}

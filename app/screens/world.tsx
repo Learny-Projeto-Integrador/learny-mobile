@@ -98,13 +98,15 @@ export default function WorldScreen() {
                 style={styles.medalha}
               />
             </ImageBackground>
-            <ImageBackground
-              source={require("../../assets/images/img-mundo1.png")}
-              style={styles.fundoMundo}
-            >
-              <Text style={styles.txtNumMundo}>Mundo-1</Text>
-              <Text style={styles.txtNomeMundo}>Dino's World</Text>
-            </ImageBackground>
+            <TouchableOpacity onPress={() => navigation.navigate("home")}>
+              <ImageBackground
+                source={require("../../assets/images/img-mundo1.png")}
+                style={styles.fundoMundo}
+              >
+                <Text style={styles.txtNumMundo}>Mundo-1</Text>
+                <Text style={styles.txtNomeMundo}>Dino's World</Text>
+              </ImageBackground>
+            </TouchableOpacity>
           </View>
           <View style={{flexDirection: "row", alignItems: "center", paddingLeft: 30,}}>
           <Image
@@ -112,15 +114,21 @@ export default function WorldScreen() {
               style={styles.trilha}
             />
           </View>
-          <Text style={[styles.fase, styles.fase1]}>01</Text>
-          <Text style={[styles.fase, styles.fase2]}>02</Text>
-          <Text style={[styles.fase, styles.fase3]}>03</Text>
-          <View style={styles.viewIconBoss}>
+          <TouchableOpacity style={styles.fase1} onPress={() => navigation.navigate("atvConnect")}>
+            <Text style={styles.fase}>01</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.fase2}  onPress={() => navigation.navigate("atvMemory")}>
+            <Text style={styles.fase}>02</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.fase3} onPress={() => navigation.navigate("atvMatch")}>
+            <Text style={styles.fase}>03</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("atvListening")} style={styles.viewIconBoss}>
             <Image
               source={require("../../assets/images/icon-boss.png")}
               style={styles.boss}
             />
-          </View>
+          </TouchableOpacity>
         </View>
       </ScrollView>
       <View style={styles.navigationBarWrapper}>
@@ -190,28 +198,30 @@ const styles = StyleSheet.create({
     marginBottom: height * 0.1
   },
   fase: {
-    position: "absolute",
     fontFamily: "Montserrat_700Bold",
     fontSize: width * 0.06,
     color: "#fff",
   },
   fase1: {
+    position: "absolute",
     top: height * 0.745,
     paddingLeft: width * 0.2,
   },
   fase2: {
+    position: "absolute",
     top: height * 0.57,
     paddingLeft: width * 0.48,
   },
   fase3: {
+    position: "absolute",
     top: height * 0.405,
     paddingLeft: width * 0.21,
   },
   viewIconBoss: {
     position: "absolute",
     flexDirection: "row",
-    top: height * 0.295,
-    left: width * 0.265,
+    top: height * 0.296,
+    left: width * 0.263,
   },
   boss: {
     width: width * 0.15,
