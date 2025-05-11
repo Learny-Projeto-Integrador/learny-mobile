@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,11 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../../types";
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 type Filho = {
   usuario: string;
@@ -33,6 +38,7 @@ export default function ContainerFilhos({
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigation = useNavigation<NavigationProp>();
 
   useEffect(() => {
     if (filhoSelecionado && Object.keys(filhoSelecionado).length > 0) {
@@ -115,7 +121,7 @@ export default function ContainerFilhos({
               </Text>
             </View>
             <Image
-              source={require("../../assets/images/icon-plus.png")}
+              source={require("../../assets/icons/icon-plus.png")}
               style={styles.dropdownIcon}
             />
           </View>
@@ -140,10 +146,18 @@ export default function ContainerFilhos({
                 <Text style={styles.label}>Filho:</Text>
                 <Text style={styles.nome}>{selectedChild.nome}</Text>
               </View>
-              <Image
-                source={require("../../assets/images/icon-dropdown.png")}
-                style={styles.dropdownIcon}
-              />
+              <View style={{ flexDirection: "row", alignItems: "flex-end"}}>
+                <TouchableOpacity onPress={() => navigation.navigate("edit", { userFilho: selectedChild.usuario})}>
+                  <Image
+                    source={require("../../assets/icons/icon-edit-pequeno.png")}
+                    style={styles.dropdownIcon}
+                  />
+                </TouchableOpacity>
+                <Image
+                  source={require("../../assets/icons/icon-dropdown.png")}
+                  style={styles.dropdownIcon}
+                />
+              </View>
             </View>
           </TouchableOpacity>
           {dropdownVisible && selectedChild && (

@@ -59,7 +59,7 @@ export default function DiaryScreen() {
             <View style={styles.containerTitle}>
                 <Text style={styles.title}>Diário</Text>
                 <Image
-                    source={require("../../assets/images/icon-voltar2.png")}
+                    source={require("../../assets/icons/icon-voltar2.png")}
                     style={styles.iconFechar}
                     />
             </View>

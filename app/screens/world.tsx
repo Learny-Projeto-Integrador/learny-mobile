@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useCallback, useState } from "react";
 import {
   ImageBackground,
@@ -14,37 +15,20 @@ import {
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from "@/components/ui/Header";
-import ContainerMundo from "@/components/ui/ContainerMundo";
-import ContainerTimeAttack from "@/components/ui/ContainerTimeAttack";
 import NavigationBar from "@/components/ui/NavigationBar";
+import { useGetToken } from "@/hooks/useGetToken";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
 export default function WorldScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const [data, setData] = useState<any>(null);
+  const [dadosMundo, setDadosMundo] = useState<any>(null);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const [pontos, setPontos] = useState(0);
-  const [numMedalhas, setNumMedalhas] = useState(0);
-  const [rankingAtual, setRankingAtual] = useState(0);
-
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      return token;
-    } catch (e) {
-      console.error("Erro ao buscar o token", e);
-    }
-  };
+  const { getToken } = useGetToken();
 
   const loadData = async () => {
-    setLoading(true);
-    setError(null);
-
     try {
       const token = await getToken();
 
@@ -59,16 +43,18 @@ export default function WorldScreen() {
       const result = await res.json();
 
       if (res.ok) {
-        setPontos(result.pontos);
-        setNumMedalhas(result.medalhas.length);
-        setRankingAtual(result.rankingAtual)
+        setData({
+          pontos: result.pontos,
+          numMedalhas: result.medalhas.length,
+          rankingAtual: result.rankingAtual,
+          mundos: result.mundos,
+          avatar: result.avatar,
+        });
       } else {
-        setError(result.error);
+        alert(result.error);
       }
     } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      alert(err.message);
     }
   };
 
@@ -78,17 +64,109 @@ export default function WorldScreen() {
     }, [])
   );
 
+  const getAvatarImage = (name: string) => {
+    switch (name) {
+      case "avatar1": return require("../../assets/icons/avatars/avatar1.png");
+      case "avatar2": return require("../../assets/icons/avatars/avatar2.png");
+      default: return null;
+    }
+  };
+
+ const renderFases = () => {
+  if (!data?.mundos || data.mundos.length === 0) return null;
+
+  const fases = data.mundos[0].fases;
+  let liberarProxima = true;
+  let ultimaFaseLiberadaIndex = -1;
+
+  const renderedFases = fases.map((faseObj, index) => {
+    const { fase, concluida, boss } = faseObj;
+    const faseLiberada = liberarProxima;
+    if (faseLiberada) ultimaFaseLiberadaIndex = index;
+    if (!concluida) liberarProxima = false;
+
+    const faseScreens = ["atvConnect", "atvMemory", "atvFeeling", "atvListening"];
+    const screenName = faseScreens[index] ?? "atvConnect";
+
+    if (boss) {
+      return (
+        <TouchableOpacity
+          key={index}
+          onPress={faseLiberada ? () => navigation.navigate(screenName) : undefined}
+          disabled={!faseLiberada}
+          style={styles.viewIconBoss}
+        >
+          <Image
+            source={require("../../assets/icons/icon-boss.png")}
+            style={styles.boss}
+          />
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <TouchableOpacity
+        key={index}
+        onPress={faseLiberada ? () => navigation.navigate(screenName) : undefined}
+        disabled={!faseLiberada}
+        style={[styles[`fase${fase}`], { flexDirection: "row" }]}
+      >
+        {faseLiberada ? (
+          <Text style={styles.fase}>{String(fase).padStart(2, "0")}</Text>
+        ) : (
+          <Image
+            source={require("../../assets/icons/icon-cadeado.png")}
+            style={{ width: width * 0.06, aspectRatio: 31 / 35 }}
+          />
+        )}
+      </TouchableOpacity>
+    );
+  });
+  
+  return renderedFases;
+};
+
+const renderAvatar = () => {
+  if (!data?.avatar || !data.mundos) return null;
+
+  const faseAtual = data.mundos[0].faseAtual;
+
+  // Define o estilo baseado na faseAtual ou inicio
+  const avatarStyle =
+    faseAtual === null
+      ? styles.inicio
+      : styles[`fase${faseAtual}`] || styles.inicio;
+
+  return (
+    <View style={avatarStyle}>
+      <Image
+        source={getAvatarImage(data.avatar)}
+        style={{ width: width * 0.1, height: width * 0.1 }}
+        resizeMode="contain"
+      />
+    </View>
+  );
+};
+
+
   return (
     <View style={styles.container}>
       <ScrollView>
-        <View style={{flexDirection: "row"}}>
+        <View style={{ flexDirection: "row" }}>
           <Image
             source={require("../../assets/images/teste.png")}
-          style={styles.fundoVerde}/>
+            style={styles.fundoVerde}
+          />
         </View>
         <View style={styles.containerDados}>
-          <Header pontos={pontos} medalhas={numMedalhas} ranking={rankingAtual} />
-          <View style={{flexDirection: "row", alignItems: "center", gap: 50}}>
+          {data ? (
+            <Header
+              pontos={data.pontos}
+              medalhas={data.numMedalhas}
+              ranking={data.rankingAtual}
+            />
+          ) : null}
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 50 }}>
             <ImageBackground
               source={require("../../assets/images/circulo-sombra.png")}
               style={styles.fundoMedalha}
@@ -96,6 +174,7 @@ export default function WorldScreen() {
               <Image
                 source={require("../../assets/images/medalha.png")}
                 style={styles.medalha}
+                resizeMode="contain"
               />
             </ImageBackground>
             <TouchableOpacity onPress={() => navigation.navigate("home")}>
@@ -108,27 +187,20 @@ export default function WorldScreen() {
               </ImageBackground>
             </TouchableOpacity>
           </View>
-          <View style={{flexDirection: "row", alignItems: "center", paddingLeft: 30,}}>
-          <Image
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              paddingLeft: 30,
+            }}
+          >
+            <Image
               source={require("../../assets/images/trilha.png")}
               style={styles.trilha}
             />
           </View>
-          <TouchableOpacity style={styles.fase1} onPress={() => navigation.navigate("atvConnect")}>
-            <Text style={styles.fase}>01</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.fase2}  onPress={() => navigation.navigate("atvMemory")}>
-            <Text style={styles.fase}>02</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.fase3} onPress={() => navigation.navigate("atvMatch")}>
-            <Text style={styles.fase}>03</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("atvListening")} style={styles.viewIconBoss}>
-            <Image
-              source={require("../../assets/images/icon-boss.png")}
-              style={styles.boss}
-            />
-          </TouchableOpacity>
+          {renderAvatar()}
+          {renderFases()}
         </View>
       </ScrollView>
       <View style={styles.navigationBarWrapper}>
@@ -147,7 +219,7 @@ const styles = StyleSheet.create({
   },
   fundoVerde: {
     width: "100%",
-    aspectRatio: 390/124
+    aspectRatio: 390 / 124,
   },
   containerDados: {
     width: "100%",
@@ -165,19 +237,18 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   fundoMedalha: {
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     width: width * 0.17,
-    aspectRatio: 1/1
+    aspectRatio: 1 / 1,
   },
   medalha: {
-      width: width * 0.09,
-      aspectRatio: 36 / 45,
+    width: width * 0.11,
+    height: width * 0.11,
   },
   fundoMundo: {
     width: width * 0.55,
-    aspectRatio: 233/103,
+    aspectRatio: 233 / 103,
     justifyContent: "center",
     paddingHorizontal: width * 0.05,
     gap: height * 0.01,
@@ -195,12 +266,18 @@ const styles = StyleSheet.create({
   trilha: {
     width: width * 0.6,
     aspectRatio: 281 / 537,
-    marginBottom: height * 0.1
+    marginBottom: height * 0.1,
   },
   fase: {
     fontFamily: "Montserrat_700Bold",
     fontSize: width * 0.06,
     color: "#fff",
+  },
+  inicio: {
+    position: "absolute",
+    flexDirection: "row",
+    top: height * 0.845,
+    left: width * 0.31,
   },
   fase1: {
     position: "absolute",
@@ -225,6 +302,6 @@ const styles = StyleSheet.create({
   },
   boss: {
     width: width * 0.15,
-    aspectRatio: 73/70,
-  }
+    aspectRatio: 73 / 70,
+  },
 });

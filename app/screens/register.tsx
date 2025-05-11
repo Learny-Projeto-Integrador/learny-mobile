@@ -168,7 +168,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
         ) : (
           <Image
             style={styles.btnImg}
-            source={require("../../assets/images/icone-camera.png")}
+            source={require("../../assets/icons/icone-camera.png")}
           />
         )}
       </TouchableOpacity>

@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   ImageBackground,
+  Dimensions,
 } from "react-native";
 
 const ContainerActions = () => {
@@ -16,15 +17,15 @@ const ContainerActions = () => {
     >
       <View style={styles.containerFilho}>
         <Image
-        source={require("../../assets/images/icon-notificacao.png")}
+        source={require("../../assets/icons/icon-notificacao.png")}
         style={styles.icon}
         />
         <Image
-        source={require("../../assets/images/icon-atv.png")}
+        source={require("../../assets/icons/icon-atv.png")}
         style={styles.icon}
         />
         <Image
-        source={require("../../assets/images/icon-chat.png")}
+        source={require("../../assets/icons/icon-chat.png")}
         style={styles.icon}
         />
       </View>
@@ -32,18 +33,19 @@ const ContainerActions = () => {
   );
 };
 
+const { width, height } = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 160,
+    height: height * 0.15,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 60,
     overflow: 'hidden',
   },
   icon: {
-    width: 80,
-    height: 80,
+    width: width * 0.15,
     aspectRatio: 62 / 62,
   },
   containerFilho: {

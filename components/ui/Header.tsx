@@ -24,7 +24,7 @@ export default function Header({pontos,medalhas,ranking}: HeaderProps) {
           <View style={styles.pontos}>
             <Image
               style={styles.iconChama}
-              source={require("../../assets/images/icon-chama.png")}
+              source={require("../../assets/icons/icon-chama.png")}
             />
             <ImageBackground
               style={styles.retanguloPontos}
@@ -36,7 +36,7 @@ export default function Header({pontos,medalhas,ranking}: HeaderProps) {
           <View style={styles.pontos}>
             <Image
               style={styles.iconMedalha}
-              source={require("../../assets/images/icon-medalha.png")}
+              source={require("../../assets/icons/icon-medalha.png")}
             />
             <ImageBackground
               style={styles.retanguloPontos}
@@ -48,7 +48,7 @@ export default function Header({pontos,medalhas,ranking}: HeaderProps) {
           <View style={styles.pontos}>
             <Image
               style={styles.iconEstrela}
-              source={require("../../assets/images/icon-estrela.png")}
+              source={require("../../assets/icons/icon-estrela.png")}
             />
             <ImageBackground
               style={styles.retanguloPontos}

@@ -4,7 +4,7 @@ export type RootStackParamList = {
     register: { idParent?: string };
     transition: { name: string, type: string };
     profileParent: undefined;
-    edit: { idParent?: string }
+    edit: undefined;
     home: undefined;
     profileChildren: undefined;
     iconChildren: undefined;
@@ -19,5 +19,15 @@ export type RootStackParamList = {
     atvListeningArduino: undefined;
     atvMemory: undefined;
     atvConnect: undefined;
+    score: { score: {} }
   };
+
+export type AlertData = {
+  title: string;
+  message: string;
+  score?: {
+    pontos: number;
+    tempo: string;
+  };
+}
   

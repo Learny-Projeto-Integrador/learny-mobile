@@ -23,8 +23,6 @@ import LoginInput from "@/components/ui/LoginInput";
 import { useFocusEffect } from "expo-router";
 
 export default function EditScreen({ route, navigation }: Props) {
-  const { idParent } = route.params ?? {};
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -200,7 +198,7 @@ export default function EditScreen({ route, navigation }: Props) {
         <TouchableOpacity style={styles.btnVoltar} onPress={handleRedirect}>
           <Image 
             style={styles.iconVoltar}
-            source={require("../../assets/images/icon-voltar.png")}
+            source={require("../../assets/icons/icon-voltar.png")}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={pickImage}>
@@ -209,7 +207,7 @@ export default function EditScreen({ route, navigation }: Props) {
           ) : (
             <Image
               style={styles.btnImg}
-              source={require("../../assets/images/icone-camera.png")}
+              source={require("../../assets/icons/icone-camera.png")}
             />
           )}
         </TouchableOpacity>

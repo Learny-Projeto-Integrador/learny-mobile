@@ -3,85 +3,62 @@ import {
   StyleSheet,
   Dimensions,
   View,
-  Text,
-  ImageBackground,
-  ScrollView,
-  Alert,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 
 import React, { useCallback, useEffect, useState } from "react";
-import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
-import ContainerFilhos from "@/components/ui/ContainerFilhos";
-import MaskedView from "@react-native-masked-view/masked-view";
-import { LinearGradient } from "expo-linear-gradient"; // ou 'react-native-linear-gradient' se não for Expo
-import ContainerActions from "@/components/ui/ContainerActions";
-import ContainerFasesConcluidas from "@/components/ui/ContainerFasesConcluidas";
-import ContainerMundoAtual from "@/components/ui/ContainerMundoAtual";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import ContainerActionChildren from "@/components/ui/ContainerActionChildren";
-import ContainerAcessibilidade from "@/components/ui/ContainerAcessibilidade";
+import { useGetToken } from "@/hooks/useGetToken";
+import GradientText from "@/components/ui/GradientText";
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
-  "profileParent"
+  "iconChildren"
 >;
 
-type ParentData = {
-  idParent: string;
+type ChildData = {
   foto: string;
-  nome: string;
-  filhos: [{}];
-  filhoSelecionado: {};
+  avatar: string;
 };
 
-const GradientText = ({ style, children }: any) => {
-  return (
-    <MaskedView
-      maskElement={
-        <Text style={[style, { backgroundColor: "transparent" }]}>
-          {children}
-        </Text>
-      }
-    >
-      <LinearGradient
-        colors={["#d57388", "#8fb3d7"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-      >
-        <Text style={[style, { opacity: 0 }]}>{children}</Text>
-      </LinearGradient>
-    </MaskedView>
-  );
-};
+// IMPORT MANUAL DOS AVATARES
+const avatarNames = [
+  "avatar1",
+  "avatar2",
+  "avatar3",
+  "avatar4",
+  "avatar5",
+  "avatar6",
+  "avatar7",
+  "avatar8",
+  "avatar9",
+];
 
 export default function IconChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const [data, setData] = useState<ParentData | undefined>(undefined);
-  const [id, setId] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<ChildData | undefined>(undefined);
+  const { getToken } = useGetToken();
 
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      return token;
-    } catch (e) {
-      console.error("Erro ao buscar o token", e);
+  const avatarNames = ["avatar1", "avatar2"];
+
+  const getAvatarImage = (name: string) => {
+    switch (name) {
+      case "avatar1":
+        return require("../../assets/icons/avatars/avatar1.png");
+      case "avatar2":
+        return require("../../assets/icons/avatars/avatar2.png");
+      default:
+        return undefined;
     }
   };
 
   const loadData = async () => {
-    setLoading(true);
-    setError(null);
-
     try {
       const token = await getToken();
-
-      const res = await fetch("http://10.0.2.2:5000/pais", {
+      const res = await fetch("http://10.0.2.2:5000/criancas", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -90,17 +67,13 @@ export default function IconChildrenScreen() {
       });
 
       const result = await res.json();
-
       if (res.ok) {
         setData(result);
-        setId(result._id.$oid);
       } else {
-        setError(result.error);
+        alert(result.error);
       }
     } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      alert(err.message);
     }
   };
 
@@ -110,20 +83,29 @@ export default function IconChildrenScreen() {
     }, [])
   );
 
-  const handleRedirectCadastro = () => {
-    if (!data) return;
-    navigation.navigate("register", { idParent: id });
-  };
+  const changeAvatar = async (avatarName: string) => {
+    const body = { avatar: avatarName }; // salva o nome apenas
 
-  const handleSair = () => {
-    Alert.alert("Alerta", "Deseja mesmo sair?", [
-      { text: "Cancelar" },
-      { text: "Sair", onPress: () => navigation.navigate("index") },
-    ]);
-  };
+    try {
+      const token = await getToken();
+      const res = await fetch("http://10.0.2.2:5000/criancas", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
 
-  const handleEdit = () => {
-    navigation.navigate("edit", { idParent: id });
+      const result = await res.json();
+      if (res.ok) {
+        Alert.alert("Sucesso!", "Avatar alterado com sucesso!");
+      } else {
+        Alert.alert("Erro na edição", result.error);
+      }
+    } catch (err: any) {
+      Alert.alert("Erro inesperado", "Não foi possível conectar ao servidor.");
+    }
   };
 
   return (
@@ -133,7 +115,7 @@ export default function IconChildrenScreen() {
         <View style={styles.containerDados}>
           <View style={styles.viewFotoIcon}>
             <View style={styles.viewFotoNome}>
-              <View style={{flexDirection: "row"}}>
+              <View style={{ flexDirection: "row" }}>
                 <Image
                   style={styles.foto}
                   source={
@@ -143,24 +125,44 @@ export default function IconChildrenScreen() {
                   }
                 />
               </View>
-              <GradientText style={styles.nameText}>Joana</GradientText>
+              <GradientText
+                color1="#946274"
+                color2="#5c94b3"
+                style={styles.nameText}
+              >
+                Joana
+              </GradientText>
             </View>
-            <View style={styles.viewIcon}>
+            <TouchableOpacity style={styles.viewIcon} onPress={() => navigation.goBack()}>
               <Image
                 style={styles.icon}
-                source={
-                  data && data.foto
-                    ? { uri: data.foto }
-                    : require("../../assets/images/icon-voltar2.png")
-                }
+                source={require("../../assets/icons/icon-voltar2.png")}
               />
-            </View>
+            </TouchableOpacity>
           </View>
-          <View style={styles.containerFotos}>
-          {Array.from({ length: 9 }).map((_, index) => (
-            <View key={index} style={styles.selectIcon} />
-          ))}
-        </View>
+
+          <View style={styles.containerAvatares}>
+            {Array.from({ length: 9 }).map((_, index) => {
+              const avatarName = avatarNames[index];
+
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onPress={avatarName ? () => changeAvatar(avatarName) : undefined}
+                  disabled={!avatarName}
+                  style={styles.selectIcon}
+                >
+                  {avatarName && (
+                    <Image
+                      source={getAvatarImage(avatarName)}
+                      style={{ width: width * 0.1, height: width * 0.1 }}
+                      resizeMode="contain"
+                    />
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
       </View>
     </View>
@@ -190,7 +192,7 @@ const styles = StyleSheet.create({
     height: "100%",
     paddingVertical: height * 0.1,
     alignItems: "center",
-    gap: height * 0.04
+    gap: height * 0.04,
   },
   viewFotoIcon: {
     flexDirection: "row",
@@ -219,7 +221,7 @@ const styles = StyleSheet.create({
     fontSize: width * 0.07,
     fontFamily: "Montserrat_700Bold",
   },
-  containerFotos: {
+  containerAvatares: {
     flexDirection: "row",
     flexWrap: "wrap",
     width: "80%",
@@ -230,6 +232,8 @@ const styles = StyleSheet.create({
     width: width * 0.22,
     height: width * 0.22,
     borderRadius: 30,
-    backgroundColor: "#c9c9c9"
+    backgroundColor: "#c9c9c9",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

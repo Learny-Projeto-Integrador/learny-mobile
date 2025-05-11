@@ -7,14 +7,20 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../../types";
+import type { AlertData, RootStackParamList } from "../../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import HeaderFase from "@/components/ui/HeaderFase";
 import SoundCard from "@/components/ui/SoundCard";
+import { useScreenDuration } from "@/hooks/useScreenDuration";
+import { useSubmitMission } from "@/hooks/useSubmitMission";
+import CustomAlert from "@/components/ui/CustomAlert";
+
+const { width, height } = Dimensions.get("window");
 
 // Definição da estrutura de cada opção de áudio
 type AudioOption = {
@@ -43,12 +49,16 @@ const audioOptions: AudioOption[] = [
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-const { width, height } = Dimensions.get("window");
-
 export default function AtvListeningArduinoScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [correctOption, setCorrectOption] = useState<AudioOption | null>(null);
   const [shuffledOptions, setShuffledOptions] = useState<AudioOption[]>([]);
+
+   const [alertData, setAlertData] = useState<AlertData | null>(null);
+    const [alertVisible, setAlertVisible] = useState(false);
+  
+    const { getDuration } = useScreenDuration();
+    const { submitMission } = useSubmitMission();
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * audioOptions.length);
@@ -59,24 +69,40 @@ export default function AtvListeningArduinoScreen() {
     setShuffledOptions(shuffled);
   }, []);
 
-  const handleConfirm = (isCorrect: boolean) => {
+  const handleConfirm = async (isCorrect: boolean) => {
+    const { durationFormatted } = getDuration();
+    let pontos = 0;
     if (isCorrect) {
-      alert("Correto!");
+      pontos = 100
+    } 
+
+    const body: any = {
+      pontos: pontos,
+      fasesConcluidas: 1,
+      tipoFase: "listening",
+    };
+
+    const response = await submitMission(body);
+
+    if (response.success) {
+      const score = { pontos, tempo: durationFormatted };
+
+      if (response.result.missaoConcluida) {
+        setAlertData({
+          title: "Diária concluída!",
+          message: response.result.missaoConcluida.descricao,
+          score,
+        });
+        setAlertVisible(true);
+      } else {
+        navigation.navigate("score", { score });
+      }
     } else {
-      alert("Incorreto. Tente novamente.");
-    }
-
-    // Você pode navegar para outra tela se quiser
-    // navigation.navigate("NextScreen");
-  };
-
-  const getToken = async (): Promise<string | null> => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      return token;
-    } catch (e) {
-      console.error("Erro ao buscar o token", e);
-      return null;
+      setAlertData({
+        title: "Erro!",
+        message: response.error ? response.error : "Erro desconhecido",
+      });
+      setAlertVisible(true);
     }
   };
 
@@ -89,9 +115,19 @@ export default function AtvListeningArduinoScreen() {
         title="Listen & Answer"
         description="Ouça o nome e encontre ele escrito"
         color="#EF5B6A"
-        onReturn={() => navigation.navigate("world")}
       />
-
+      {alertData ? (
+              <CustomAlert
+                icon={require("../../../assets/icons/icon-alerta.png")}
+                visible={alertVisible}
+                onClose={() =>
+                  //@ts-ignore
+                  navigation.navigate("score", { score: alertData.score })
+                }
+                title={alertData.title}
+                message={alertData.message}
+              />
+            ) : null}
       <View style={{ paddingHorizontal: width * 0.03, marginTop: height * 0.02 }}>
         <SoundCard
           id="1"
@@ -118,7 +154,7 @@ export default function AtvListeningArduinoScreen() {
 
       <View style={{ flexDirection: "row", justifyContent: "center", marginTop: height * 0.16 }}>
         <Image
-          source={require("../../../assets/images/icon-dica.png")}
+          source={require("../../../assets/icons/icon-dica.png")}
           style={styles.iconDica}
         />
       </View>

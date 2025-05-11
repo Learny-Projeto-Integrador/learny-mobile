@@ -19,8 +19,8 @@ import Header from "@/components/ui/Header";
 import ContainerMundo from "@/components/ui/ContainerMundo";
 import ContainerTimeAttack from "@/components/ui/ContainerTimeAttack";
 import NavigationBar from "@/components/ui/NavigationBar";
-import ContainerActions from "@/components/ui/ContainerActions";
 import ContainerMissoes from "@/components/ui/ContainerMissoes";
+import Menu from "@/components/ui/Menu";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
@@ -56,14 +56,14 @@ export default function MenuScreen() {
         <View style={styles.containerDados}>
             <View style={styles.containerTitle}>
                 <Text style={styles.title}>Atalhos</Text>
-                <TouchableOpacity onPress={() => navigation.navigate("home")} style={{flexDirection: "row"}}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{flexDirection: "row"}}>
                   <Image
-                      source={require("../../assets/images/icon-fechar.png")}
+                      source={require("../../assets/icons/icon-fechar.png")}
                       style={styles.iconFechar}
                       />
                 </TouchableOpacity>
             </View>
-            <ContainerActions/>
+            <Menu/>
             <ContainerMissoes />
             <View style={{width: "100%", height: 100}}/>
         </View>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   ImageBackground,
   Image,
@@ -21,6 +21,7 @@ import ContainerTimeAttack from "@/components/ui/ContainerTimeAttack";
 import NavigationBar from "@/components/ui/NavigationBar";
 import PodiumCard from "@/components/ui/PodiumCard";
 import OtherRanking from "@/components/ui/OtherRanking";
+import { useFocusEffect } from "expo-router";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
@@ -30,20 +31,51 @@ export default function RankingScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [usuario, setUsuario] = useState("");
-  const [senha, setSenha] = useState("");
+  const [ranking, setRanking] = useState([{}]);
 
-  const saveToken = async (token: string) => {
+  const getToken = async () => {
     try {
-      await AsyncStorage.setItem("token", token);
+      const token = await AsyncStorage.getItem("token");
+      return token;
     } catch (e) {
-      console.error("Erro ao salvar o token", e);
+      console.error("Erro ao buscar o token", e);
     }
   };
 
-  const handleRedirect = () => {
-    navigation.navigate("register", { idParent: undefined });
+  const loadData = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = await getToken();
+
+      const res = await fetch("http://10.0.2.2:5000/criancas/ranking", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        setRanking(result);
+      } else {
+        setError(result.error);
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
@@ -58,43 +90,70 @@ export default function RankingScreen() {
           <Header pontos={1000} medalhas={10} ranking={1} />
           <View style={styles.containerTitle}>
             <Image
-              source={require("../../assets/images/icon-info.png")}
+              source={require("../../assets/icons/icon-info.png")}
               style={styles.icon}
             />
             <Text style={styles.title}>Ranking</Text>
-            <Image
-              source={require("../../assets/images/icon-voltar2.png")}
-              style={styles.icon}
-            />
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Image
+                source={require("../../assets/icons/icon-voltar2.png")}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
           </View>
-          <View style={{gap: 40}}>
-            <PodiumCard name="Joana" rank="1" points="100" />
-            <PodiumCard name="Joana" rank="1" points="100" />
-            <PodiumCard name="Joana" rank="1" points="100" />
+          <View style={{ gap: 40 }}>
+            {ranking?.slice(0, 3).map((item: any, index: number) => {
+              if (!item || item.nome === undefined || item.pontos === undefined)
+                return null;
+              return (
+                <PodiumCard
+                  key={item.id || index}
+                  image={item.foto.toString()}
+                  name={item.nome.toString()}
+                  rank={(index + 1)}
+                  points={item.pontos}
+                />
+              );
+            })}
           </View>
-          <ImageBackground 
-          source={require("../../assets/images/fundo-planeta.png")}
-          style={{
-            width: "100%",
-            height: height * 0.5,
-            alignItems: "center",
-            marginBottom: -height * 0.035,
-          }}
-          >
-            <View style={{
-              backgroundColor: "rgba(0,0,0,0.35)",
-              width: width * 0.74,
-              marginTop: height * 0.02,
-              borderRadius: 40,
+
+          <ImageBackground
+            source={require("../../assets/images/fundo-planeta.png")}
+            style={{
+              width: "100%",
+              height: height * 0.5,
               alignItems: "center",
-              justifyContent: "center",
-              gap: 20,
-              paddingVertical: height * 0.04,
-            }}>
-              <OtherRanking name="Joana" rank="4" points="100" />
-              <OtherRanking name="Joana" rank="5" points="100" />
-              <OtherRanking name="Joana" rank="6" points="100" />
-              <OtherRanking name="Joana" rank="7" points="100" />
+              marginBottom: -height * 0.035,
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: "rgba(0,0,0,0.35)",
+                width: width * 0.74,
+                marginTop: height * 0.02,
+                borderRadius: 40,
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 20,
+                paddingVertical: height * 0.04,
+              }}
+            >
+              {ranking?.slice(3, 7).map((item: any, index: number) => {
+                if (
+                  !item ||
+                  item.nome === undefined ||
+                  item.pontos === undefined
+                )
+                  return null;
+                return (
+                  <OtherRanking
+                    key={item.id || index}
+                    name={item.nome.toString()}
+                    rank={(index + 4).toString()}
+                    points={item.pontos.toString()}
+                  />
+                );
+              })}
             </View>
           </ImageBackground>
         </View>

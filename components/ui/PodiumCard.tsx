@@ -1,13 +1,23 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 
-const PodiumCard = ({ rank, name, points, image, borderColor }: any) => {
+type PodiumCardProps = {
+  rank: number;
+  name: string;
+  points: number;
+  image: any;
+}
+
+export default function PodiumCard({ rank, name, points, image }: PodiumCardProps){
+  const colors = ["#E3AC0A", "#B8B9BB", "#C55A1D"]
+  const borderColor = colors[rank - 1] || "#000";
+  const color = colors[rank - 1] || "#000";
   return (
     <View style={styles.container}>
-      <Image source={require("../../assets/images/avatar.png")} style={styles.avatar} />
-      <View style={styles.card}>
+      <Image source={image ? {uri: image} : require("../../assets/images/avatar.png")} style={[styles.avatar, {borderColor}]} />
+      <View style={[styles.card, {borderColor}]}>
         <View style={{flexDirection: "row", alignItems: "center", gap: width * 0.02}}>
-          <Text style={styles.rank}>{rank}º</Text>
+          <Text style={[styles.rank, {color}]}>{rank}º</Text>
           <Text style={styles.txt}>{name}</Text>
         </View>
         <Text style={styles.points}>
@@ -17,8 +27,6 @@ const PodiumCard = ({ rank, name, points, image, borderColor }: any) => {
     </View>
   );
 };
-
-const BORDER_COLOR = '#C55A1D';
 
 const { width, height } = Dimensions.get("window");
 
@@ -33,17 +41,16 @@ const styles = StyleSheet.create({
     height: width * 0.13,
     borderRadius: width * 0.13,
     borderWidth: 5,
-    borderColor: BORDER_COLOR,
     marginRight: 10,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 5,
-    borderColor: BORDER_COLOR,
     borderRadius: 15,
     paddingVertical: height * 0.01,
     paddingHorizontal: width * 0.05,
+    width: width * 0.5,
     gap: width * 0.1,
   },
   rank: {
@@ -61,5 +68,3 @@ const styles = StyleSheet.create({
     color: '#555',
   },
 });
-
-export default PodiumCard;

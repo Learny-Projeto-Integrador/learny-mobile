@@ -10,9 +10,12 @@ import {
 import Svg, { Line } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../../types";
+import type { AlertData, RootStackParamList } from "../../../types";
 import AnimalCard from "@/components/ui/AnimalCard"; // ajuste o caminho conforme necessário
 import HeaderFase from "@/components/ui/HeaderFase";
+import { useScreenDuration } from "@/hooks/useScreenDuration";
+import CustomAlert from "@/components/ui/CustomAlert";
+import { useSubmitMission } from "@/hooks/useSubmitMission";
 
 const { width, height } = Dimensions.get("window");
 
@@ -45,6 +48,12 @@ export default function AtvConnectScreen() {
   const [selected, setSelected] = useState<CardInfo[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
 
+  const [alertData, setAlertData] = useState<AlertData | null>(null);
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  const { getDuration } = useScreenDuration();
+  const { submitMission } = useSubmitMission();
+
   const handleSelect = (card: CardInfo) => {
     if (connections.some((c) => c.from.id === card.id || c.to.id === card.id))
       return;
@@ -75,22 +84,61 @@ export default function AtvConnectScreen() {
     setSelected([]);
   };
 
-  const handleConfirm = () => {
-    const correctCount = connections.filter(c => c.isCorrect).length;
+  const handleConfirm = async () => {
+    const { durationFormatted } = getDuration();
+    const correctCount = connections.filter((c) => c.isCorrect).length;
     const total = connections.length;
-  
-    console.log(`Acertos: ${correctCount} de ${total}`);
-    // Aqui você pode atualizar pontuação, enviar pro backend, mostrar feedback, etc.
+    const pontos = (correctCount / total) * 100;
+
+    const body = {
+      pontos,
+      fasesConcluidas: 1,
+      tipoFase: "connect",
+    };
+
+    const response = await submitMission(body);
+
+    if (response.success) {
+      const score = { pontos, tempo: durationFormatted };
+
+      if (response.result.missaoConcluida) {
+        setAlertData({
+          title: "Diária concluída!",
+          message: response.result.missaoConcluida.descricao,
+          score,
+        });
+        setAlertVisible(true);
+      } else {
+        navigation.navigate("score", { score });
+      }
+    } else {
+      setAlertData({
+        title: "Erro!",
+        message: response.error ? response.error : "Erro desconhecido",
+      });
+      setAlertVisible(true);
+    }
   };
 
   return (
     <ScrollView style={styles.container}>
+      {alertData ? (
+        <CustomAlert
+          icon={require("../../../assets/icons/icon-alerta.png")}
+          visible={alertVisible}
+          onClose={() =>
+            //@ts-ignore
+            navigation.navigate("score", { score: alertData.score })
+          }
+          title={alertData.title}
+          message={alertData.message}
+        />
+      ) : null}
       <HeaderFase
         image={require("../../../assets/images/watch.png")}
         title="Look & Connect"
         description="Ligue os animais"
         color="#6CD2FF"
-        onReturn={() => navigation.navigate("world")}
       />
 
       {/* Camada das linhas */}
@@ -181,18 +229,24 @@ export default function AtvConnectScreen() {
 
       <View style={styles.viewButtons}>
         <Image
-          source={require("../../../assets/images/icon-dica.png")}
+          source={require("../../../assets/icons/icon-dica.png")}
           style={styles.icon}
         />
-        <TouchableOpacity style={{flexDirection: "row"}} onPress={handleConfirm}>
+        <TouchableOpacity
+          style={{ flexDirection: "row" }}
+          onPress={handleConfirm}
+        >
           <Image
-            source={require("../../../assets/images/icon-confirmar-vermelho.png")}
+            source={require("../../../assets/icons/icon-confirmar-vermelho.png")}
             style={styles.icon}
           />
         </TouchableOpacity>
-        <TouchableOpacity style={{flexDirection: "row"}} onPress={handleClearConnections}>
+        <TouchableOpacity
+          style={{ flexDirection: "row" }}
+          onPress={handleClearConnections}
+        >
           <Image
-            source={require("../../../assets/images/icon-limpar.png")}
+            source={require("../../../assets/icons/icon-limpar.png")}
             style={styles.icon}
           />
         </TouchableOpacity>

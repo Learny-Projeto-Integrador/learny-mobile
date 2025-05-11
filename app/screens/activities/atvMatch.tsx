@@ -22,6 +22,7 @@ import GradientText from "@/components/ui/GradientText";
 import ContainerEmotion from "@/components/ui/ContainerEmotion";
 import HeaderFase from "@/components/ui/HeaderFase";
 import SoundCard from "@/components/ui/SoundCard";
+import { useScreenDuration } from "@/hooks/useScreenDuration";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -58,6 +59,10 @@ export default function AtvMatchScreen() {
   const [selectedDino, setSelectedDino] = useState<DinoOption | null>(null);
   const [shuffledOptions, setShuffledOptions] = useState<DinoOption[]>([]);
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { getDuration } = useScreenDuration();
+
   useEffect(() => {
     // Escolhe um dino aleatoriamente
     const randomDino =
@@ -77,8 +82,59 @@ export default function AtvMatchScreen() {
     return array;
   }
 
-  const handleConfirm = () => {
-    alert("Sucesso! Você acertou!");
+  const getToken = async (): Promise<string | null> => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      return token;
+    } catch (e) {
+      console.error("Erro ao buscar o token", e);
+      return null;
+    }
+  };
+
+  const handleConfirm = async () => {
+    const { durationFormatted } = getDuration();
+    const pontos = 100;
+
+    setLoading(true);
+    setError(null);
+
+    const body: any = {
+      pontos: pontos,
+      fasesConcluidas: 1,
+      tipoFase: "feeling",
+    };
+
+    try {
+      const token = await getToken();
+
+      const res = await fetch(`http://10.0.2.2:5000/criancas/faseconcluida`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        const score = { pontos: pontos, tempo: durationFormatted };
+        navigation.navigate("score", { score: score });
+      } else {
+        setError(result.error);
+        Alert.alert("Erro na atualização dos pontos", result.error);
+      }
+    } catch (err: any) {
+      setError(err.message);
+      Alert.alert(
+        "Erro inesperado",
+        "Não foi possível conectar ao servidor. Verifique sua conexão."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleError = (dino: DinoOption) => {
@@ -89,7 +145,6 @@ export default function AtvMatchScreen() {
       },
     });
   };
-  
 
   return (
     <ScrollView style={styles.container}>
@@ -98,7 +153,6 @@ export default function AtvMatchScreen() {
         title="Look & Match"
         description="Veja a imagem e ligue a emoção correta"
         color="#6CD2FF"
-        onReturn={() => navigation.navigate("world")}
       />
 
       <View
@@ -112,7 +166,7 @@ export default function AtvMatchScreen() {
 
         {selectedDino && (
           <Image
-          //@ts-ignore
+            //@ts-ignore
             source={selectedDino.image}
             style={{ width: width * 0.75, aspectRatio: 350 / 257 }}
           />
@@ -149,7 +203,7 @@ export default function AtvMatchScreen() {
         }}
       >
         <Image
-          source={require("../../../assets/images/icon-dica.png")}
+          source={require("../../../assets/icons/icon-dica.png")}
           style={styles.iconDica}
         />
       </View>

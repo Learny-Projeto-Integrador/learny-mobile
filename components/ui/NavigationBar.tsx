@@ -12,19 +12,19 @@ export default function NavigationBar() {
             <TouchableOpacity onPress={() => navigation.navigate("profileChildren")} style={{flexDirection: "row"}}>  
                 <Image
                 style={styles.icon}
-                    source={require("../../assets/images/icon-perfil.png")}
+                    source={require("../../assets/icons/icon-perfil.png")}
                 />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate("home")} style={{flexDirection: "row"}}>
                 <Image
                 style={styles.iconHome}
-                    source={require("../../assets/images/icon-home.png")}
+                    source={require("../../assets/icons/icon-home.png")}
                 />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate("menu")} style={{flexDirection: "row"}}>
                 <Image
                 style={styles.icon}
-                    source={require("../../assets/images/icon-menu.png")}
+                    source={require("../../assets/icons/icon-menu.png")}
                 />
             </TouchableOpacity>
         </View>

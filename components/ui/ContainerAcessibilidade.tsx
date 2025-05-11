@@ -28,7 +28,7 @@ export default function ContainerAcessibilidade({
         <View style={styles.viewTitle}>
             <Image
             style={styles.icon}
-            source={require("../../assets/images/icon-acessibilidade.png")}
+            source={require("../../assets/icons/icon-acessibilidade.png")}
             />
             <GradientText color1="#946274" color2="#5c94b3" style={styles.txtGradient}>Acessibilidade</GradientText>
         </View>

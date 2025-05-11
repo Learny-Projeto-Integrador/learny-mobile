@@ -18,6 +18,7 @@ import type { RootStackParamList } from "../../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderFase from "@/components/ui/HeaderFase";
 import MemoryCard from "@/components/ui/MemoryCard";
+import { useScreenDuration } from "@/hooks/useScreenDuration";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -76,6 +77,20 @@ export default function AtvMemoryScreen() {
   const [matched, setMatched] = useState<string[]>([]);
   const [isChecking, setIsChecking] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { getDuration } = useScreenDuration();
+
+  const getToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      return token;
+    } catch (e) {
+      console.error('Erro ao buscar o token', e);
+    }
+  };
+
   const handleCardPress = (id: string, animal: string, type: string) => {
     if (isChecking || selected.includes(id) || matched.includes(id)) return;
   
@@ -113,11 +128,47 @@ export default function AtvMemoryScreen() {
     }
   }, [matched]);
 
-  const handleConfirm = () => {
-    Alert.alert("Parabéns!", "Você completou o jogo da memória!");
-    // Aqui você pode fazer a integração com a API depois
-    // navigation.navigate("world");
-  };
+  const handleConfirm = async () => {
+      const { durationFormatted } = getDuration();
+      const pontos = 100;
+  
+      setLoading(true);
+      setError(null);
+  
+      const body: any = {
+        pontos: pontos,
+        fasesConcluidas: 1,
+        tipoFase: "memory"
+      };
+  
+      try {
+        const token = await getToken();
+  
+        const res = await fetch(`http://10.0.2.2:5000/criancas/faseconcluida`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(body),
+        });
+    
+        const result = await res.json();
+    
+        if (res.ok) {
+          const score = { pontos: pontos, tempo: durationFormatted };
+          navigation.navigate("score", { score: score })
+        } else {
+          setError(result.error);
+          Alert.alert("Erro na atualização dos pontos", result.error);
+        }
+      } catch (err: any) {
+        setError(err.message);
+        Alert.alert("Erro inesperado", "Não foi possível conectar ao servidor. Verifique sua conexão.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
     <ScrollView style={styles.container}>
@@ -126,7 +177,6 @@ export default function AtvMemoryScreen() {
         title="Memory Game"
         description="Ache os pares de texto e imagem"
         color="#FFB300"
-        onReturn={() => navigation.navigate("world")}
       />
 
       <View style={styles.containerCards}>
@@ -148,7 +198,7 @@ export default function AtvMemoryScreen() {
 
       <View style={styles.viewButton}>
         <Image
-          source={require("../../../assets/images/icon-dica.png")}
+          source={require("../../../assets/icons/icon-dica.png")}
           style={styles.icon}
         />
       </View>

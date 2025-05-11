@@ -7,13 +7,17 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../../types";
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 type HeaderFaseProps = {
   image: any;
   title: string;
   description: string;
   color: string;
-  onReturn: () => void;
 };
 
 export default function HeaderFase({
@@ -21,8 +25,8 @@ export default function HeaderFase({
   title,
   description,
   color,
-  onReturn,
 }: HeaderFaseProps) {
+  const navigation = useNavigation<NavigationProp>();
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.containerDados}>
@@ -33,15 +37,15 @@ export default function HeaderFase({
           </View>
         </View>
         <View style={styles.viewVoltar}>
-          <TouchableOpacity onPress={onReturn}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image
               style={styles.iconVoltar}
-              source={require("../../assets/images/icon-voltar2.png")}
+              source={require("../../assets/icons/icon-voltar2.png")}
             />
           </TouchableOpacity>
           <Image
             style={styles.iconInfo}
-            source={require("../../assets/images/icon-info-transparente.png")}
+            source={require("../../assets/icons/icon-info-transparente.png")}
           />
         </View>
       </View>

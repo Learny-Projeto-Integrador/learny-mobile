@@ -87,7 +87,7 @@ export default function Medalha() {
                 <Text style={styles.nome}>A todo o vapor</Text>
               </View>
               <Image
-                source={require("../../assets/images/icon-dropdown.png")}
+                source={require("../../assets/icons/icon-dropdown.png")}
                 style={styles.dropdownIcon}
               />
             </View>

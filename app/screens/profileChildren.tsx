@@ -133,10 +133,10 @@ export default function ProfileChildrenScreen() {
             <Text style={styles.txt}>lvl {nivel}</Text>
           </View>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate("home")} style={styles.viewVoltar}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.viewVoltar}>
           <Image
             style={styles.iconVoltar}
-            source={require("../../assets/images/icon-voltar2.png")}
+            source={require("../../assets/icons/icon-voltar2.png")}
           />
         </TouchableOpacity>
       </View>
@@ -144,9 +144,9 @@ export default function ProfileChildrenScreen() {
         <ProgressBarLvl pontos={pontos} progresso={progressoNivel} />
         <View style={{ gap: 10 }}>
           <ContainerAcessibilidade audioAtivo={audio} onChangeAudio={(novoValor) => atualizarAudio(audio, novoValor)} />
-          <ContainerActionChildren icon={require("../../assets/images/icon-estatisticas.png")} title="Estatísticas" />
-          <ContainerActionChildren icon={require("../../assets/images/icon-quests.png")} title="Quests" />
-          <ContainerActionChildren icon={require("../../assets/images/icon-notificacoes.png")} title="Notificações" />
+          <ContainerActionChildren icon={require("../../assets/icons/icon-estatisticas.png")} title="Estatísticas" />
+          <ContainerActionChildren icon={require("../../assets/icons/icon-quests.png")} title="Quests" />
+          <ContainerActionChildren icon={require("../../assets/icons/icon-notificacoes.png")} title="Notificações" />
         </View>
           <TouchableOpacity style={styles.viewBtn} onPress={handleSair}>
             <Image

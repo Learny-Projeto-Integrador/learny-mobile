@@ -100,7 +100,7 @@ export default function ProfileParentScreen() {
   };
 
   const handleEdit = () => {
-    navigation.navigate("edit", { idParent: id });
+    navigation.navigate("edit");
   };
 
   return (
@@ -134,7 +134,7 @@ export default function ProfileParentScreen() {
             <View style={styles.stackContainer}>
               <Image
                 style={styles.fireIcon}
-                source={require("../../assets/images/icon-fogo.png")}
+                source={require("../../assets/icons/icon-fogo.png")}
               />
               <Text style={styles.txtRankNumber}>5</Text>
             </View>

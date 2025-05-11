@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 15,
     paddingVertical: height * 0.01,
-    gap: width * 0.2,
+    width: width * 0.5,
   },
   rank: {
     fontFamily: 'Montserrat_700Bold',
