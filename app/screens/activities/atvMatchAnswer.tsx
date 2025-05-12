@@ -6,14 +6,10 @@ import {
   Text,
   ImageBackground,
   ScrollView,
-  Alert,
-  TouchableOpacity,
 } from "react-native";
 
-import React, { useCallback, useEffect, useState } from "react";
-import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import HeaderFase from "@/components/ui/HeaderFase";
+import React from "react";
+import { useNavigation } from "@react-navigation/native";
 import SoundCard from "@/components/ui/SoundCard";
 
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -30,13 +26,20 @@ type DinoOption = {
   emotion: string;
 };
 
+type Score = {
+  pontos: number;
+  tempo: number;
+};
+
 export default function AtvMatchAnswerScreen({ route }: RouteProp) {
   //@ts-ignore
   const { answer }: { answer: DinoOption } = route.params;
+  //@ts-ignore
+  const { score }: { score: Score } = route.params;
   const navigation = useNavigation<NavigationProp>();
 
   const handleConfirm = () => {
-    navigation.navigate("world");
+    navigation.navigate("scoreFail", {score: score});
   };
 
   return (

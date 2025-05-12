@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../types";
+import type { AlertData, RootStackParamList } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomAlert from "@/components/ui/CustomAlert";
 
@@ -28,9 +28,8 @@ export default function LoginScreen() {
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
 
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [title, setTitle] = useState("");
-  const [message, setMessage] = useState("");
+  const [alertData, setAlertData] = useState<AlertData | null>(null);
+    const [alertVisible, setAlertVisible] = useState(false);
 
   const saveToken = async (token: string) => {
     try {
@@ -42,7 +41,6 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     setLoading(true);
-    setError(null);
 
     try {
       const res = await fetch("http://10.0.2.2:5000/login", {
@@ -65,15 +63,20 @@ export default function LoginScreen() {
           type: result.tipo,
         });
       } else {
-        setTitle("Erro no login")
-        setMessage(result.error);
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
         setAlertVisible(true);
       }
     } catch (err: any) {
-      setTitle("Erro inesperado")
-      setMessage(
-        "Não foi possível conectar ao servidor. Verifique sua conexão."
-      );
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
       setAlertVisible(true);
     } finally {
       setLoading(false);
@@ -90,13 +93,16 @@ export default function LoginScreen() {
       resizeMode="cover"
       style={styles.container}
     >
-      <CustomAlert
-        icon={require("../../assets/icons/icon-alerta.png")}
-        visible={alertVisible}
-        onClose={() => setAlertVisible(false)}
-        title={title}
-        message={message}
-      />
+      {alertData && (
+        <CustomAlert
+          icon={alertData.icon}
+          visible={alertVisible}
+          onClose={() => setAlertVisible(false)}
+          dualAction={false}
+          title={alertData.title}
+          message={alertData.message}
+        />
+      )}
       <Image
         style={styles.logo}
         source={require("../../assets/images/logo.png")}

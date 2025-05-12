@@ -8,6 +8,7 @@ import {
   View,
   Text,
 } from "react-native";
+import { useCheckAudio } from "@/hooks/useCheckAudio";
 
 type SoundCardProps = {
   image?: ImageSourcePropType;
@@ -19,9 +20,9 @@ type SoundCardProps = {
 };
 
 const colorMap: Record<string, string> = {
-  Sad: "#EF5B6A",     // vermelho
-  Happy: "#6CD2FF",     // amarelo
-  Angry: "#80D25B",    // azul
+  Sad: "#EF5B6A", // vermelho
+  Happy: "#6CD2FF", // amarelo
+  Angry: "#80D25B", // azul
 };
 
 export default function SoundCard({
@@ -37,6 +38,20 @@ export default function SoundCard({
   const cardRef = useRef<TouchableOpacity>(null);
   const { width } = useWindowDimensions();
 
+  const { checkAudio } = useCheckAudio();
+
+  const [canPlayAudio, setCanPlayAudio] = useState(false);
+
+  useEffect(() => {
+    const verifyAudio = async () => {
+      const result = await checkAudio();
+      if (result !== undefined) {
+        setCanPlayAudio(result);
+      }
+    };
+    verifyAudio();
+  }, []);
+
   const playSound = async () => {
     if (sound) await sound.unloadAsync();
     const { sound: newSound } = await Audio.Sound.createAsync(source);
@@ -51,9 +66,9 @@ export default function SoundCard({
   }, [sound]);
 
   const press = () => {
-    playSound();
+    canPlayAudio ? playSound() : null;
     onPress ? onPress() : null;
-  }
+  };
 
   return (
     <TouchableOpacity

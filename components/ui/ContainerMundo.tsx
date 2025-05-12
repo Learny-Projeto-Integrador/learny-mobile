@@ -26,7 +26,7 @@ type ContainerMundoProps = {
 export default function ContainerMundo({imagem, nome, nomeIngles, num, progresso, cor} : ContainerMundoProps) {
   const navigation = useNavigation<NavigationProp>();
   return (
-    <TouchableOpacity onPress={()=> navigation.navigate("world")} activeOpacity={1} style={styles.container}>
+    <TouchableOpacity onPress={() => num == 1 ? navigation.navigate("world") : null} activeOpacity={1} style={styles.container}>
       <ImageBackground
         style={styles.container}
         //@ts-ignore

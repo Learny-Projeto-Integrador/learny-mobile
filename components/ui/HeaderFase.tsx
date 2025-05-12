@@ -18,6 +18,7 @@ type HeaderFaseProps = {
   title: string;
   description: string;
   color: string;
+  onPressInfo?: () => void;
 };
 
 export default function HeaderFase({
@@ -25,6 +26,7 @@ export default function HeaderFase({
   title,
   description,
   color,
+  onPressInfo,
 }: HeaderFaseProps) {
   const navigation = useNavigation<NavigationProp>();
   return (
@@ -43,10 +45,12 @@ export default function HeaderFase({
               source={require("../../assets/icons/icon-voltar2.png")}
             />
           </TouchableOpacity>
-          <Image
-            style={styles.iconInfo}
-            source={require("../../assets/icons/icon-info-transparente.png")}
-          />
+          <TouchableOpacity onPress={onPressInfo}>
+            <Image
+              style={styles.iconInfo}
+              source={require("../../assets/icons/icon-info-transparente.png")}
+            />
+          </TouchableOpacity>
         </View>
       </View>
       <View style={{ flexDirection: "row", marginTop: height * 0.01 }}>

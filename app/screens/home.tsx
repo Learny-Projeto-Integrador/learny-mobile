@@ -1,51 +1,33 @@
 import { useCallback, useState } from "react";
 import {
   ImageBackground,
-  Image,
   Text,
   StyleSheet,
-  TouchableOpacity,
   View,
-  ActivityIndicator,
   Dimensions,
-  Alert,
   ScrollView,
 } from "react-native";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import type { AlertData } from "../../types";
 import Header from "@/components/ui/Header";
 import ContainerMundo from "@/components/ui/ContainerMundo";
 import ContainerTimeAttack from "@/components/ui/ContainerTimeAttack";
 import NavigationBar from "@/components/ui/NavigationBar";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
+import CustomAlert from "@/components/ui/CustomAlert";
+import { useGetToken } from "@/hooks/useGetToken";
 
 const { width, height } = Dimensions.get("window");
 
 export default function HomeScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const [data, setData] = useState<any>(null);
 
-  const [pontos, setPontos] = useState(0);
-  const [numMedalhas, setNumMedalhas] = useState(0);
-  const [rankingAtual, setRankingAtual] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [alertData, setAlertData] = useState<AlertData | null>(null);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [progressoMundo, setProgressoMundo] = useState(0);
 
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      return token;
-    } catch (e) {
-      console.error("Erro ao buscar o token", e);
-    }
-  };
+  const { getToken } = useGetToken();
 
   const loadData = async () => {
-    setLoading(true);
-    setError(null);
-
     try {
       const token = await getToken();
 
@@ -60,16 +42,25 @@ export default function HomeScreen() {
       const result = await res.json();
 
       if (res.ok) {
-        setPontos(result.pontos);
-        setNumMedalhas(result.medalhas.length);
-        setRankingAtual(result.rankingAtual)
+        setData(result);
+        const progresso = (result.mundos[0].faseAtual/4) * 100
+        setProgressoMundo(progresso)
       } else {
-        setError(result.error);
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
+        setAlertVisible(true);
       }
     } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
+      setAlertVisible(true);
     }
   };
 
@@ -81,6 +72,16 @@ export default function HomeScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      {alertData && (
+        <CustomAlert
+          icon={alertData.icon}
+          visible={alertVisible}
+          title={alertData.title}
+          message={alertData.message}
+          dualAction={false}
+          onClose={() => setAlertVisible(false)}
+        />
+      )}
       <ScrollView style={styles.container}>
         <ImageBackground
           source={require("../../assets/images/fundo-gradiente.png")}
@@ -88,11 +89,13 @@ export default function HomeScreen() {
           style={styles.gradiente}
         >
           <View style={{ alignItems: "center" }}>
+            {data && (
               <Header
-                pontos={pontos}
-                medalhas={numMedalhas}
-                ranking={rankingAtual}
+                pontos={data.pontos}
+                medalhas={data.numMedalhas || 0}
+                ranking={data.rankingAtual}
               />
+            )}
           </View>
           <View style={styles.containerTitulo}>
             <Text style={styles.txtTitulo}>Mundos</Text>
@@ -105,7 +108,8 @@ export default function HomeScreen() {
             nome="Floresta do Dino"
             nomeIngles="Dinos's Forest"
             num={1}
-            progresso="50"
+            //@ts-ignore
+            progresso={progressoMundo}
             cor="#329F00"
           />
           <ContainerMundo
@@ -113,7 +117,7 @@ export default function HomeScreen() {
             nome="Mundo quebra-cabeça"
             nomeIngles="Jigsaw World"
             num={2}
-            progresso="50"
+            progresso="0"
             cor="#25A6DE"
           />
           <ContainerMundo
@@ -121,7 +125,7 @@ export default function HomeScreen() {
             nome="Reino Espacial"
             nomeIngles="Space Realm"
             num={3}
-            progresso="50"
+            progresso="0"
             cor="#B060C2"
           />
           <ContainerMundo
@@ -129,7 +133,7 @@ export default function HomeScreen() {
             nome="Festa Pop"
             nomeIngles="Pop Party"
             num={4}
-            progresso="50"
+            progresso="0"
             cor="#B82A38"
           />
           <View

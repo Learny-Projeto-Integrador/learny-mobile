@@ -7,10 +7,10 @@ import {
   Alert,
 } from "react-native";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../types";
+import type { AlertData, RootStackParamList } from "../../types";
 import { useGetToken } from "@/hooks/useGetToken";
 import GradientText from "@/components/ui/GradientText";
 
@@ -40,6 +40,10 @@ const avatarNames = [
 export default function IconChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [data, setData] = useState<ChildData | undefined>(undefined);
+
+  const [alertData, setAlertData] = useState<AlertData | null>(null);
+  const [alertVisible, setAlertVisible] = useState(false);
+
   const { getToken } = useGetToken();
 
   const avatarNames = ["avatar1", "avatar2"];
@@ -70,10 +74,21 @@ export default function IconChildrenScreen() {
       if (res.ok) {
         setData(result);
       } else {
-        alert(result.error);
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
+        setAlertVisible(true);
       }
     } catch (err: any) {
-      alert(err.message);
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
+      setAlertVisible(true);
     }
   };
 
@@ -99,12 +114,27 @@ export default function IconChildrenScreen() {
 
       const result = await res.json();
       if (res.ok) {
-        Alert.alert("Sucesso!", "Avatar alterado com sucesso!");
+        setAlertData({
+          icon: require("../../assets/icons/icon-check-gradiente.png"),
+          title: "Sucesso!",
+          message: "Avatar alterado com sucesso!",
+        });
+        setAlertVisible(true);
       } else {
-        Alert.alert("Erro na edição", result.error);
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
+        setAlertVisible(true);
       }
     } catch (err: any) {
-      Alert.alert("Erro inesperado", "Não foi possível conectar ao servidor.");
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
     }
   };
 
@@ -133,7 +163,10 @@ export default function IconChildrenScreen() {
                 Joana
               </GradientText>
             </View>
-            <TouchableOpacity style={styles.viewIcon} onPress={() => navigation.goBack()}>
+            <TouchableOpacity
+              style={styles.viewIcon}
+              onPress={() => navigation.goBack()}
+            >
               <Image
                 style={styles.icon}
                 source={require("../../assets/icons/icon-voltar2.png")}
@@ -148,7 +181,9 @@ export default function IconChildrenScreen() {
               return (
                 <TouchableOpacity
                   key={index}
-                  onPress={avatarName ? () => changeAvatar(avatarName) : undefined}
+                  onPress={
+                    avatarName ? () => changeAvatar(avatarName) : undefined
+                  }
                   disabled={!avatarName}
                   style={styles.selectIcon}
                 >

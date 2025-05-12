@@ -2,30 +2,32 @@ import {
   ImageBackground,
   StyleSheet,
   Image,
-  Alert,
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
 } from "react-native";
 import { Text, View } from "react-native";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { AlertData, RootStackParamList } from "../../types";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'edit'>;
+type Props = NativeStackScreenProps<RootStackParamList, "edit">;
 
 import DateInput from "@/components/ui/DateInput";
 import LoginInput from "@/components/ui/LoginInput";
 import { useFocusEffect } from "expo-router";
+import CustomAlert from "@/components/ui/CustomAlert";
+import { useGetToken } from "@/hooks/useGetToken";
 
 export default function EditScreen({ route, navigation }: Props) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { userFilho } = route.params ?? {};
 
+  const [alertData, setAlertData] = useState<AlertData | null>(null);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [id, setId] = useState("");
   const [image, setImage] = useState<string | null>("");
@@ -35,54 +37,7 @@ export default function EditScreen({ route, navigation }: Props) {
   const [email, setEmail] = useState("");
   const [dataNasc, setDataNasc] = useState("");
 
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      return token;
-    } catch (e) {
-      console.error('Erro ao buscar o token', e);
-    }
-  };
-
-  const loadData = async () => {
-      setLoading(true);
-      setError(null);
-  
-      try {
-        const token = await getToken();
-  
-        const res = await fetch('http://10.0.2.2:5000/pais', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        const result = await res.json();
-  
-        if (res.ok) {
-          setId(result._id.$oid)
-          setImage(result.foto)
-          setUsuario(result.usuario);
-          setNome(result.nome);
-          setEmail(result.email);
-          setDataNasc(result.dataNasc)
-        } else {
-          setError(result.error);
-        }
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    useFocusEffect(
-      useCallback(() => {
-        loadData();
-      }, [])
-    );
+  const { getToken } = useGetToken();
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -109,10 +64,64 @@ export default function EditScreen({ route, navigation }: Props) {
     }
   };
 
+  let pathGet = "pais";
+  let pathPut = "pais";
+  let pathDelete = `pais/${id}`;
+  if (userFilho) {
+    pathGet = "pais/crianca/" + userFilho;
+    pathDelete = "pais/crianca/" + userFilho;
+    pathPut = "pais/criancas";
+  }
+
+  const loadData = async () => {
+    try {
+      const token = await getToken();
+
+      const res = await fetch(`http://10.0.2.2:5000/${pathGet}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        setId(result._id.$oid);
+        setImage(result.foto);
+        setUsuario(result.usuario);
+        setNome(result.nome);
+        setEmail(result.email);
+        setDataNasc(result.dataNasc);
+      } else {
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
+        setAlertVisible(true);
+      }
+    } catch (err: any) {
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
+      setAlertVisible(true);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
+
   const handleEdit = async () => {
     setLoading(true);
-    setError(null);
-  
+
     const body: any = {
       foto: image,
       usuario: usuario,
@@ -125,7 +134,7 @@ export default function EditScreen({ route, navigation }: Props) {
     try {
       const token = await getToken();
 
-      const res = await fetch(`http://10.0.2.2:5000/pais`, {
+      const res = await fetch(`http://10.0.2.2:5000/${pathPut}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -133,21 +142,33 @@ export default function EditScreen({ route, navigation }: Props) {
         },
         body: JSON.stringify(body),
       });
-  
+
       const result = await res.json();
-  
+
       if (res.ok) {
-        Alert.alert("Sucesso!", result.message, [
-          { text: "Voltar", onPress: () => navigation.navigate("profileParent") },
-          { text: "OK" },
-        ]);
+        setAlertData({
+          icon: require("../../assets/icons/icon-check-gradiente.png"),
+          title: "Sucesso!",
+          message: result.message,
+          dual: true,
+        });
+        setAlertVisible(true);
       } else {
-        setError(result.error);
-        Alert.alert("Erro na edição", result.error);
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
+        setAlertVisible(true);
       }
     } catch (err: any) {
-      setError(err.message);
-      Alert.alert("Erro inesperado", "Não foi possível conectar ao servidor. Verifique sua conexão.");
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
+      setAlertVisible(true);
     } finally {
       setLoading(false);
     }
@@ -155,37 +176,47 @@ export default function EditScreen({ route, navigation }: Props) {
 
   const handleDelete = async () => {
     setLoading(true);
-    setError(null);
-  
     try {
       const token = await getToken();
 
-      const res = await fetch(`http://10.0.2.2:5000/pais/${id}`, {
+      const res = await fetch(`http://10.0.2.2:5000/${pathDelete}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       if (res.status === 204) {
-        Alert.alert("Conta Excluída", "A conta foi excluída com sucesso.", [
-          { text: "Ok", onPress: () => navigation.navigate("index") },
-        ]);
+        setAlertData({
+          icon: require("../../assets/icons/icon-check-gradiente.png"),
+          title: "Sucesso!",
+          message: "A conta foi excluída com sucesso",
+        });
+        setAlertVisible(true);
       } else {
         const result = await res.json();
-        setError(result.error || "Erro desconhecido.");
-        Alert.alert("Erro ao excluir conta", result.error || "Erro desconhecido.");
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
+        setAlertVisible(true);
       }
     } catch (err: any) {
-      setError(err.message);
-      Alert.alert("Erro inesperado", "Não foi possível conectar ao servidor. Verifique sua conexão.");
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
+      setAlertVisible(true);
     } finally {
       setLoading(false);
     }
   };
 
   const handleRedirect = () => {
-    navigation.navigate("profileParent")
+    navigation.navigate("profileParent");
   };
 
   return (
@@ -194,9 +225,24 @@ export default function EditScreen({ route, navigation }: Props) {
       resizeMode="cover"
       style={styles.container}
     >
+      {alertData && (
+        <CustomAlert
+          icon={alertData.icon}
+          visible={alertVisible}
+          title={alertData.title}
+          message={alertData.message}
+          dualAction={alertData.dual}
+          onClose={() => setAlertVisible(false)}
+          onRedirect={() => {
+            setAlertVisible(false);
+            navigation.navigate("profileParent");
+          }}
+          redirectLabel="Voltar"
+        />
+      )}
       <View style={styles.containerFoto}>
         <TouchableOpacity style={styles.btnVoltar} onPress={handleRedirect}>
-          <Image 
+          <Image
             style={styles.iconVoltar}
             source={require("../../assets/icons/icon-voltar.png")}
           />
@@ -241,7 +287,9 @@ export default function EditScreen({ route, navigation }: Props) {
           {loading ? (
             <ActivityIndicator size="large" color="#547d98" />
           ) : (
-            <Text style={[styles.btnText, {color: "#EF5B6A",}]}>Excluir Conta</Text>
+            <Text style={[styles.btnText, { color: "#EF5B6A" }]}>
+              Excluir Conta
+            </Text>
           )}
         </TouchableOpacity>
       </View>
@@ -259,18 +307,18 @@ const styles = StyleSheet.create({
     gap: height * 0.035,
   },
   containerFoto: {
-    width: "100%", 
-    flexDirection: "row", 
-    justifyContent: "center"
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
   },
   btnVoltar: {
-    position: "absolute", 
-    top: 0, 
-    left: width * 0.13
+    position: "absolute",
+    top: 0,
+    left: width * 0.13,
   },
   iconVoltar: {
     width: width * 0.08,
-    height: width * 0.08
+    height: width * 0.08,
   },
   btn: {
     display: "flex",

@@ -1,22 +1,27 @@
 import { View, Text, StyleSheet, Dimensions, ImageBackground } from "react-native";
 
-export default function ContainerMundoAtual() {
+type Props = {
+  filhoSelecionado: boolean;
+}
+
+export default function ContainerMundoAtual({ filhoSelecionado }:Props) {
   return (
     <ImageBackground 
     source={require("../../assets/images/retangulo-sombra1.png")}
     style={styles.container}>
       <Text style={styles.title}>Mundo Atual</Text>
+      {filhoSelecionado && (
       <View style={styles.teste}>
         <View style={styles.line} />
         <View style={styles.containerNumMundo}>
-          <Text style={styles.txtNumMundo}>10</Text>
+          <Text style={styles.txtNumMundo}>1</Text>
         </View>
-      </View>
+      </View>)}
     </ImageBackground>
   );
 }
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   line: {
@@ -24,7 +29,7 @@ const styles = StyleSheet.create({
     top: width * 0.07,
     width: "70%",
     borderWidth: 2,
-    borderColor: "#EF5B6A", // ou qualquer cor que você quiser
+    borderColor: "#80D25B", // ou qualquer cor que você quiser
     borderStyle: "dashed",
   },
   teste: {
@@ -35,10 +40,10 @@ const styles = StyleSheet.create({
     width: width * 0.5,
     aspectRatio: 199 / 108, // largura / altura da imagem original
     alignItems: "center",
-    justifyContent: "center",
+    paddingVertical: height * 0.02
   },
   containerNumMundo: {
-    backgroundColor: "#EF5B6A",
+    backgroundColor: "#80D25B",
     alignItems: "center",
     justifyContent: "center",
     width: width * 0.14,

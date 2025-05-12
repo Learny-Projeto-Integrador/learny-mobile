@@ -7,25 +7,35 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../../types";
 import ContainerEmotion from "@/components/ui/ContainerEmotion";
 import HeaderFase from "@/components/ui/HeaderFase";
+import ContainerInfo from "@/components/ui/ContainerInfo";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function AtvFeelingScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const [infoVisible, setInfoVisible] = useState<boolean>(false);
 
   return (
     <ScrollView style={styles.container}>
+      <ContainerInfo
+              message={
+                "Essa é a fase feeling. A primeira parte é um reconhecimento, para você descobrir quais são as emoções e seus respectivos dinos. Na segunda etapa você deve selecionar a emoção correta do dino entre as opções."
+              }
+              visible={infoVisible}
+              onClose={() => setInfoVisible(false)}
+            />
       <HeaderFase
         image={require("../../../assets/images/watch.png")}
         title="Look & Listen"
         description="Ligue os animais"
         color="#94ECA5"
+        onPressInfo={() => setInfoVisible(true)}
       />
       <View
         style={{

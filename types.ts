@@ -4,7 +4,7 @@ export type RootStackParamList = {
     register: { idParent?: string };
     transition: { name: string, type: string };
     profileParent: undefined;
-    edit: undefined;
+    edit: { userFilho?: string }
     home: undefined;
     profileChildren: undefined;
     iconChildren: undefined;
@@ -14,19 +14,24 @@ export type RootStackParamList = {
     ranking: undefined;
     atvFeeling: undefined;
     atvMatch: undefined;
-    atvMatchAnswer: { answer: {}};
+    atvMatchAnswer: { score: {}, answer: {}};
     atvListening: undefined;
     atvListeningArduino: undefined;
     atvMemory: undefined;
     atvConnect: undefined;
-    score: { score: {} }
+    score: { score: {} };
+    scoreFail: { score: {} };
   };
 
 export type AlertData = {
+  icon?: any;
   title: string;
   message: string;
+  dual?: boolean;
+  label?: string;
   score?: {
     pontos: number;
+    porcentagem: number;
     tempo: string;
   };
 }

@@ -1,7 +1,6 @@
 import { ImageBackground, Image, Text, StyleSheet, Dimensions, View } from 'react-native';
 
 import React, { useEffect } from 'react';
-import { useNavigation } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../types';
 

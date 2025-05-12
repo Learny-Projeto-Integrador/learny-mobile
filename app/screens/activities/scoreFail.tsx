@@ -16,22 +16,21 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../../types";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
-type RouteProp = NativeStackScreenProps<RootStackParamList, "score">;
+type RouteProp = NativeStackScreenProps<RootStackParamList, "scoreFail">;
 
-type Score = {
+type ScoreFail = {
   pontos: number;
-  porcentagem: number;
   tempo: number;
 };
 
-export default function ScoreScreen({ route }: RouteProp) {
+export default function ScoreFailScreen({ route }: RouteProp) {
   //@ts-ignore
-  const { score }: { score: Score } = route.params;
+  const { score }: { score: ScoreFail } = route.params;
   const navigation = useNavigation<NavigationProp>();
 
   return (
     <View style={styles.container}>
-      <View style={{ gap: height * 0.02 }}>
+      <View style={{ gap: height * 0.06 }}>
         <View
           style={{
             flexDirection: "row",
@@ -40,26 +39,13 @@ export default function ScoreScreen({ route }: RouteProp) {
           }}
         >
           <Image
-            source={require("../../../assets/images/confetes2.png")}
+            source={require("../../../assets/images/img-try-again.png")}
             style={{
-              width: width * 0.5,
+              width: width * 0.6,
               aspectRatio: 1 / 1,
             }}
           />
         </View>
-
-        <View>
-          <Text style={[styles.title, { color: "#EF5B6A" }]}>Congratu</Text>
-          <Text
-            style={[
-              styles.title,
-              { color: "#6CD2FF", marginTop: -height * 0.01 },
-            ]}
-          >
-            lations
-          </Text>
-        </View>
-
         <View
           style={{
             flexDirection: "row",
@@ -74,34 +60,12 @@ export default function ScoreScreen({ route }: RouteProp) {
             <Text style={styles.txtScore}>{score.pontos}</Text>
           </ImageBackground>
           <ImageBackground
-            source={require("../../../assets/images/porcentagem.png")}
+            source={require("../../../assets/images/tempo-azul.png")}
             style={[
               styles.containerScore,
               {
                 width: width * 0.35,
                 aspectRatio: 157 / 115,
-              },
-            ]}
-          >
-            <Text style={styles.txtScore}>{score.porcentagem}%</Text>
-          </ImageBackground>
-        </View>
-
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <ImageBackground
-            source={require("../../../assets/images/tempo.png")}
-            style={[
-              styles.containerScore,
-              {
-                width: width * 0.4,
-                aspectRatio: 167 / 99,
-                paddingBottom: height * 0.01,
               },
             ]}
           >
@@ -138,7 +102,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-end",
+    paddingBottom: height * 0.1,
   },
   title: {
     fontFamily: "Montserrat_700Bold",

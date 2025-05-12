@@ -2,7 +2,6 @@ import {
   ImageBackground,
   StyleSheet,
   Image,
-  Alert,
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
@@ -13,19 +12,23 @@ import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import type { AlertData, RootStackParamList } from "../../types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "register">;
 
 import DateInput from "@/components/ui/DateInput";
 import LoginInput from "@/components/ui/LoginInput";
+import { useGetToken } from "@/hooks/useGetToken";
+import CustomAlert from "@/components/ui/CustomAlert";
 
 export default function RegisterScreen({ route, navigation }: Props) {
   const { idParent } = route.params ?? {};
 
+  const [alertData, setAlertData] = useState<AlertData | null>(null);
+  const [alertVisible, setAlertVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const { getToken } = useGetToken();
 
   const [image, setImage] = useState<string | null>("");
   const [usuario, setUsuario] = useState("");
@@ -59,18 +62,8 @@ export default function RegisterScreen({ route, navigation }: Props) {
     }
   };
 
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      return token;
-    } catch (e) {
-      console.error("Erro ao buscar o token", e);
-    }
-  };
-
   const handleSubmit = async () => {
     setLoading(true);
-    setError(null);
 
     let registerRoute;
 
@@ -100,49 +93,54 @@ export default function RegisterScreen({ route, navigation }: Props) {
       const result = await res.json();
 
       if (res.ok) {
-        // Fazendo uma cópia do body sem a senha
-        const { senha, responsavel, ...bodyWithoutPassword } = body;
+        if (idParent) {
+          const bodyId: any = {
+            _id: result.dados._id,
+          };
 
-        // Adicionando a criança na lista de filhos do responsável
-        await fetch(`http://10.0.2.2:5000/pais/addcrianca`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(bodyWithoutPassword),
-        });
-        {
-          idParent
-            ? Alert.alert("Sucesso!", result, [
-                {
-                  text: "Voltar",
-                  onPress: () => {
-                    navigation.navigate("profileParent");
-                  },
-                },
-                { text: "OK" },
-              ])
-            : Alert.alert("Sucesso!", result, [
-                {
-                  text: "Fazer Login",
-                  onPress: () => {
-                    navigation.navigate("index");
-                  },
-                },
-                { text: "OK" },
-              ]);
+          // Adicionando a criança na lista de filhos do responsável
+          await fetch(`http://10.0.2.2:5000/pais/addcrianca`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(bodyId),
+          });
+
+          setAlertData({
+            icon: require("../../assets/icons/icon-check-gradiente.png"),
+            title: "Sucesso!",
+            message: result.message,
+            dual: true,
+            label: "Voltar",
+          });
+        } else {
+          setAlertData({
+            icon: require("../../assets/icons/icon-check-gradiente.png"),
+            title: "Sucesso!",
+            message: result.message,
+            dual: true,
+            label: "Fazer Login",
+          });
         }
+        setAlertVisible(true);
       } else {
-        setError(result.error);
-        Alert.alert("Erro no cadastro", result.error);
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
+        setAlertVisible(true);
       }
     } catch (err: any) {
-      setError(err.message);
-      Alert.alert(
-        "Erro inesperado",
-        "Não foi possível conectar ao servidor. Verifique sua conexão."
-      );
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
+      setAlertVisible(true);
     } finally {
       setLoading(false);
     }
@@ -162,6 +160,21 @@ export default function RegisterScreen({ route, navigation }: Props) {
       resizeMode="cover"
       style={styles.container}
     >
+      {alertData && (
+        <CustomAlert
+          icon={alertData.icon}
+          visible={alertVisible}
+          title={alertData.title}
+          message={alertData.message}
+          dualAction={alertData.dual}
+          onClose={() => setAlertVisible(false)}
+          onRedirect={() => {
+            setAlertVisible(false);
+            alertData.label == "Voltar" ? navigation.navigate("profileParent") : navigation.navigate("index")
+          }}
+          redirectLabel={alertData.label ? alertData.label : "Voltar"}
+        />
+      )}
       <TouchableOpacity onPress={pickImage}>
         {image ? (
           <Image source={{ uri: image }} style={styles.img} />

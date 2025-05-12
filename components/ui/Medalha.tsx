@@ -6,85 +6,56 @@ import {
   StyleSheet,
   ImageBackground,
   TouchableOpacity,
-  FlatList,
   Dimensions,
 } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function Medalha() {
-//   const [selectedChild, setSelectedChild] = useState<Filho | null>(null);
-//   const [dropdownVisible, setDropdownVisible] = useState(false);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState<string | null>(null);
+type MedalhaProps = {
+  fundo: any;
+  nome: string;
+  descricao: string;
+  date: string;
+}
 
-//   useEffect(() => {
-//     if (filhoSelecionado && Object.keys(filhoSelecionado).length > 0) {
-//       setSelectedChild(filhoSelecionado);
-//     }
-//   }, [filhoSelecionado]);
+const efeitos: any = {
+  "Iniciando!": "+50 pontos por fase",
+  "A todo o vapor!": "pontos x2 nas fases",
+  "Desvendando": "habilita as dicas nas faese"
+}
 
-//   const toggleDropdown = () => {
-//     setDropdownVisible(!dropdownVisible);
-//   };
+export default function Medalha({fundo, nome, descricao, date}: MedalhaProps) {
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const toggleDropdown = () => {
+    setDropdownVisible(!dropdownVisible);
+  };
 
-//   const selectFilho = async (filho: Filho) => {
-//     setSelectedChild(filho);
-//     setDropdownVisible(false);
-//     await fetchDadosFilho(filho);
-//   };
-
-//   const getToken = async () => {
-//     try {
-//       const token = await AsyncStorage.getItem("token");
-//       return token;
-//     } catch (e) {
-//       console.error("Erro ao buscar o token", e);
-//     }
-//   };
-
-//   const fetchDadosFilho = async (filho: any) => {
-//     setLoading(true);
-//     setError(null);
-
-//     const token = await getToken();
-
-//     try {
-//       const res = await fetch("http://10.0.2.2:5000/pais/filhoselecionado", {
-//         method: "PUT",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify(filho),
-//       });
-//     } catch (err: any) {
-//       setError(err.message);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+  function formatDate(isoString: string): string {
+  const dateObj = new Date(isoString);
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // mês começa em 0
+  const year = dateObj.getFullYear();
+  return `${day}/${month}/${year}`;
+}
 
   return (
     <ImageBackground
-      source={require("../../assets/images/fundo-gradiente-claro.png")}
+      source={fundo}
       style={styles.container}
     >
 
         <View>
           <TouchableOpacity
-            // onPress={toggleDropdown}
+            onPress={toggleDropdown}
             style={styles.containerFilho}
             activeOpacity={1}
           >
             <View style={styles.container}>
               <Image
-                source={ require("../../assets/images/avatar.png")}
+                source={ require("../../assets/icons/icon-medalha-branca.png")}
                 style={styles.avatar}
               />
               <View style={styles.info}>
                 <Text style={styles.label}>Mundo-1</Text>
-                <Text style={styles.nome}>A todo o vapor</Text>
+                <Text style={styles.nome}>{nome}</Text>
               </View>
               <Image
                 source={require("../../assets/icons/icon-dropdown.png")}
@@ -92,21 +63,18 @@ export default function Medalha() {
               />
             </View>
           </TouchableOpacity>
-          {/* {dropdownVisible && selectedChild && (
+          {dropdownVisible && (
             <View style={styles.dropdown}>
-              {filhos
-                .filter((f) => f.usuario !== selectedChild.usuario)
-                .map((filho) => (
-                  <TouchableOpacity
-                    key={filho.usuario}
-                    style={styles.item}
-                    onPress={() => selectFilho(filho)}
-                  >
-                    <Image source={filho.foto ? {uri: filho.foto} : require("../../assets/images/avatar.png")} style={styles.avatarMini} />
-                    <Text style={styles.nomeDropdown}>{filho.nome}</Text>
-                  </TouchableOpacity>
-                ))} */}
+              <View
+                style={styles.item}
+              >
+                <Text style={styles.desc}>{descricao}</Text>
+                <Text style={styles.desc}>Data: {formatDate(date)}</Text>
+                <Text style={styles.desc}>Efeito: {efeitos[nome]}</Text>
+              </View>
             </View>
+          )}
+        </View>
     </ImageBackground>
   );
 }
@@ -130,8 +98,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   avatar: {
-    width: width * 0.11,
-    aspectRatio: 62 / 62,
+    width: width * 0.08,
+    aspectRatio: 30 / 37,
     borderRadius: 50,
   },
   info: {
@@ -160,20 +128,18 @@ const styles = StyleSheet.create({
     paddingVertical: width * 0.02,
   },
   item: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: width * 0.034,
-    paddingVertical: width * 0.02,
+    paddingHorizontal: width * 0.04,
+    paddingVertical: width * 0.01,
   },
   btnAdd: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
   },
-  nomeDropdown: {
-    fontSize: width * 0.04,
+  desc: {
+    fontSize: width * 0.035,
     marginTop: width * 0.01,
-    fontFamily: "Montserrat_600SemiBold",
+    fontFamily: "Montserrat_500Medium",
     color: "#fff",
   },
 });

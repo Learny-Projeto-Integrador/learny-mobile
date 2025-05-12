@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { useCallback, useState } from "react";
+import { useEffect, useCallback, useState } from "react";
 import {
   ImageBackground,
   Image,
@@ -18,13 +18,25 @@ import type { RootStackParamList } from "../../types";
 import Header from "@/components/ui/Header";
 import NavigationBar from "@/components/ui/NavigationBar";
 import { useGetToken } from "@/hooks/useGetToken";
+import ContainerSelectMedalha from "@/components/ui/ContainerSelectMedalha";
+import CustomAlert from "@/components/ui/CustomAlert";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
+
+const imgMedalhas = {
+  "Iniciando!": require("../../assets/icons/medalha-verde.png"),
+  "A todo o vapor!": require("../../assets/icons/medalha-vermelha.png"),
+  Desvendando: require("../../assets/icons/medalha-azul.png"),
+};
 
 export default function WorldScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [data, setData] = useState<any>(null);
   const [dadosMundo, setDadosMundo] = useState<any>(null);
+
+  const [visible, setVisible] = useState(false);
+  const [alertData, setAlertData] = useState<AlertData | null>(null);
+  const [alertVisible, setAlertVisible] = useState(false);
 
   const { getToken } = useGetToken();
 
@@ -48,13 +60,26 @@ export default function WorldScreen() {
           numMedalhas: result.medalhas.length,
           rankingAtual: result.rankingAtual,
           mundos: result.mundos,
+          medalhas: result.medalhas,
+          medalhaSelecionada: result.medalhaSelecionada,
           avatar: result.avatar,
         });
       } else {
-        alert(result.error);
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
+        setAlertVisible(true);
       }
     } catch (err: any) {
-      alert(err.message);
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
+      setAlertVisible(true);
     }
   };
 
@@ -64,93 +89,130 @@ export default function WorldScreen() {
     }, [])
   );
 
+  useEffect(() => {
+    if (!visible) {
+      loadData(); // só recarrega quando o modal for fechado
+    }
+  }, [visible]);
+
   const getAvatarImage = (name: string) => {
     switch (name) {
-      case "avatar1": return require("../../assets/icons/avatars/avatar1.png");
-      case "avatar2": return require("../../assets/icons/avatars/avatar2.png");
-      default: return null;
+      case "avatar1":
+        return require("../../assets/icons/avatars/avatar1.png");
+      case "avatar2":
+        return require("../../assets/icons/avatars/avatar2.png");
+      default:
+        return null;
     }
   };
 
- const renderFases = () => {
-  if (!data?.mundos || data.mundos.length === 0) return null;
+  const renderFases = () => {
+    if (!data?.mundos || data.mundos.length === 0) return null;
 
-  const fases = data.mundos[0].fases;
-  let liberarProxima = true;
-  let ultimaFaseLiberadaIndex = -1;
+    const fases = data.mundos[0].fases;
+    let liberarProxima = true;
+    let ultimaFaseLiberadaIndex = -1;
 
-  const renderedFases = fases.map((faseObj, index) => {
-    const { fase, concluida, boss } = faseObj;
-    const faseLiberada = liberarProxima;
-    if (faseLiberada) ultimaFaseLiberadaIndex = index;
-    if (!concluida) liberarProxima = false;
+    const renderedFases = fases.map((faseObj, index) => {
+      const { fase, concluida, boss } = faseObj;
+      const faseLiberada = liberarProxima;
+      if (faseLiberada) ultimaFaseLiberadaIndex = index;
+      if (!concluida) liberarProxima = false;
 
-    const faseScreens = ["atvConnect", "atvMemory", "atvFeeling", "atvListening"];
-    const screenName = faseScreens[index] ?? "atvConnect";
+      const faseScreens = [
+        "atvConnect",
+        "atvMemory",
+        "atvFeeling",
+        "atvListeningArduino",
+      ];
+      const screenName = faseScreens[index] ?? "atvConnect";
 
-    if (boss) {
+      if (boss) {
+        return (
+          <TouchableOpacity
+            key={index}
+            onPress={
+              faseLiberada ? () => navigation.navigate(screenName) : undefined
+            }
+            disabled={!faseLiberada}
+            style={styles.viewIconBoss}
+          >
+            <Image
+              source={require("../../assets/icons/icon-boss.png")}
+              style={styles.boss}
+            />
+          </TouchableOpacity>
+        );
+      }
+
       return (
         <TouchableOpacity
           key={index}
-          onPress={faseLiberada ? () => navigation.navigate(screenName) : undefined}
+          onPress={
+            faseLiberada ? () => navigation.navigate(screenName) : undefined
+          }
           disabled={!faseLiberada}
-          style={styles.viewIconBoss}
+          style={[styles[`fase${fase}`], { flexDirection: "row" }]}
         >
-          <Image
-            source={require("../../assets/icons/icon-boss.png")}
-            style={styles.boss}
-          />
+          {faseLiberada ? (
+            <Text style={styles.fase}>{String(fase).padStart(2, "0")}</Text>
+          ) : (
+            <Image
+              source={require("../../assets/icons/icon-cadeado.png")}
+              style={{ width: width * 0.06, aspectRatio: 31 / 35 }}
+            />
+          )}
         </TouchableOpacity>
       );
-    }
+    });
+
+    return renderedFases;
+  };
+
+  const renderAvatar = () => {
+    if (!data?.avatar || !data.mundos) return null;
+
+    const faseAtual = data.mundos[0].faseAtual;
+
+    // Define o estilo baseado na faseAtual ou inicio
+    const avatarStyle =
+      faseAtual === ""
+        ? styles.inicio
+        : styles[`fase${faseAtual}`] || styles.inicio;
 
     return (
-      <TouchableOpacity
-        key={index}
-        onPress={faseLiberada ? () => navigation.navigate(screenName) : undefined}
-        disabled={!faseLiberada}
-        style={[styles[`fase${fase}`], { flexDirection: "row" }]}
-      >
-        {faseLiberada ? (
-          <Text style={styles.fase}>{String(fase).padStart(2, "0")}</Text>
-        ) : (
-          <Image
-            source={require("../../assets/icons/icon-cadeado.png")}
-            style={{ width: width * 0.06, aspectRatio: 31 / 35 }}
-          />
-        )}
-      </TouchableOpacity>
+      <View style={avatarStyle}>
+        <Image
+          source={getAvatarImage(data.avatar)}
+          style={{ width: width * 0.1, height: width * 0.1 }}
+          resizeMode="contain"
+        />
+      </View>
     );
-  });
-  
-  return renderedFases;
-};
-
-const renderAvatar = () => {
-  if (!data?.avatar || !data.mundos) return null;
-
-  const faseAtual = data.mundos[0].faseAtual;
-
-  // Define o estilo baseado na faseAtual ou inicio
-  const avatarStyle =
-    faseAtual === null
-      ? styles.inicio
-      : styles[`fase${faseAtual}`] || styles.inicio;
-
-  return (
-    <View style={avatarStyle}>
-      <Image
-        source={getAvatarImage(data.avatar)}
-        style={{ width: width * 0.1, height: width * 0.1 }}
-        resizeMode="contain"
-      />
-    </View>
-  );
-};
-
+  };
 
   return (
     <View style={styles.container}>
+      {alertData && (
+        <CustomAlert
+          icon={alertData.icon}
+          visible={alertVisible}
+          title={alertData.title}
+          message={alertData.message}
+          dualAction={false}
+          onClose={() => setAlertVisible(false)}
+        />
+      )}
+      {data && (
+        <ContainerSelectMedalha
+          medalhas={data?.medalhas}
+          visible={visible}
+          onClose={() => setVisible(false)}
+          onSelectMedalha={() => {
+            loadData(); // sua função de recarregamento aqui
+          }}
+        />
+      )}
       <ScrollView>
         <View style={{ flexDirection: "row" }}>
           <Image
@@ -167,16 +229,20 @@ const renderAvatar = () => {
             />
           ) : null}
           <View style={{ flexDirection: "row", alignItems: "center", gap: 50 }}>
-            <ImageBackground
-              source={require("../../assets/images/circulo-sombra.png")}
-              style={styles.fundoMedalha}
-            >
-              <Image
-                source={require("../../assets/images/medalha.png")}
-                style={styles.medalha}
-                resizeMode="contain"
-              />
-            </ImageBackground>
+            <TouchableOpacity onPress={() => setVisible(true)}>
+              <ImageBackground
+                source={require("../../assets/images/circulo-sombra.png")}
+                style={styles.fundoMedalha}
+              >
+                {data && (
+                  <Image
+                    source={imgMedalhas[data.medalhaSelecionada.nome]}
+                    style={styles.medalha}
+                    resizeMode="contain"
+                  />
+                )}
+              </ImageBackground>
+            </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate("home")}>
               <ImageBackground
                 source={require("../../assets/images/img-mundo1.png")}
@@ -199,8 +265,8 @@ const renderAvatar = () => {
               style={styles.trilha}
             />
           </View>
-          {renderAvatar()}
           {renderFases()}
+          {renderAvatar()}
         </View>
       </ScrollView>
       <View style={styles.navigationBarWrapper}>

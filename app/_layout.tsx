@@ -36,6 +36,7 @@ import AtvMemoryScreen from './screens/activities/atvMemory';
 import AtvConnectScreen from './screens/activities/atvConnect';
 import AtvMatchAnswerScreen from './screens/activities/atvMatchAnswer';
 import ScoreScreen from './screens/activities/score';
+import ScoreFailScreen from './screens/activities/scoreFail';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -165,6 +166,11 @@ export default function RootLayout() {
       <Stack.Screen
         name="score"
         component={ScoreScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="scoreFail"
+        component={ScoreFailScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

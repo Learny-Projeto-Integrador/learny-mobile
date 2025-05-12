@@ -4,25 +4,22 @@ import {
   Dimensions,
   View,
   Text,
-  ImageBackground,
   ScrollView,
-  Alert,
   TouchableOpacity,
 } from "react-native";
 
 import React, { useCallback, useEffect, useState } from "react";
-import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../../types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import ContainerActionChildren from "@/components/ui/ContainerActionChildren";
-import ContainerAcessibilidade from "@/components/ui/ContainerAcessibilidade";
-import GradientText from "@/components/ui/GradientText";
-import ContainerEmotion from "@/components/ui/ContainerEmotion";
+import type { AlertData, RootStackParamList } from "../../../types";
 import HeaderFase from "@/components/ui/HeaderFase";
 import SoundCard from "@/components/ui/SoundCard";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
+import CustomAlert from "@/components/ui/CustomAlert";
+import { useCheckMedalha } from "@/hooks/useChceckMedalha";
+import { useSubmitMission } from "@/hooks/useSubmitMission";
+import { useCheckAudio } from "@/hooks/useCheckAudio";
+import ContainerInfo from "@/components/ui/ContainerInfo";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -59,9 +56,49 @@ export default function AtvMatchScreen() {
   const [selectedDino, setSelectedDino] = useState<DinoOption | null>(null);
   const [shuffledOptions, setShuffledOptions] = useState<DinoOption[]>([]);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [alertDica, setAlertDica] = useState<AlertData | null>(null);
+  const [alertQueue, setAlertQueue] = useState<AlertData[]>([]);
+  const [currentAlert, setCurrentAlert] = useState<AlertData | null>(null);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [medalha, setMedalha] = useState<string | null>(null);
+  const [audio, setAudio] = useState<any>(null);
+  const [infoVisible, setInfoVisible] = useState<boolean>(false);
+
   const { getDuration } = useScreenDuration();
+  const { submitMission } = useSubmitMission();
+  const { checkMedalha } = useCheckMedalha();
+  const { checkAudio } = useCheckAudio();
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchMedalha = async () => {
+        const nomeMedalha = await checkMedalha();
+        setMedalha(nomeMedalha ?? null);
+      };
+      const fetchAudio = async () => {
+        const audio = await checkAudio();
+        setAudio(audio ?? null);
+      };
+      fetchAudio();
+      fetchMedalha();
+    }, [])
+  );
+
+  const showNextAlert = () => {
+    if (alertQueue.length > 0) {
+      const [next, ...rest] = alertQueue;
+      setCurrentAlert(next);
+      setAlertQueue(rest);
+      setAlertVisible(true);
+    } else {
+      setCurrentAlert(null);
+      // Vai para a tela de score quando todos os alertas forem fechados
+      navigation.navigate("score", {
+        //@ts-ignore
+        score: currentAlert?.score,
+      });
+    }
+  };
 
   useEffect(() => {
     // Escolhe um dino aleatoriamente
@@ -82,22 +119,40 @@ export default function AtvMatchScreen() {
     return array;
   }
 
-  const getToken = async (): Promise<string | null> => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      return token;
-    } catch (e) {
-      console.error("Erro ao buscar o token", e);
-      return null;
+  const handleHint = () => {
+    if (medalha != "Desvendando") {
+      setAlertDica({
+        icon: require("../../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message: 'Você precisa estar com a medalha "Desvendando"',
+      });
+      setAlertVisible(true);
+      return;
     }
+    if (!selectedDino || shuffledOptions.length <= 2) return;
+
+    const incorrectOptions = shuffledOptions.filter(
+      (opt) => opt.emotion !== selectedDino.emotion
+    );
+
+    const optionToRemove =
+      incorrectOptions[Math.floor(Math.random() * incorrectOptions.length)];
+
+    setShuffledOptions((prev) =>
+      prev.filter((opt) => opt.id !== optionToRemove.id)
+    );
   };
 
   const handleConfirm = async () => {
     const { durationFormatted } = getDuration();
-    const pontos = 100;
+    let pontos = 100;
+    let porcentagem = 100;
 
-    setLoading(true);
-    setError(null);
+    if (medalha == "Iniciando!") {
+      pontos += 50;
+    } else if (medalha == "A todo o vapor!") {
+      pontos = pontos * 2;
+    }
 
     const body: any = {
       pontos: pontos,
@@ -105,40 +160,59 @@ export default function AtvMatchScreen() {
       tipoFase: "feeling",
     };
 
-    try {
-      const token = await getToken();
+    const response = await submitMission(body);
 
-      const res = await fetch(`http://10.0.2.2:5000/criancas/faseconcluida`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-      });
+    if (response.success) {
+      const score = { pontos, porcentagem, tempo: durationFormatted };
+      const newAlerts: AlertData[] = [];
 
-      const result = await res.json();
-
-      if (res.ok) {
-        const score = { pontos: pontos, tempo: durationFormatted };
-        navigation.navigate("score", { score: score });
-      } else {
-        setError(result.error);
-        Alert.alert("Erro na atualização dos pontos", result.error);
+      if (response.result.missaoConcluida) {
+        newAlerts.push({
+          title: "Diária concluída!",
+          message: response.result.missaoConcluida.descricao,
+          score,
+        });
       }
-    } catch (err: any) {
-      setError(err.message);
-      Alert.alert(
-        "Erro inesperado",
-        "Não foi possível conectar ao servidor. Verifique sua conexão."
-      );
-    } finally {
-      setLoading(false);
+
+      if (
+        response.result.medalhasGanhas &&
+        response.result.medalhasGanhas.length > 0
+      ) {
+        for (const medalha of response.result.medalhasGanhas) {
+          newAlerts.push({
+            //@ts-ignore
+            icon: imgsMedalhas[medalha.nome],
+            title: "Medalha conquistada!",
+            message: medalha.descricao || "Você ganhou uma medalha!",
+            score,
+          });
+        }
+      }
+
+      if (newAlerts.length > 0) {
+        setCurrentAlert(newAlerts[0]);
+        setAlertQueue(newAlerts.slice(1)); // Apenas o restante entra na fila
+        setAlertVisible(true);
+      } else {
+        navigation.navigate("score", { score });
+      }
+    } else {
+      setCurrentAlert({
+        title: "Erro!",
+        message: response.error ? response.error : "Erro desconhecido",
+      });
+      setAlertQueue([]);
+      setAlertVisible(true);
     }
   };
 
   const handleError = (dino: DinoOption) => {
+    const { durationFormatted } = getDuration();
     navigation.navigate("atvMatchAnswer", {
+      score: {
+        pontos: 0,
+        tempo: durationFormatted,
+      },
       answer: {
         image: dino.image,
         emotion: dino.emotion,
@@ -148,11 +222,50 @@ export default function AtvMatchScreen() {
 
   return (
     <ScrollView style={styles.container}>
+      <ContainerInfo
+                    message={
+                      "Essa é a fase feeling. A primeira parte é um reconhecimento, para você descobrir quais são as emoções e seus respectivos dinos. Na segunda etapa você deve selecionar a emoção correta do dino entre as opções."
+                    }
+                    visible={infoVisible}
+                    onClose={() => setInfoVisible(false)}
+                  />
+      {currentAlert && (
+        <CustomAlert
+          icon={
+            currentAlert.icon ??
+            require("../../../assets/icons/icon-check-gradiente.png")
+          }
+          visible={alertVisible}
+          onClose={() => {
+            setAlertVisible(false);
+            showNextAlert();
+          }}
+          dualAction={false}
+          title={currentAlert.title}
+          message={currentAlert.message}
+        />
+      )}
+      {alertDica && (
+        <CustomAlert
+          icon={
+            alertDica.icon ??
+            require("../../../assets/icons/icon-check-gradiente.png")
+          }
+          visible={alertVisible}
+          onClose={() => {
+            setAlertVisible(false);
+          }}
+          dualAction={false}
+          title={alertDica.title}
+          message={alertDica.message}
+        />
+      )}
       <HeaderFase
         image={require("../../../assets/images/eye.png")}
         title="Look & Match"
         description="Veja a imagem e ligue a emoção correta"
         color="#6CD2FF"
+        onPressInfo={() => setInfoVisible(true)}
       />
 
       <View
@@ -180,7 +293,7 @@ export default function AtvMatchScreen() {
               text={
                 option.emotion.charAt(0).toUpperCase() + option.emotion.slice(1)
               }
-              source={option.source}
+              source={audio ? option.source : null}
               type="grande"
               onPress={() => {
                 if (option.emotion === selectedDino?.emotion) {
@@ -195,7 +308,8 @@ export default function AtvMatchScreen() {
         </View>
       </View>
 
-      <View
+      <TouchableOpacity
+        onPress={handleHint}
         style={{
           flexDirection: "row",
           justifyContent: "center",
@@ -206,7 +320,7 @@ export default function AtvMatchScreen() {
           source={require("../../../assets/icons/icon-dica.png")}
           style={styles.iconDica}
         />
-      </View>
+      </TouchableOpacity>
     </ScrollView>
   );
 }

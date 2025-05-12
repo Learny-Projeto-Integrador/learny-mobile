@@ -1,54 +1,42 @@
+import React, { useCallback, useState } from "react";
 import {
-  Image,
-  StyleSheet,
-  Dimensions,
+  ScrollView,
   View,
   Text,
-  ImageBackground,
-  ScrollView,
-  Alert,
   TouchableOpacity,
+  Image,
+  Dimensions,
+  StyleSheet,
+  ActivityIndicator,
 } from "react-native";
-
-import React, { useCallback, useEffect, useState } from "react";
-import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import ContainerActionChildren from "@/components/ui/ContainerActionChildren";
-import ContainerAcessibilidade from "@/components/ui/ContainerAcessibilidade";
-import GradientText from "@/components/ui/GradientText";
+import type { AlertData, RootStackParamList } from "../../types";
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+import { useGetToken } from "@/hooks/useGetToken";
+import GradientText from "@/components/ui/GradientText";
+import CustomAlert from "@/components/ui/CustomAlert";
+import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
+import ContainerAcessibilidade from "@/components/ui/ContainerAcessibilidade";
+import ContainerActionChildren from "@/components/ui/ContainerActionChildren";
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profileChildren">;
+
+const { width, height } = Dimensions.get("window");
 
 export default function ProfileChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [foto, setFoto] = useState("");
-  const [nome, setNome] = useState("");
-  const [pontos, setPontos] = useState(0);
-  const [nivel, setNivel] = useState(0);
-  const [progressoNivel, setProgressoNivel] = useState(0);
-  const [audio, setAudio] = useState(false);
+  const { getToken } = useGetToken();
 
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      return token;
-    } catch (e) {
-      console.error("Erro ao buscar o token", e);
-    }
-  };
+  const [data, setData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [alertData, setAlertData] = useState<AlertData | null>(null);
+  const [alertVisible, setAlertVisible] = useState(false);
 
   const loadData = async () => {
-    setLoading(true);
-    setError(null);
-
     try {
       const token = await getToken();
-
       const res = await fetch("http://10.0.2.2:5000/criancas", {
         method: "GET",
         headers: {
@@ -60,19 +48,25 @@ export default function ProfileChildrenScreen() {
       const result = await res.json();
 
       if (res.ok) {
-        setFoto(result.foto);
-        setNome(result.nome)
-        setPontos(result.pontos);
-        setNivel(Math.floor(pontos/100))
-        setProgressoNivel(pontos % 100)
-        setAudio(result.audio)
+        setData(result);
       } else {
-        setError(result.error);
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
+        setAlertVisible(true);
       }
     } catch (err: any) {
-      setError(err.message);
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
+      setAlertVisible(true);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -82,9 +76,9 @@ export default function ProfileChildrenScreen() {
     }, [])
   );
 
-  const atualizarAudio = async (audio: boolean, novoValor: boolean) => {
-    const token = await getToken();
+  const atualizarAudio = async (novoValor: boolean) => {
     try {
+      const token = await getToken();
       await fetch("http://10.0.2.2:5000/criancas", {
         method: "PUT",
         headers: {
@@ -93,44 +87,82 @@ export default function ProfileChildrenScreen() {
         },
         body: JSON.stringify({ audio: novoValor }),
       });
-      setAudio(novoValor);
+      setData((prev: any) => ({ ...prev, audio: novoValor }));
     } catch (e) {
-      console.error("Erro ao atualizar o audio", e);
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message: `Erro ao atualizar o áudio: ${e}`,
+      });
+      setAlertVisible(true);
     }
   };
 
   const handleSair = () => {
-    Alert.alert("Alerta", "Deseja mesmo sair?", [
-      { text: "Cancelar" },
-      { text: "Sair", onPress: () => navigation.navigate("index") },
-    ]);
+    setAlertData({
+      icon: require("../../assets/icons/icon-alerta.png"),
+      title: "Alerta",
+      message: "Deseja mesmo sair?",
+      dual: true,
+    });
+    setAlertVisible(true);
   };
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+        <ActivityIndicator size="large" color="#EF5B6A" />
+      </View>
+    );
+  }
+
+  if (!data) return null;
+
+  const { foto, nome, pontos, audio } = data;
+  const nivel = Math.floor(pontos / 100);
+  const progressoNivel = pontos % 100;
 
   return (
     <ScrollView style={styles.container}>
+      {alertData && (
+        <CustomAlert
+          icon={alertData.icon}
+          visible={alertVisible}
+          title={alertData.title}
+          message={alertData.message}
+          dualAction={alertData.dual}
+          onClose={() => setAlertVisible(false)}
+          onRedirect={() => {
+            setAlertVisible(false);
+            navigation.navigate("index");
+          }}
+          closeLabel="Cancelar"
+          redirectLabel="Sair"
+        />
+      )}
       <View style={styles.containerDados}>
-        <TouchableOpacity onPress={()=> navigation.navigate("iconChildren")} style={{flexDirection: "row"}}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("iconChildren")}
+          style={{ flexDirection: "row" }}
+        >
           <Image
             style={styles.foto}
-            source={
-              foto
-                ? { uri: foto }
-                : require("../../assets/images/joana.png")
-            }
+            source={foto ? { uri: foto } : require("../../assets/images/joana.png")}
           />
         </TouchableOpacity>
-        <View style={{ justifyContent: "center", gap: 10 }}>
+        <View style={{ justifyContent: "center" }}>
           <View style={styles.containerNameChildren}>
-            {nome
-              ? nome.split(" ").map((nome, index) => (
-                  <GradientText color1="#EF5B6A" color2="#6CD2FF" key={index} style={styles.nameText}>
-                    {nome}
-                  </GradientText>
-                ))
-              : ""}
-          </View>
-          <View style={{ marginTop: width * 0.1, flexDirection: "row" }}>
-            <Text style={styles.txt}>lvl {nivel}</Text>
+            {nome.split(" ").map((parte: string, index: number) => (
+              <GradientText
+                color1="#EF5B6A"
+                color2="#6CD2FF"
+                key={index}
+                style={styles.nameText}
+              >
+                {parte}
+              </GradientText>
+            ))}
+            <Text style={styles.txt}>lvl <Text style={[styles.txt, {fontSize: width * 0.05,fontFamily: "Montserrat_700Bold"}]}>{nivel}</Text></Text>
           </View>
         </View>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.viewVoltar}>
@@ -140,26 +172,39 @@ export default function ProfileChildrenScreen() {
           />
         </TouchableOpacity>
       </View>
+
       <View style={styles.containerWidgets}>
         <ProgressBarLvl pontos={pontos} progresso={progressoNivel} />
         <View style={{ gap: 10 }}>
-          <ContainerAcessibilidade audioAtivo={audio} onChangeAudio={(novoValor) => atualizarAudio(audio, novoValor)} />
-          <ContainerActionChildren icon={require("../../assets/icons/icon-estatisticas.png")} title="Estatísticas" />
-          <ContainerActionChildren icon={require("../../assets/icons/icon-quests.png")} title="Quests" />
-          <ContainerActionChildren icon={require("../../assets/icons/icon-notificacoes.png")} title="Notificações" />
-        </View>
-          <TouchableOpacity style={styles.viewBtn} onPress={handleSair}>
-            <Image
-              style={styles.btn}
-              source={require("../../assets/images/btn-sair.png")}
+          <ContainerAcessibilidade
+            audioAtivo={audio}
+            onChangeAudio={(novoValor) => atualizarAudio(novoValor)}
+          />
+          <ContainerActionChildren
+            icon={require("../../assets/icons/icon-estatisticas.png")}
+            title="Estatísticas"
+          />
+          <TouchableOpacity onPress={() => navigation.navigate("diary")}>
+            <ContainerActionChildren
+              icon={require("../../assets/icons/icon-quests.png")}
+              title="Quests"
             />
           </TouchableOpacity>
+          <ContainerActionChildren
+            icon={require("../../assets/icons/icon-notificacoes.png")}
+            title="Notificações"
+          />
+        </View>
+        <TouchableOpacity style={styles.viewBtn} onPress={handleSair}>
+          <Image
+            style={styles.btn}
+            source={require("../../assets/images/btn-sair.png")}
+          />
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
 }
-
-const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
@@ -169,8 +214,6 @@ const styles = StyleSheet.create({
     gap: width * 0.05,
   },
   containerDados: {
-    display: "flex",
-    height: "auto",
     flexDirection: "row",
     marginTop: height * 0.04,
     gap: width * 0.05,
@@ -181,19 +224,19 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   viewVoltar: {
-    position: "relative",
     alignItems: "center",
-    paddingLeft: width * 0.09,
-    paddingTop: height * 0.01
+    paddingTop: height * 0.01,
   },
   iconVoltar: {
     width: width * 0.075,
     height: width * 0.075,
   },
   containerNameChildren: {
-    height: width * 0.08,
+    width: width * 0.35,
+    justifyContent: "center",
   },
   nameText: {
+    marginTop: -height * 0.015,
     fontSize: width * 0.07,
     fontFamily: "Montserrat_800ExtraBold",
   },
@@ -209,9 +252,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   viewBtn: {
-    flexDirection: "row", 
-    marginTop: height * 0.02, 
-    marginBottom: height * 0.04, 
+    flexDirection: "row",
+    marginTop: height * 0.02,
+    marginBottom: height * 0.04,
   },
   btn: {
     width: width * 0.15,

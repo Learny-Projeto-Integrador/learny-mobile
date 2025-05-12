@@ -4,13 +4,11 @@ import {
   Dimensions,
   View,
   Text,
-  ImageBackground,
   ScrollView,
-  Alert,
   TouchableOpacity,
 } from "react-native";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
 import ContainerFilhos from "@/components/ui/ContainerFilhos";
 import ContainerActions from "@/components/ui/ContainerActions";
@@ -18,9 +16,11 @@ import ContainerFasesConcluidas from "@/components/ui/ContainerFasesConcluidas";
 import ContainerMundoAtual from "@/components/ui/ContainerMundoAtual";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../types";
+import type { AlertData, RootStackParamList } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import GradientText from "@/components/ui/GradientText";
+import { useGetToken } from "@/hooks/useGetToken";
+import CustomAlert from "@/components/ui/CustomAlert";
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -32,29 +32,21 @@ type ParentData = {
   foto: string;
   nome: string;
   filhos: [{}];
-  filhoSelecionado: {};
+  filhoSelecionado: {fasesConcluidas: any};
 };
 
 export default function ProfileParentScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [data, setData] = useState<ParentData | undefined>(undefined);
+  const [childrenData, setChildrenData] = useState<any>(undefined);
   const [id, setId] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      return token;
-    } catch (e) {
-      console.error("Erro ao buscar o token", e);
-    }
-  };
+  const [alertData, setAlertData] = useState<AlertData | null>(null);
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  const { getToken } = useGetToken();
 
   const loadData = async () => {
-    setLoading(true);
-    setError(null);
-
     try {
       const token = await getToken();
 
@@ -72,19 +64,76 @@ export default function ProfileParentScreen() {
         setData(result);
         setId(result._id.$oid);
       } else {
-        setError(result.error);
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
+        setAlertVisible(true);
       }
     } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
+      setAlertVisible(true);
+    }
+  };
+
+  const loadChildren = async () => {
+    try {
+      const token = await getToken();
+
+      const res = await fetch("http://10.0.2.2:5000/pais/criancas", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        setChildrenData(result);
+      } else {
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
+        setAlertVisible(true);
+      }
+    } catch (err: any) {
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
+      setAlertVisible(true);
     }
   };
 
   useFocusEffect(
     useCallback(() => {
       loadData();
+      loadChildren();
     }, [])
+  );
+
+  const normalizarId = (idObj: any) => (typeof idObj === "string" ? idObj : idObj?.$oid);
+
+  const filhoSelecionadoId = normalizarId(data?.filhoSelecionado);
+
+  const filhoSelecionado = childrenData?.find(
+    (child: any) => normalizarId(child._id) === filhoSelecionadoId
+  );
+
+  const outrosFilhos = childrenData?.filter(
+    (child: any) => normalizarId(child._id) !== filhoSelecionadoId
   );
 
   const handleRedirectCadastro = () => {
@@ -93,18 +142,37 @@ export default function ProfileParentScreen() {
   };
 
   const handleSair = () => {
-    Alert.alert("Alerta", "Deseja mesmo sair?", [
-      { text: "Cancelar" },
-      { text: "Sair", onPress: () => navigation.navigate("index") },
-    ]);
+    setAlertData({
+      icon: require("../../assets/icons/icon-alerta.png"),
+      title: "Alerta",
+      message: "Deseja mesmo sair?",
+      dual: true,
+    });
+    setAlertVisible(true);
   };
 
   const handleEdit = () => {
-    navigation.navigate("edit");
+    navigation.navigate("edit", { userFilho: undefined });
   };
 
   return (
     <ScrollView style={styles.container}>
+      {alertData && (
+        <CustomAlert
+          icon={alertData.icon}
+          visible={alertVisible}
+          title={alertData.title}
+          message={alertData.message}
+          dualAction={alertData.dual}
+          onClose={() => setAlertVisible(false)}
+          onRedirect={() => {
+            setAlertVisible(false);
+            navigation.navigate("index");
+          }}
+          closeLabel="Cancelar"
+          redirectLabel="Sair"
+        />
+      )}
       <View style={styles.containerDados}>
         <Image
           style={styles.foto}
@@ -118,7 +186,12 @@ export default function ProfileParentScreen() {
           <View style={styles.containerNameParent}>
             {data
               ? data.nome.split(" ").map((nome, index) => (
-                  <GradientText color1="#EF5B6A" color2="#6CD2FF" key={index} style={styles.nameText}>
+                  <GradientText
+                    color1="#EF5B6A"
+                    color2="#6CD2FF"
+                    key={index}
+                    style={styles.nameText}
+                  >
                     {nome}
                   </GradientText>
                 ))
@@ -127,7 +200,11 @@ export default function ProfileParentScreen() {
           <View style={styles.containerRankParent}>
             <View>
               <Text style={styles.txt}>You're a</Text>
-              <GradientText color1="#EF5B6A" color2="#6CD2FF" style={styles.txtRankParent}>
+              <GradientText
+                color1="#EF5B6A"
+                color2="#6CD2FF"
+                style={styles.txtRankParent}
+              >
                 SUPER PARENT
               </GradientText>
             </View>
@@ -142,18 +219,27 @@ export default function ProfileParentScreen() {
         </View>
       </View>
       <View style={styles.containerWidgets}>
-        <ProgressBarLvl progresso="50" />
+        <ProgressBarLvl pontos="0" progresso="0" />
         <ContainerFilhos
           //@ts-ignore
-          filhos={data ? data.filhos : [{}]}
+          filhos={childrenData ? childrenData : [{}]}
           //@ts-ignore
-          filhoSelecionado={data ? data.filhoSelecionado : {}}
+          filhoSelecionado={filhoSelecionado ? filhoSelecionado : {}}
           handleRedirect={handleRedirectCadastro}
+          onSelectFilho={async () => {
+            await loadData();
+            await loadChildren();
+          }}
         />
         <ContainerActions />
         <View style={styles.containerDadosFases}>
-          <ContainerMundoAtual />
-          <ContainerFasesConcluidas />
+          <ContainerMundoAtual
+            filhoSelecionado={!!filhoSelecionado}
+          />
+          <ContainerFasesConcluidas
+              filhoSelecionado={filhoSelecionado}
+              fasesConcluidas={filhoSelecionado?.fasesConcluidas}
+            />
         </View>
         <View style={styles.divider} />
         <View style={{ flexDirection: "row", gap: 40 }}>

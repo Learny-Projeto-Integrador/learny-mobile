@@ -1,25 +1,16 @@
-import { useState } from "react";
 import {
-  ImageBackground,
   Image,
   Text,
   StyleSheet,
   TouchableOpacity,
   View,
-  ActivityIndicator,
   Dimensions,
-  Alert,
   ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Header from "@/components/ui/Header";
-import ContainerMundo from "@/components/ui/ContainerMundo";
-import ContainerTimeAttack from "@/components/ui/ContainerTimeAttack";
 import NavigationBar from "@/components/ui/NavigationBar";
-import ContainerActions from "@/components/ui/ContainerActions";
 import ContainerMissoes from "@/components/ui/ContainerMissoes";
 import ContainerMedalhas from "@/components/ui/ContainerMedalhas";
 import GradientText from "@/components/ui/GradientText";
@@ -28,24 +19,6 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
 export default function DiaryScreen() {
   const navigation = useNavigation<NavigationProp>();
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const [usuario, setUsuario] = useState("");
-  const [senha, setSenha] = useState("");
-
-  const saveToken = async (token: string) => {
-    try {
-      await AsyncStorage.setItem("token", token);
-    } catch (e) {
-      console.error("Erro ao salvar o token", e);
-    }
-  };
-
-  const handleRedirect = () => {
-    navigation.navigate("register", { idParent: undefined });
-  };
 
   return (
     <View style={styles.container}>
@@ -58,10 +31,12 @@ export default function DiaryScreen() {
         <View style={styles.containerDados}>
             <View style={styles.containerTitle}>
                 <Text style={styles.title}>Diário</Text>
-                <Image
-                    source={require("../../assets/icons/icon-voltar2.png")}
-                    style={styles.iconFechar}
-                    />
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{flexDirection: "row"}}>
+                  <Image
+                      source={require("../../assets/icons/icon-voltar2.png")}
+                      style={styles.iconFechar}
+                      />
+                </TouchableOpacity>
             </View>
             <ContainerMissoes />
             <ContainerMedalhas />

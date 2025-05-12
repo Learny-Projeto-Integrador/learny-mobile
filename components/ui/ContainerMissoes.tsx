@@ -10,6 +10,7 @@ import {
 import { useState, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useGetToken } from "@/hooks/useGetToken";
 
 type MissaoDiaria = {
   nome: string;
@@ -28,22 +29,9 @@ export default function ContainerMissoes() {
   const [missoesDiarias, setMissoesDiarias] = useState<MissaoDiaria[] | null>(
     null
   );
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      return token;
-    } catch (e) {
-      console.error("Erro ao buscar o token", e);
-    }
-  };
+  const { getToken } = useGetToken();
 
   const loadData = async () => {
-    setLoading(true);
-    setError(null);
-
     try {
       const token = await getToken();
 
@@ -60,12 +48,10 @@ export default function ContainerMissoes() {
       if (res.ok) {
         setMissoesDiarias(result.missoesDiarias);
       } else {
-        setError(result.error);
+        alert(result.error);
       }
     } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      alert(err.message);
     }
   };
 

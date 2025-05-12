@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat_700Bold',
   },
   outerBar: {
-    width: width * 0.64,
+    width: width * 0.65,
     height: height * 0.02,
     overflow: "hidden",
     justifyContent: "center",

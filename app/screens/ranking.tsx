@@ -6,46 +6,75 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
-  ActivityIndicator,
   Dimensions,
-  Alert,
   ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import type { AlertData, RootStackParamList } from "../../types";
 import Header from "@/components/ui/Header";
-import ContainerMundo from "@/components/ui/ContainerMundo";
-import ContainerTimeAttack from "@/components/ui/ContainerTimeAttack";
 import NavigationBar from "@/components/ui/NavigationBar";
 import PodiumCard from "@/components/ui/PodiumCard";
 import OtherRanking from "@/components/ui/OtherRanking";
 import { useFocusEffect } from "expo-router";
+import { useGetToken } from "@/hooks/useGetToken";
+import CustomAlert from "@/components/ui/CustomAlert";
+import ContainerInfo from "@/components/ui/ContainerInfo";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
 export default function RankingScreen() {
   const navigation = useNavigation<NavigationProp>();
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [pontos, setPontos] = useState(0);
+  const [numMedalhas, setNumMedalhas] = useState(0);
+  const [rankingAtual, setRankingAtual] = useState(0);
 
   const [ranking, setRanking] = useState([{}]);
+  const [alertData, setAlertData] = useState<AlertData | null>(null);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [infoVisible, setInfoVisible] = useState<boolean>(false);
 
-  const getToken = async () => {
+  const { getToken } = useGetToken();
+
+  const loadData = async () => {
     try {
-      const token = await AsyncStorage.getItem("token");
-      return token;
-    } catch (e) {
-      console.error("Erro ao buscar o token", e);
+      const token = await getToken();
+
+      const res = await fetch("http://10.0.2.2:5000/criancas", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        setPontos(result.pontos);
+        setNumMedalhas(result.medalhas.length);
+        setRankingAtual(result.rankingAtual);
+      } else {
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
+        setAlertVisible(true);
+      }
+    } catch (err: any) {
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
+      setAlertVisible(true);
     }
   };
 
-  const loadData = async () => {
-    setLoading(true);
-    setError(null);
-
+  const loadRanking = async () => {
     try {
       const token = await getToken();
 
@@ -62,23 +91,64 @@ export default function RankingScreen() {
       if (res.ok) {
         setRanking(result);
       } else {
-        setError(result.error);
+        console.log(result)
+        setAlertData({
+          icon: require("../../assets/icons/icon-alerta.png"),
+          title: "Erro!",
+          message: result.error,
+        });
+        setAlertVisible(true);
       }
     } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setAlertData({
+        icon: require("../../assets/icons/icon-alerta.png"),
+        title: "Erro!",
+        message:
+          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+      });
+      setAlertVisible(true);
     }
   };
 
   useFocusEffect(
     useCallback(() => {
       loadData();
+      loadRanking();
     }, [])
   );
 
+  const podiumItems = [...ranking.slice(0, 3)];
+  while (podiumItems.length < 3) {
+    //@ts-ignore
+    podiumItems.push(null);
+  }
+
+  // Garante que sempre haja 4 elementos no other ranking
+  const otherItems = [...ranking.slice(3, 7)];
+  while (otherItems.length < 4) {
+    //@ts-ignore
+    otherItems.push(null);
+  }
+
   return (
     <View style={styles.container}>
+      <ContainerInfo
+        message={
+          "Esse é o ranking. Aqui você entrontra as crianças com a melhor pontuação do 1° ao 7° colocados. Os integrantes do pódios tem um cardespecias, mostrando a foto. Se você ainda não está aqui não fique triste, uma hora você consegue!"
+        }
+        visible={infoVisible}
+        onClose={() => setInfoVisible(false)}
+      />
+      {alertData && (
+        <CustomAlert
+          icon={alertData.icon}
+          visible={alertVisible}
+          title={alertData.title}
+          message={alertData.message}
+          dualAction={false}
+          onClose={() => setAlertVisible(false)}
+        />
+      )}
       <ScrollView>
         <View style={{ flexDirection: "row" }}>
           <Image
@@ -87,34 +157,42 @@ export default function RankingScreen() {
           />
         </View>
         <View style={styles.containerDados}>
-          <Header pontos={1000} medalhas={10} ranking={1} />
+          <Header
+            pontos={pontos}
+            medalhas={numMedalhas}
+            ranking={rankingAtual}
+          />
           <View style={styles.containerTitle}>
-            <Image
-              source={require("../../assets/icons/icon-info.png")}
-              style={styles.icon}
-            />
+            <TouchableOpacity
+              style={{ flexDirection: "row" }}
+              onPress={() => setInfoVisible(true)}
+            >
+              <Image
+                source={require("../../assets/icons/icon-info.png")}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
             <Text style={styles.title}>Ranking</Text>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity
+              style={{ flexDirection: "row" }}
+              onPress={() => navigation.goBack()}
+            >
               <Image
                 source={require("../../assets/icons/icon-voltar2.png")}
-                style={styles.icon}
+                style={[styles.icon, { width: width * 0.07 }]}
               />
             </TouchableOpacity>
           </View>
           <View style={{ gap: 40 }}>
-            {ranking?.slice(0, 3).map((item: any, index: number) => {
-              if (!item || item.nome === undefined || item.pontos === undefined)
-                return null;
-              return (
-                <PodiumCard
-                  key={item.id || index}
-                  image={item.foto.toString()}
-                  name={item.nome.toString()}
-                  rank={(index + 1)}
-                  points={item.pontos}
-                />
-              );
-            })}
+            {podiumItems.map((item: any, index: any) => (
+              <PodiumCard
+                key={item?.id || `empty-${index}`}
+                image={item?.foto?.toString() || ""}
+                name={item?.nome?.toString() || ""}
+                rank={index + 1}
+                points={item?.pontos !== undefined ? item.pontos.toString() : ""}
+              />
+            ))}
           </View>
 
           <ImageBackground
@@ -138,22 +216,14 @@ export default function RankingScreen() {
                 paddingVertical: height * 0.04,
               }}
             >
-              {ranking?.slice(3, 7).map((item: any, index: number) => {
-                if (
-                  !item ||
-                  item.nome === undefined ||
-                  item.pontos === undefined
-                )
-                  return null;
-                return (
-                  <OtherRanking
-                    key={item.id || index}
-                    name={item.nome.toString()}
-                    rank={(index + 4).toString()}
-                    points={item.pontos.toString()}
-                  />
-                );
-              })}
+              {otherItems.map((item: any, index: any) => (
+                <OtherRanking
+                  key={item?.id || `empty-other-${index}`}
+                  name={item?.nome?.toString() || ""}
+                  rank={(index + 4).toString()}
+                  points={item?.pontos !== undefined ? item.pontos.toString() : ""}
+                />
+              ))}
             </View>
           </ImageBackground>
         </View>
