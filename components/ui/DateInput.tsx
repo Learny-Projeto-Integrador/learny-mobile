@@ -45,7 +45,7 @@ export default function DateInput({ valor, atualizar }: DateInputProps) {
         <TextInput style={styles.inputDate} value={valor} editable={false} />
         <Image
           style={styles.iconDate}
-          source={require("../../assets/images/icon-data.png")}
+          source={require("../../assets/icons/icon-data.png")}
         />
       </Pressable>
 
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   iconDate: {
     width: width * 0.064,
-    height: height * 0.04,
+    aspectRatio: 30 / 33,
   },
   datePicker: {
     display: "flex",

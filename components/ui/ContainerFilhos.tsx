@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,12 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../../types";
+import { useGetToken } from "@/hooks/useGetToken";
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 type Filho = {
   usuario: string;
@@ -22,17 +28,20 @@ type ContainerFilhosProps = {
   filhos: Filho[];
   filhoSelecionado: Filho | null;
   handleRedirect: () => void;
+  onSelectFilho: () => void;
 };
 
 export default function ContainerFilhos({
   filhos,
   filhoSelecionado,
   handleRedirect,
+  onSelectFilho,
 }: ContainerFilhosProps) {
   const [selectedChild, setSelectedChild] = useState<Filho | null>(null);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigation = useNavigation<NavigationProp>();
 
   useEffect(() => {
     if (filhoSelecionado && Object.keys(filhoSelecionado).length > 0) {
@@ -47,17 +56,10 @@ export default function ContainerFilhos({
   const selectFilho = async (filho: Filho) => {
     setSelectedChild(filho);
     setDropdownVisible(false);
-    await fetchDadosFilho(filho);
+    return await fetchDadosFilho(filho);
   };
 
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      return token;
-    } catch (e) {
-      console.error("Erro ao buscar o token", e);
-    }
-  };
+  const { getToken } = useGetToken();
 
   const fetchDadosFilho = async (filho: any) => {
     setLoading(true);
@@ -74,10 +76,21 @@ export default function ContainerFilhos({
         },
         body: JSON.stringify(filho),
       });
+      return res;
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSelect = async (filho: any) => {
+    const res = await selectFilho(filho);
+
+    if (res?.ok) {
+      onSelectFilho(); // Só chama depois do sucesso
+    } else {
+      console.error("Erro ao atualizar filho selecionado.");
     }
   };
 
@@ -115,7 +128,7 @@ export default function ContainerFilhos({
               </Text>
             </View>
             <Image
-              source={require("../../assets/images/icon-plus.png")}
+              source={require("../../assets/icons/icon-plus.png")}
               style={styles.dropdownIcon}
             />
           </View>
@@ -140,10 +153,24 @@ export default function ContainerFilhos({
                 <Text style={styles.label}>Filho:</Text>
                 <Text style={styles.nome}>{selectedChild.nome}</Text>
               </View>
-              <Image
-                source={require("../../assets/images/icon-dropdown.png")}
-                style={styles.dropdownIcon}
-              />
+              <View style={{ flexDirection: "row" }}>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("edit", {
+                      userFilho: selectedChild.usuario,
+                    })
+                  }
+                >
+                  <Image
+                    source={require("../../assets/icons/icon-edit-pequeno.png")}
+                    style={styles.dropdownIcon}
+                  />
+                </TouchableOpacity>
+                <Image
+                  source={require("../../assets/icons/icon-dropdown.png")}
+                  style={styles.dropdownIcon}
+                />
+              </View>
             </View>
           </TouchableOpacity>
           {dropdownVisible && selectedChild && (
@@ -154,9 +181,16 @@ export default function ContainerFilhos({
                   <TouchableOpacity
                     key={filho.usuario}
                     style={styles.item}
-                    onPress={() => selectFilho(filho)}
+                    onPress={() => handleSelect(filho)}
                   >
-                    <Image source={filho.foto ? {uri: filho.foto} : require("../../assets/images/avatar.png")} style={styles.avatarMini} />
+                    <Image
+                      source={
+                        filho.foto
+                          ? { uri: filho.foto }
+                          : require("../../assets/images/avatar.png")
+                      }
+                      style={styles.avatarMini}
+                    />
                     <Text style={styles.nomeDropdown}>{filho.nome}</Text>
                   </TouchableOpacity>
                 ))}
@@ -203,6 +237,7 @@ const styles = StyleSheet.create({
     marginRight: width * 0.03,
   },
   info: {
+    width: width * 0.47,
     marginTop: width * 0.02,
     justifyContent: "center",
     paddingLeft: width * 0.04,
