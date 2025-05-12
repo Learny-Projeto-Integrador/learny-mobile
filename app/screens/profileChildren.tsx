@@ -147,7 +147,7 @@ export default function ProfileChildrenScreen() {
         >
           <Image
             style={styles.foto}
-            source={foto ? { uri: foto } : require("../../assets/images/joana.png")}
+            source={foto ? { uri: foto } : require("../../assets/images/logo.png")}
           />
         </TouchableOpacity>
         <View style={{ justifyContent: "center" }}>
