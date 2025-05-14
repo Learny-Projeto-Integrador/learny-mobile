@@ -7,6 +7,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -71,6 +72,22 @@ export default function AtvListeningArduinoScreen() {
   const { submitMission } = useSubmitMission();
   const { checkMedalha } = useCheckMedalha();
   const { checkAudio } = useCheckAudio();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch('http://10.0.2.2:5000/button')
+        .then(res => res.json())
+        .then(data => {
+          if (data.button) {
+            Alert.alert('Botão pressionado', data.button);
+            // aqui você pode acionar animações, mudar tela, etc
+          }
+        })
+        .catch(err => console.log(err));
+    }, 1000); // a cada segundo
+
+    return () => clearInterval(interval);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

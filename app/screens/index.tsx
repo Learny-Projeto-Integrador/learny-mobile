@@ -16,6 +16,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { AlertData, RootStackParamList } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomAlert from "@/components/ui/CustomAlert";
+import { useArduino } from "@/contexts/ArduinoContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
@@ -29,16 +30,22 @@ export default function LoginScreen() {
   const [senha, setSenha] = useState("");
 
   const [alertData, setAlertData] = useState<AlertData | null>(null);
-    const [alertVisible, setAlertVisible] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
 
-  const saveToken = async (token: string) => {
+  const { setArduinoOnline } = useArduino();
+
+  const saveLoginInfo = async (token: string, arduino: boolean) => {
     try {
-      await AsyncStorage.setItem("token", token);
+      await AsyncStorage.multiSet([
+        ["token", token],
+        ["arduino", JSON.stringify(arduino)],
+      ]);
+      setArduinoOnline(arduino); // Atualiza o contexto
     } catch (e) {
-      console.error("Erro ao salvar o token", e);
+      console.error("Erro ao salvar dados de login", e);
     }
   };
-
+  
   const handleLogin = async () => {
     setLoading(true);
 
@@ -57,7 +64,7 @@ export default function LoginScreen() {
       const result = await res.json();
 
       if (res.ok) {
-        saveToken(result.access_token);
+        await saveLoginInfo(result.access_token, result.arduino);
         navigation.navigate("transition", {
           name: result.nome,
           type: result.tipo,
