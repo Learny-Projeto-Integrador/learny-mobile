@@ -67,28 +67,13 @@ export default function AtvListeningArduinoScreen() {
   const [medalha, setMedalha] = useState<string | null>(null);
   const [audio, setAudio] = useState<any>(null);
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
+  const [botaoPressionado, setBotaoPressionado] = useState("")
 
   const { getDuration } = useScreenDuration();
   const { submitMission } = useSubmitMission();
   const { checkMedalha } = useCheckMedalha();
   const { checkAudio } = useCheckAudio();
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetch('http://10.0.2.2:5000/button')
-        .then(res => res.json())
-        .then(data => {
-          if (data.button) {
-            Alert.alert('Botão pressionado', data.button);
-            // aqui você pode acionar animações, mudar tela, etc
-          }
-        })
-        .catch(err => console.log(err));
-    }, 1000); // a cada segundo
-
-    return () => clearInterval(interval);
-  }, []);
-
+  
   useFocusEffect(
     useCallback(() => {
       const fetchMedalha = async () => {
@@ -221,6 +206,33 @@ export default function AtvListeningArduinoScreen() {
     }
   };
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch('http://10.0.2.2:5000/button')
+        .then(res => res.json())
+        .then(data => {
+          console.log(data.button)
+          if (!data.button || shuffledOptions.length < 3 || !correctOption) return;
+  
+          const buttonMap: { [key: string]: AudioOption } = {
+            ok1: shuffledOptions[0],
+            ok2: shuffledOptions[1],
+            ok3: shuffledOptions[2],
+          };
+  
+          const selectedOption = buttonMap[data.button];
+  
+          if (!selectedOption) return;
+  
+          const isCorrect = selectedOption.id === correctOption.id;
+          handleConfirm(isCorrect);
+        })
+        .catch(err => console.log(err));
+    }, 1000);
+  
+    return () => clearInterval(interval);
+  }, [shuffledOptions, correctOption]);
+
   if (!correctOption) return null;
 
   return (
@@ -307,13 +319,12 @@ export default function AtvListeningArduinoScreen() {
         <Text style={styles.txtPergunta}>Que animal é esse?</Text>
         <View style={{ flexDirection: "row", gap: width * 0.05 }}>
           {shuffledOptions.map((option) => (
-            <TouchableOpacity
+            <View
               key={option.id}
-              onPress={() => handleConfirm(option.id === correctOption.id)}
               style={styles.retanguloAnimal}
             >
               <Text style={styles.txtEmocao}>{option.label}</Text>
-            </TouchableOpacity>
+            </View>
           ))}
         </View>
       </View>
