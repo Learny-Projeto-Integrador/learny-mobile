@@ -4,6 +4,7 @@ import { View, Text, TextInput, StyleSheet, Dimensions } from "react-native";
 interface LoginInputProps {
     campo: string;
     valor: string;
+    edit?: boolean;
     atualizar: (valor: string) => void;
 }
 export default function LoginInput(props: LoginInputProps) {
@@ -17,6 +18,7 @@ export default function LoginInput(props: LoginInputProps) {
             value={props.valor}
             placeholderTextColor="#757575"
             secureTextEntry={props.campo === "Senha" || props.campo === "Nova Senha"}
+            editable={!props.edit}
         />
         </View>
     );

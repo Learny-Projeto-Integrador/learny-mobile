@@ -44,14 +44,14 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   card: {
+    width: width * 0.5,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: "space-between",
     borderWidth: 5,
     borderRadius: 15,
     paddingVertical: height * 0.01,
-    paddingHorizontal: width * 0.05,
-    width: width * 0.5,
-    gap: width * 0.1,
+    paddingHorizontal: width * 0.04,
   },
   rank: {
     fontFamily: 'Montserrat_700Bold',
