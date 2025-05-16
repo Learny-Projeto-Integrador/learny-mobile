@@ -212,7 +212,7 @@ export default function AtvListeningArduinoScreen() {
         fetch("http://10.0.2.2:5000/button")
           .then((res) => res.json())
           .then((data) => {
-            console.log(data.button)
+            console.log(data.button);
             if (!data.button || shuffledOptions.length < 3 || !correctOption)
               return;
 
@@ -321,11 +321,19 @@ export default function AtvListeningArduinoScreen() {
       <View style={styles.viewRespostas}>
         <Text style={styles.txtPergunta}>Que animal é esse?</Text>
         <View style={{ flexDirection: "row", gap: width * 0.05 }}>
-          {shuffledOptions.map((option) => (
-            <View key={option.id} style={styles.retanguloAnimal}>
-              <Text style={styles.txtEmocao}>{option.label}</Text>
-            </View>
-          ))}
+          {shuffledOptions.map((option, index) => {
+            const borderColors = ["#EF5B6A", "#FFB300", "#6CD2FF"]; // vermelho, amarelo, azul
+            const borderColor = borderColors[index % borderColors.length];
+
+            return (
+              <View
+                key={option.id}
+                style={[styles.retanguloAnimal, { borderColor }]}
+              >
+                <Text style={styles.txtEmocao}>{option.label}</Text>
+              </View>
+            );
+          })}
         </View>
       </View>
 
