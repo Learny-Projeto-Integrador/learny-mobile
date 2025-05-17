@@ -140,7 +140,7 @@ export default function AtvConnectScreen() {
     let pontos = (correctCount / 4) * 100;
 
     if (medalha == "Iniciando!") {
-      pontos += 50;
+      pontos != 0 ? pontos += 50 : null
     } else if (medalha == "A todo o vapor!") {
       pontos = pontos * 2;
     }

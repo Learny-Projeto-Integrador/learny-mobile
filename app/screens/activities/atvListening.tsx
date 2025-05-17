@@ -144,7 +144,7 @@ export default function AtvListeningScreen() {
     let porcentagem = parseFloat(((correct / sounds.length) * 100).toFixed(0)); // arredondado
 
     if (medalha == "Iniciando!") {
-      pontos += 50;
+      pontos != 0 ? pontos += 50 : null
     } else if (medalha == "A todo o vapor!") {
       pontos = pontos * 2;
     }

@@ -143,13 +143,13 @@ export default function AtvMatchScreen() {
     );
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = async (pontosFase: number, porcentagemFase: number) => {
     const { durationFormatted } = getDuration();
-    let pontos = 100;
-    let porcentagem = 100;
+    let pontos = pontosFase;
+    let porcentagem = porcentagemFase;
 
     if (medalha == "Iniciando!") {
-      pontos += 50;
+      pontos != 0 ? pontos += 50 : null
     } else if (medalha == "A todo o vapor!") {
       pontos = pontos * 2;
     }
@@ -297,7 +297,9 @@ export default function AtvMatchScreen() {
               type="grande"
               onPress={() => {
                 if (option.emotion === selectedDino?.emotion) {
-                  handleConfirm();
+                  let porcentagem = 100;
+                  let pontos = 100;
+                  handleConfirm(pontos, porcentagem);
                 } else {
                   //@ts-ignore
                   handleError(selectedDino);
