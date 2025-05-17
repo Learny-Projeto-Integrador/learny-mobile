@@ -10,12 +10,6 @@ type Medalhas = {
   descricao: string;
 };
 
-const imgsMedalhas = {
-  "Iniciando!": require("../../assets/images/fundo-gradiente-verde.png"),
-  "A todo o vapor!": require("../../assets/images/fundo-gradiente-marrom.png"),
-  "Desvendando": require("../../assets/images/fundo-gradiente-azul.png"),
-};
-
 export default function ContainerMedalhas() {
   const [medalhas, setMedalhas] = useState<Medalhas[] | null>(
       null
@@ -57,7 +51,7 @@ export default function ContainerMedalhas() {
       <Text style={styles.title}>Medalhas</Text>
       <View style={{gap: 20, marginTop: 20}}>
         {medalhas?.map((medalha, index) => (
-          <Medalha key={index} fundo={imgsMedalhas[medalha.nome]} nome={medalha.nome} descricao={medalha.descricao} date={medalha.dataConquista}/>
+          <Medalha key={index} nome={medalha.nome} descricao={medalha.descricao} date={medalha.dataConquista}/>
         ))}
       </View>
     </View>

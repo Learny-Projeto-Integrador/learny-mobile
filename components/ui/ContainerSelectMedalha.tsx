@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Image,
   Dimensions,
+  ImageBackground,
 } from "react-native";
 
 type ContainerSelectMedalhaProps = {
@@ -20,9 +21,9 @@ type ContainerSelectMedalhaProps = {
 };
 
 const imgMedalhas = {
-  "Iniciando!": require("../../assets/icons/medalha-verde.png"),
-  "A todo o vapor!": require("../../assets/icons/medalha-vermelha.png"),
-  "Desvendando": require("../../assets/icons/medalha-azul.png"),
+  "Iniciando!": require("../../assets/icons/medalha-verde-select.png"),
+  "A todo o vapor!": require("../../assets/icons/medalha-vermelha-select.png"),
+  Desvendando: require("../../assets/icons/medalha-azul-select.png"),
 };
 
 export default function ContainerSelectMedalha({
@@ -53,7 +54,6 @@ export default function ContainerSelectMedalha({
       const result = await res.json();
 
       if (res.ok) {
-
         onClose();
       } else {
         alert(result.error);
@@ -65,32 +65,41 @@ export default function ContainerSelectMedalha({
   return (
     <Modal transparent visible={visible} animationType="fade">
       <TouchableOpacity style={styles.overlay} onPress={onClose}>
-        <View style={styles.medalBox}>
-          {medalhas.map((medalha, index) => {
-            const imgSource = imgMedalhas[medalha.nome];
+        <ImageBackground
+          source={require("../../assets/images/fundo-gradiente.png")}
+          style={styles.medalBox}
+        >
+          {medalhas.length === 0 ? (
+            <Text style={[styles.message, { color: "#fff" }]}>
+              Ainda não possui medalhas
+            </Text>
+          ) : (
+            medalhas.map((medalha, index) => {
+              const imgSource = imgMedalhas[medalha.nome];
 
-            // Verifica se existe uma imagem para o nome da medalha
-            if (!imgSource) {
-              return null; // ignora se não tiver imagem
-            }
+              if (!imgSource) return null;
 
-            return (
-              <TouchableOpacity
-                key={index}
-                style={{ flexDirection: "row", marginHorizontal: 10 }}
-                onPress={() => {changeMedalha(medalha); onSelectMedalha(medalha);}}
-              >
-                <Image
-                  source={imgSource}
-                  style={{
-                    width: width * 0.12,
-                    aspectRatio: 38 / 48,
+              return (
+                <TouchableOpacity
+                  key={index}
+                  style={{ flexDirection: "row", marginHorizontal: 10 }}
+                  onPress={() => {
+                    changeMedalha(medalha);
+                    onSelectMedalha(medalha);
                   }}
-                />
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+                >
+                  <Image
+                    source={imgSource}
+                    style={{
+                      width: width * 0.16,
+                      aspectRatio: 1 / 1,
+                    }}
+                  />
+                </TouchableOpacity>
+              );
+            })
+          )}
+        </ImageBackground>
       </TouchableOpacity>
     </Modal>
   );
@@ -107,40 +116,20 @@ const styles = StyleSheet.create({
   medalBox: {
     backgroundColor: "#fff",
     flexDirection: "row",
-    marginTop: height * 0.19,
-    paddingVertical: height * 0.02,
-    borderRadius: 40,
-    width: "80%",
-    height: height * 0.16,
-    gap: width * 0.05,
     alignItems: "center",
     justifyContent: "center",
-  },
-  title: {
-    color: "#fff",
-    fontFamily: "Montserrat_700Bold",
-    fontSize: width * 0.055,
-    marginVertical: height * 0.01,
+    width: width * 0.85,
+    height: height * 0.16,
+    marginTop: height * 0.19,
+    paddingVertical: height * 0.02,
+    gap: width * 0.05,
+    borderRadius: 40,
+    overflow: "hidden",
   },
   message: {
     color: "#fff",
     fontFamily: "Montserrat_500Medium",
     fontSize: width * 0.04,
-    marginBottom: 20,
     textAlign: "center",
-  },
-  button: {
-    backgroundColor: "#9E9E9E",
-    width: width * 0.3,
-    height: height * 0.06,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 15,
-  },
-  buttonText: {
-    color: "white",
-    fontFamily: "Montserrat_700Bold",
-    fontSize: width * 0.04,
-    fontWeight: "bold",
   },
 });

@@ -141,13 +141,16 @@ export default function AtvListeningScreen() {
       if (assignments[sound.id] === sound.expectedLabel) correct++;
     });
     let pontos = (correct / sounds.length) * 100;
-    let porcentagem = (correct / sounds.length) * 100;
+    let porcentagem = parseFloat(((correct / sounds.length) * 100).toFixed(0)); // arredondado
 
     if (medalha == "Iniciando!") {
       pontos += 50;
     } else if (medalha == "A todo o vapor!") {
       pontos = pontos * 2;
     }
+
+    // Arredonda pontos depois dos bônus/multiplicadores
+    pontos = parseFloat(pontos.toFixed(0));
 
     const body: any = {
       pontos: pontos,

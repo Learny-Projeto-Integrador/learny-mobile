@@ -14,68 +14,86 @@ type MedalhaProps = {
   nome: string;
   descricao: string;
   date: string;
-}
+};
 
 const efeitos: any = {
   "Iniciando!": "+50 pontos por fase",
   "A todo o vapor!": "pontos x2 nas fases",
-  "Desvendando": "habilita as dicas nas faese"
-}
+  "Desvendando": "habilita as dicas nas fases",
+};
 
-export default function Medalha({fundo, nome, descricao, date}: MedalhaProps) {
+const cores: any = {
+  "Iniciando!": {
+    corEscura: "#34A103",
+    corClara: "#80D25B",
+  },
+  "A todo o vapor!": {
+    corEscura: "#CB4653",
+    corClara: "#DE7E88",
+  },
+  Desvendando: {
+    corEscura: "#439FC7",
+    corClara: "#6CD2FF",
+  },
+};
+
+export default function Medalha({
+  fundo,
+  nome,
+  descricao,
+  date,
+}: MedalhaProps) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
   };
 
   function formatDate(isoString: string): string {
-  const dateObj = new Date(isoString);
-  const day = String(dateObj.getDate()).padStart(2, '0');
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // mês começa em 0
-  const year = dateObj.getFullYear();
-  return `${day}/${month}/${year}`;
-}
+    const dateObj = new Date(isoString);
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0"); // mês começa em 0
+    const year = dateObj.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
 
   return (
-    <ImageBackground
-      source={fundo}
-      style={styles.container}
+    <View
+      style={[styles.container, { backgroundColor: cores[nome].corEscura }]}
     >
-
-        <View>
-          <TouchableOpacity
-            onPress={toggleDropdown}
-            style={styles.containerFilho}
-            activeOpacity={1}
+      <View>
+        <TouchableOpacity
+          onPress={toggleDropdown}
+          style={styles.containerFilho}
+          activeOpacity={1}
+        >
+          <View style={styles.container}>
+            <Image
+              source={require("../../assets/icons/icon-medalha-branca.png")}
+              style={styles.avatar}
+            />
+            <View style={styles.info}>
+              <Text style={styles.label}>Mundo-1</Text>
+              <Text style={styles.nome}>{nome}</Text>
+            </View>
+            <Image
+              source={require("../../assets/icons/icon-dropdown.png")}
+              style={styles.dropdownIcon}
+            />
+          </View>
+        </TouchableOpacity>
+        {dropdownVisible && (
+          <View
+            style={[styles.dropdown, { backgroundColor: cores[nome].corClara }]}
           >
-            <View style={styles.container}>
-              <Image
-                source={ require("../../assets/icons/icon-medalha-branca.png")}
-                style={styles.avatar}
-              />
-              <View style={styles.info}>
-                <Text style={styles.label}>Mundo-1</Text>
-                <Text style={styles.nome}>{nome}</Text>
-              </View>
-              <Image
-                source={require("../../assets/icons/icon-dropdown.png")}
-                style={styles.dropdownIcon}
-              />
+            <View style={styles.item}>
+              <Text style={styles.desc}>{descricao}</Text>
+              <Text style={styles.desc}>Data: {formatDate(date)}</Text>
+              <Text style={styles.desc}>Efeito: {efeitos[nome]}</Text>
             </View>
-          </TouchableOpacity>
-          {dropdownVisible && (
-            <View style={styles.dropdown}>
-              <View
-                style={styles.item}
-              >
-                <Text style={styles.desc}>{descricao}</Text>
-                <Text style={styles.desc}>Data: {formatDate(date)}</Text>
-                <Text style={styles.desc}>Efeito: {efeitos[nome]}</Text>
-              </View>
-            </View>
-          )}
-        </View>
-    </ImageBackground>
+          </View>
+        )}
+      </View>
+    </View>
   );
 }
 
@@ -124,7 +142,6 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     width: "100%",
-    backgroundColor: "rgba(255,255,255,0.2)",
     paddingVertical: width * 0.02,
   },
   item: {
