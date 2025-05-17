@@ -13,6 +13,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { AlertData, RootStackParamList } from "../../types";
 import { useGetToken } from "@/hooks/useGetToken";
 import GradientText from "@/components/ui/GradientText";
+import CustomAlert from "@/components/ui/CustomAlert";
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -20,6 +21,7 @@ type NavigationProp = NativeStackNavigationProp<
 >;
 
 type ChildData = {
+  nome: string;
   foto: string;
   avatar: string;
 };
@@ -140,6 +142,16 @@ export default function IconChildrenScreen() {
 
   return (
     <View style={styles.container}>
+      {alertData && (
+        <CustomAlert
+          icon={alertData.icon}
+          visible={alertVisible}
+          onClose={() => setAlertVisible(false)}
+          dualAction={false}
+          title={alertData.title}
+          message={alertData.message}
+        />
+      )}
       <View style={styles.scrollContainer}>
         <View style={styles.fundoBranco}></View>
         <View style={styles.containerDados}>
@@ -160,7 +172,7 @@ export default function IconChildrenScreen() {
                 color2="#5c94b3"
                 style={styles.nameText}
               >
-                Joana
+                {data ? data.nome : ""}
               </GradientText>
             </View>
             <TouchableOpacity

@@ -259,7 +259,7 @@ export default function EditScreen({ route, navigation }: Props) {
         </TouchableOpacity>
       </View>
       <View style={styles.viewInputs}>
-        <LoginInput campo="Usuário" valor={usuario} atualizar={setUsuario} />
+        <LoginInput campo="Usuário" valor={usuario} atualizar={setUsuario} edit={true} />
         <LoginInput campo="Nova Senha" valor={senha} atualizar={setSenha} />
         <LoginInput campo="Nome" valor={nome} atualizar={setNome} />
         <LoginInput campo="Email" valor={email} atualizar={setEmail} />

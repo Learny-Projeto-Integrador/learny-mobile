@@ -54,6 +54,8 @@ export default function AtvMemoryScreen() {
   const navigation = useNavigation<NavigationProp>();
 
   const generateCards = () => {
+    if (audio === null) return [];
+    
     const cards = [];
     let id = 1;
     for (const animal of Object.keys(animalCards)) {
@@ -109,6 +111,13 @@ export default function AtvMemoryScreen() {
       fetchMedalha();
     }, [])
   );
+
+  useEffect(() => {
+    if (audio !== null) {
+      setCards(generateCards());
+    }
+  }, [audio]);
+  
 
   const showNextAlert = () => {
     if (alertQueue.length > 0) {

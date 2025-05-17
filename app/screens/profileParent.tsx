@@ -219,7 +219,7 @@ export default function ProfileParentScreen() {
         </View>
       </View>
       <View style={styles.containerWidgets}>
-        <ProgressBarLvl pontos="0" progresso="0" />
+        <ProgressBarLvl pontos="50" progresso="50" />
         <ContainerFilhos
           //@ts-ignore
           filhos={childrenData ? childrenData : [{}]}
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   fireIcon: {
     width: width * 0.09,
     height: width * 0.09,
-    tintColor: "orange",
+    tintColor: "#EF5B6A",
   },
   containerNameParent: {
     height: width * 0.08,

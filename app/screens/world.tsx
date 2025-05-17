@@ -7,19 +7,18 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
-  ActivityIndicator,
   Dimensions,
-  Alert,
   ScrollView,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../types";
+import type { AlertData, RootStackParamList } from "../../types";
 import Header from "@/components/ui/Header";
 import NavigationBar from "@/components/ui/NavigationBar";
 import { useGetToken } from "@/hooks/useGetToken";
 import ContainerSelectMedalha from "@/components/ui/ContainerSelectMedalha";
 import CustomAlert from "@/components/ui/CustomAlert";
+import { useArduino } from "@/contexts/ArduinoContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
@@ -39,6 +38,8 @@ export default function WorldScreen() {
   const [alertVisible, setAlertVisible] = useState(false);
 
   const { getToken } = useGetToken();
+
+  const { arduinoOnline } = useArduino();
 
   const loadData = async () => {
     try {
@@ -123,7 +124,7 @@ export default function WorldScreen() {
         "atvConnect",
         "atvMemory",
         "atvFeeling",
-        "atvListeningArduino",
+        arduinoOnline ? "atvListeningArduino" : "atvListening",
       ];
       const screenName = faseScreens[index] ?? "atvConnect";
 

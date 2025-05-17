@@ -7,6 +7,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -66,6 +67,7 @@ export default function AtvListeningArduinoScreen() {
   const [medalha, setMedalha] = useState<string | null>(null);
   const [audio, setAudio] = useState<any>(null);
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
+  const [botaoPressionado, setBotaoPressionado] = useState("");
 
   const { getDuration } = useScreenDuration();
   const { submitMission } = useSubmitMission();
@@ -204,6 +206,36 @@ export default function AtvListeningArduinoScreen() {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const interval = setInterval(() => {
+        fetch("http://10.0.2.2:5000/button")
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data.button);
+            if (!data.button || shuffledOptions.length < 3 || !correctOption)
+              return;
+
+            const buttonMap: { [key: string]: AudioOption } = {
+              ok1: shuffledOptions[0],
+              ok2: shuffledOptions[1],
+              ok3: shuffledOptions[2],
+            };
+
+            const selectedOption = buttonMap[data.button];
+
+            if (!selectedOption) return;
+
+            const isCorrect = selectedOption.id === correctOption.id;
+            handleConfirm(isCorrect);
+          })
+          .catch((err) => console.log(err));
+      }, 1000);
+
+      return () => clearInterval(interval); // Limpa o intervalo ao sair da tela
+    }, [shuffledOptions, correctOption])
+  );
+
   if (!correctOption) return null;
 
   return (
@@ -289,15 +321,19 @@ export default function AtvListeningArduinoScreen() {
       <View style={styles.viewRespostas}>
         <Text style={styles.txtPergunta}>Que animal é esse?</Text>
         <View style={{ flexDirection: "row", gap: width * 0.05 }}>
-          {shuffledOptions.map((option) => (
-            <TouchableOpacity
-              key={option.id}
-              onPress={() => handleConfirm(option.id === correctOption.id)}
-              style={styles.retanguloAnimal}
-            >
-              <Text style={styles.txtEmocao}>{option.label}</Text>
-            </TouchableOpacity>
-          ))}
+          {shuffledOptions.map((option, index) => {
+            const borderColors = ["#EF5B6A", "#FFB300", "#6CD2FF"]; // vermelho, amarelo, azul
+            const borderColor = borderColors[index % borderColors.length];
+
+            return (
+              <View
+                key={option.id}
+                style={[styles.retanguloAnimal, { borderColor }]}
+              >
+                <Text style={styles.txtEmocao}>{option.label}</Text>
+              </View>
+            );
+          })}
         </View>
       </View>
 

@@ -174,7 +174,7 @@ export default function ProfileChildrenScreen() {
       </View>
 
       <View style={styles.containerWidgets}>
-        <ProgressBarLvl pontos={pontos} progresso={progressoNivel} />
+        <ProgressBarLvl pontos={progressoNivel} progresso={progressoNivel} />
         <View style={{ gap: 10 }}>
           <ContainerAcessibilidade
             audioAtivo={audio}

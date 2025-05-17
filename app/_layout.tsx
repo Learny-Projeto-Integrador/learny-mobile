@@ -37,6 +37,7 @@ import AtvConnectScreen from './screens/activities/atvConnect';
 import AtvMatchAnswerScreen from './screens/activities/atvMatchAnswer';
 import ScoreScreen from './screens/activities/score';
 import ScoreFailScreen from './screens/activities/scoreFail';
+import { ArduinoProvider } from '@/contexts/ArduinoContext';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -67,112 +68,114 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="index"
-        component={LoginScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="register"
-        component={RegisterScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="transition"
-        component={TransitionScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="profileParent"
-        component={ProfileParentScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="edit"
-        component={EditScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="home"
-        component={HomeScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="profileChildren"
-        component={ProfileChildrenScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="iconChildren"
-        component={IconChildrenScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="world"
-        component={WorldScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="menu"
-        component={MenuScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="diary"
-        component={DiaryScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="ranking"
-        component={RankingScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="atvFeeling"
-        component={AtvFeelingScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="atvMatch"
-        component={AtvMatchScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="atvMatchAnswer"
-        component={AtvMatchAnswerScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="atvListening"
-        component={AtvListeningScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="atvListeningArduino"
-        component={AtvListeningArduinoScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="atvMemory"
-        component={AtvMemoryScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="atvConnect"
-        component={AtvConnectScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="score"
-        component={ScoreScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="scoreFail"
-        component={ScoreFailScreen}
-        options={{headerShown: false}}
-      />
-    </Stack.Navigator>
+    <ArduinoProvider>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="index"
+          component={LoginScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="register"
+          component={RegisterScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="transition"
+          component={TransitionScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="profileParent"
+          component={ProfileParentScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="edit"
+          component={EditScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="home"
+          component={HomeScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="profileChildren"
+          component={ProfileChildrenScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="iconChildren"
+          component={IconChildrenScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="world"
+          component={WorldScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="menu"
+          component={MenuScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="diary"
+          component={DiaryScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="ranking"
+          component={RankingScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="atvFeeling"
+          component={AtvFeelingScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="atvMatch"
+          component={AtvMatchScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="atvMatchAnswer"
+          component={AtvMatchAnswerScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="atvListening"
+          component={AtvListeningScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="atvListeningArduino"
+          component={AtvListeningArduinoScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="atvMemory"
+          component={AtvMemoryScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="atvConnect"
+          component={AtvConnectScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="score"
+          component={ScoreScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="scoreFail"
+          component={ScoreFailScreen}
+          options={{headerShown: false}}
+        />
+      </Stack.Navigator>
+    </ArduinoProvider>
   );
 }
