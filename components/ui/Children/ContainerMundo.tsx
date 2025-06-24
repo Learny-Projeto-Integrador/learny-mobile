@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import ProgressBarMundo from "./ProgressBarMundo";
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../../types';
+import type { RootStackParamList } from '@/types';
 import { useNavigation } from "expo-router";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

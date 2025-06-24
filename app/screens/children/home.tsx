@@ -8,10 +8,9 @@ import {
   ScrollView,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import type { AlertData } from "../../../types";
+import type { AlertData } from "@/types";
 import Header from "@/components/ui/Children/Header";
 import ContainerMundo from "@/components/ui/Children/ContainerMundo";
-import ContainerTimeAttack from "@/components/ui/Children/ContainerTimeAttack";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
 import CustomAlert from "@/components/ui/CustomAlert";
 import { useGetToken } from "@/hooks/useGetToken";
@@ -141,7 +140,18 @@ export default function HomeScreen() {
           >
             <View style={styles.divider} />
           </View>
-          <ContainerTimeAttack />
+          <View style={styles.viewTimeAttack}>
+            <ImageBackground
+              style={styles.viewTimeAttack}
+              //@ts-ignore
+              source={require("@/assets/images/fundo-timeAttack.png")}
+            >
+              <View style={styles.containerDadosTimeAttack}>
+                <Text style={styles.txtTimeAttack}>Modo de Jogo</Text>
+                <Text style={styles.txtBlack}>Time Attack</Text>
+              </View>
+            </ImageBackground>
+          </View>
         </ImageBackground>
       </ScrollView>
       <View style={styles.navigationBarWrapper}>
@@ -192,5 +202,26 @@ const styles = StyleSheet.create({
     width: "80%",
     height: width * 0.015,
     borderRadius: 15,
+  },
+  viewTimeAttack: {
+    width: width * 0.8,
+    aspectRatio: 423 / 142,
+  },
+  containerDadosTimeAttack: {
+      width: width * 0.85,
+      height: "100%",
+      justifyContent: "center",
+      paddingLeft: width * 0.06,
+  },
+  txtTimeAttack: {
+    color: "#fff",
+    fontSize: width * 0.035,
+    fontFamily: 'Montserrat_600SemiBold_Italic',
+  },
+  txtBlack: {
+    color: "#fff",
+    width: width * 0.3,
+    fontSize: width * 0.05,
+    fontFamily: 'Montserrat_900Black',
   },
 });

@@ -10,7 +10,7 @@ import {
 import React, { useCallback, useState } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "../../../types";
+import type { AlertData, RootStackParamList } from "@/types";
 import { useGetToken } from "@/hooks/useGetToken";
 import GradientText from "@/components/ui/GradientText";
 import CustomAlert from "@/components/ui/CustomAlert";

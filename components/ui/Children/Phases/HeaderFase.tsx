@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../../../types";
+import type { RootStackParamList } from "@/types";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 

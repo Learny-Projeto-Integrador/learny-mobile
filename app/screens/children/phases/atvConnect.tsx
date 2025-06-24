@@ -11,7 +11,7 @@ import {
 import Svg, { Line } from "react-native-svg";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "../../../../types";
+import type { AlertData, RootStackParamList } from "@/types";
 import AnimalCard from "@/components/ui/Children/Phases/AnimalCard";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import { useScreenDuration } from "@/hooks/useScreenDuration";

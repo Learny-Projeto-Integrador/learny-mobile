@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "../../../types";
+import type { AlertData, RootStackParamList } from "@/types";
 import Header from "@/components/ui/Children/Header";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
 import { useGetToken } from "@/hooks/useGetToken";

@@ -12,7 +12,7 @@ import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "../../types";
+import type { AlertData, RootStackParamList } from "@/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "edit">;
 

@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "../../types";
+import type { AlertData, RootStackParamList } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomAlert from "@/components/ui/CustomAlert";
 import { useArduino } from "@/contexts/ArduinoContext";

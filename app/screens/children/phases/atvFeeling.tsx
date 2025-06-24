@@ -10,7 +10,7 @@ import {
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../../../types";
+import type { RootStackParamList } from "@/types";
 import ContainerEmotion from "@/components/ui/Children/Phases/ContainerEmotion";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";

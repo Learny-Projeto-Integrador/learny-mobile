@@ -14,7 +14,7 @@ import SoundCard from "@/components/ui/Children/Phases/SoundCard";
 
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../../../../types";
+import type { RootStackParamList } from "@/types";
 import GradientText from "@/components/ui/GradientText";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

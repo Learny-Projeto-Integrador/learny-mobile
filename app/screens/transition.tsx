@@ -2,7 +2,7 @@ import { ImageBackground, Image, Text, StyleSheet, Dimensions, View } from 'reac
 
 import React, { useEffect } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../types';
+import type { RootStackParamList } from '@/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'transition'>;
 

@@ -14,7 +14,7 @@ import {
   Montserrat_900Black,
 } from '@expo-google-fonts/montserrat';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { RootStackParamList } from '../types';
+import { RootStackParamList } from '@/types';
 
 import LoginScreen from './screens';
 import RegisterScreen from './screens/register';

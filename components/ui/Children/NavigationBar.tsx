@@ -1,7 +1,7 @@
 import { Dimensions, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useNavigation } from "expo-router";
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../../types';
+import type { RootStackParamList } from '@/types';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 

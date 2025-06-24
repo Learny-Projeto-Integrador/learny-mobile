@@ -16,7 +16,7 @@ import ContainerFasesConcluidas from "@/components/ui/Parent/ContainerFasesConcl
 import ContainerMundoAtual from "@/components/ui/Parent/ContainerMundoAtual";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "../../../types";
+import type { AlertData, RootStackParamList } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import GradientText from "@/components/ui/GradientText";
 import { useGetToken } from "@/hooks/useGetToken";
