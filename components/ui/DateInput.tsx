@@ -45,7 +45,7 @@ export default function DateInput({ valor, atualizar }: DateInputProps) {
         <TextInput style={styles.inputDate} value={valor} editable={false} />
         <Image
           style={styles.iconDate}
-          source={require("../../assets/icons/icon-data.png")}
+          source={require("@/assets/icons/icon-data.png")}
         />
       </Pressable>
 

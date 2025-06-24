@@ -109,7 +109,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
           });
 
           setAlertData({
-            icon: require("../../assets/icons/icon-check-gradiente.png"),
+            icon: require("@/assets/icons/icon-check-gradiente.png"),
             title: "Sucesso!",
             message: result.message,
             dual: true,
@@ -117,7 +117,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
           });
         } else {
           setAlertData({
-            icon: require("../../assets/icons/icon-check-gradiente.png"),
+            icon: require("@/assets/icons/icon-check-gradiente.png"),
             title: "Sucesso!",
             message: result.message,
             dual: true,
@@ -127,7 +127,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
         setAlertVisible(true);
       } else {
         setAlertData({
-          icon: require("../../assets/icons/icon-alerta.png"),
+          icon: require("@/assets/icons/icon-alerta.png"),
           title: "Erro!",
           message: result.error,
         });
@@ -135,7 +135,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
       }
     } catch (err: any) {
       setAlertData({
-        icon: require("../../assets/icons/icon-alerta.png"),
+        icon: require("@/assets/icons/icon-alerta.png"),
         title: "Erro!",
         message:
           "Não foi possível conectar ao servidor. Verifique sua conexão.",
@@ -156,7 +156,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
 
   return (
     <ImageBackground
-      source={require("../../assets/images/fundo-gradiente.png")}
+      source={require("@/assets/images/fundo-gradiente.png")}
       resizeMode="cover"
       style={styles.container}
     >
@@ -181,7 +181,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
         ) : (
           <Image
             style={styles.btnImg}
-            source={require("../../assets/icons/icone-camera.png")}
+            source={require("@/assets/icons/icone-camera.png")}
           />
         )}
       </TouchableOpacity>

@@ -96,7 +96,7 @@ export default function EditScreen({ route, navigation }: Props) {
         setDataNasc(result.dataNasc);
       } else {
         setAlertData({
-          icon: require("../../assets/icons/icon-alerta.png"),
+          icon: require("@/assets/icons/icon-alerta.png"),
           title: "Erro!",
           message: result.error,
         });
@@ -104,7 +104,7 @@ export default function EditScreen({ route, navigation }: Props) {
       }
     } catch (err: any) {
       setAlertData({
-        icon: require("../../assets/icons/icon-alerta.png"),
+        icon: require("@/assets/icons/icon-alerta.png"),
         title: "Erro!",
         message:
           "Não foi possível conectar ao servidor. Verifique sua conexão.",
@@ -147,7 +147,7 @@ export default function EditScreen({ route, navigation }: Props) {
 
       if (res.ok) {
         setAlertData({
-          icon: require("../../assets/icons/icon-check-gradiente.png"),
+          icon: require("@/assets/icons/icon-check-gradiente.png"),
           title: "Sucesso!",
           message: result.message,
           dual: true,
@@ -155,7 +155,7 @@ export default function EditScreen({ route, navigation }: Props) {
         setAlertVisible(true);
       } else {
         setAlertData({
-          icon: require("../../assets/icons/icon-alerta.png"),
+          icon: require("@/assets/icons/icon-alerta.png"),
           title: "Erro!",
           message: result.error,
         });
@@ -163,7 +163,7 @@ export default function EditScreen({ route, navigation }: Props) {
       }
     } catch (err: any) {
       setAlertData({
-        icon: require("../../assets/icons/icon-alerta.png"),
+        icon: require("@/assets/icons/icon-alerta.png"),
         title: "Erro!",
         message:
           "Não foi possível conectar ao servidor. Verifique sua conexão.",
@@ -188,7 +188,7 @@ export default function EditScreen({ route, navigation }: Props) {
 
       if (res.status === 204) {
         setAlertData({
-          icon: require("../../assets/icons/icon-check-gradiente.png"),
+          icon: require("@/assets/icons/icon-check-gradiente.png"),
           title: "Sucesso!",
           message: "A conta foi excluída com sucesso",
         });
@@ -196,7 +196,7 @@ export default function EditScreen({ route, navigation }: Props) {
       } else {
         const result = await res.json();
         setAlertData({
-          icon: require("../../assets/icons/icon-alerta.png"),
+          icon: require("@/assets/icons/icon-alerta.png"),
           title: "Erro!",
           message: result.error,
         });
@@ -204,7 +204,7 @@ export default function EditScreen({ route, navigation }: Props) {
       }
     } catch (err: any) {
       setAlertData({
-        icon: require("../../assets/icons/icon-alerta.png"),
+        icon: require("@/assets/icons/icon-alerta.png"),
         title: "Erro!",
         message:
           "Não foi possível conectar ao servidor. Verifique sua conexão.",
@@ -221,7 +221,7 @@ export default function EditScreen({ route, navigation }: Props) {
 
   return (
     <ImageBackground
-      source={require("../../assets/images/fundo-gradiente.png")}
+      source={require("@/assets/images/fundo-gradiente.png")}
       resizeMode="cover"
       style={styles.container}
     >
@@ -244,7 +244,7 @@ export default function EditScreen({ route, navigation }: Props) {
         <TouchableOpacity style={styles.btnVoltar} onPress={handleRedirect}>
           <Image
             style={styles.iconVoltar}
-            source={require("../../assets/icons/icon-voltar.png")}
+            source={require("@/assets/icons/icon-voltar.png")}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={pickImage}>
@@ -253,7 +253,7 @@ export default function EditScreen({ route, navigation }: Props) {
           ) : (
             <Image
               style={styles.btnImg}
-              source={require("../../assets/icons/icone-camera.png")}
+              source={require("@/assets/icons/icone-camera.png")}
             />
           )}
         </TouchableOpacity>

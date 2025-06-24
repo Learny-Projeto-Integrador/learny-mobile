@@ -71,7 +71,7 @@ export default function LoginScreen() {
         });
       } else {
         setAlertData({
-          icon: require("../../assets/icons/icon-alerta.png"),
+          icon: require("@/assets/icons/icon-alerta.png"),
           title: "Erro!",
           message: result.error,
         });
@@ -79,7 +79,7 @@ export default function LoginScreen() {
       }
     } catch (err: any) {
       setAlertData({
-        icon: require("../../assets/icons/icon-alerta.png"),
+        icon: require("@/assets/icons/icon-alerta.png"),
         title: "Erro!",
         message:
           "Não foi possível conectar ao servidor. Verifique sua conexão.",
@@ -96,7 +96,7 @@ export default function LoginScreen() {
 
   return (
     <ImageBackground
-      source={require("../../assets/images/fundo-gradiente.png")}
+      source={require("@/assets/images/fundo-gradiente.png")}
       resizeMode="cover"
       style={styles.container}
     >
@@ -112,7 +112,7 @@ export default function LoginScreen() {
       )}
       <Image
         style={styles.logo}
-        source={require("../../assets/images/logo.png")}
+        source={require("@/assets/images/logo.png")}
       />
       <View style={styles.viewTitle}>
         <Text style={styles.title}>Entre em sua conta Learny</Text>

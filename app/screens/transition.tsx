@@ -20,7 +20,7 @@ export default function TransitionScreen({ route, navigation }: Props) {
 
   return (
     <ImageBackground 
-      source={require('../../assets/images/fundo-transicao.png')} 
+      source={require('@/assets/images/fundo-transicao.png')} 
       resizeMode="cover" 
       style={styles.container}
       >
