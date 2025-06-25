@@ -20,6 +20,7 @@ import { useFocusEffect } from "expo-router";
 import { useGetToken } from "@/hooks/useGetToken";
 import CustomAlert from "@/components/ui/CustomAlert";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
+import { useLoadData } from "@/hooks/useLoadData";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
@@ -36,43 +37,7 @@ export default function RankingScreen() {
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
 
   const { getToken } = useGetToken();
-
-  const loadData = async () => {
-    try {
-      const token = await getToken();
-
-      const res = await fetch("http://10.0.2.2:5000/criancas", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        setPontos(result.pontos);
-        setNumMedalhas(result.medalhas.length);
-        setRankingAtual(result.rankingAtual);
-      } else {
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
-      });
-      setAlertVisible(true);
-    }
-  };
+  const { loadData } = useLoadData();
 
   const loadRanking = async () => {
     try {
@@ -112,7 +77,13 @@ export default function RankingScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      loadData();
+      const fetchData = async () => {
+        const data = await loadData("http://10.0.2.2:5000/criancas");
+        setPontos(data.pontos);
+        setNumMedalhas(data.medalhas.length);
+        setRankingAtual(data.rankingAtual);
+      };
+      fetchData();
       loadRanking();
     }, [])
   );

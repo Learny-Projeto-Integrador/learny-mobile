@@ -13,59 +13,27 @@ import Header from "@/components/ui/Children/Header";
 import ContainerMundo from "@/components/ui/Children/ContainerMundo";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
 import CustomAlert from "@/components/ui/CustomAlert";
-import { useGetToken } from "@/hooks/useGetToken";
+import { useLoadData } from "@/hooks/useLoadData";
 
 const { width, height } = Dimensions.get("window");
 
 export default function HomeScreen() {
   const [data, setData] = useState<any>(null);
-
   const [alertData, setAlertData] = useState<AlertData | null>(null);
   const [alertVisible, setAlertVisible] = useState(false);
   const [progressoMundo, setProgressoMundo] = useState(0);
 
-  const { getToken } = useGetToken();
-
-  const loadData = async () => {
-    try {
-      const token = await getToken();
-
-      const res = await fetch("http://10.0.2.2:5000/criancas", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        setData(result);
-        const progresso = (result.mundos[0].faseAtual/4) * 100
-        setProgressoMundo(progresso)
-      } else {
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
-      });
-      setAlertVisible(true);
-    }
-  };
+  const { loadData } = useLoadData();
 
   useFocusEffect(
     useCallback(() => {
-      loadData();
+      const fetchData = async () => {
+        const data = await loadData("http://10.0.2.2:5000/criancas");
+        const progresso = (data?.mundos[0].faseAtual/4) * 100
+        setData(data ?? null);
+        setProgressoMundo(progresso)
+      };
+      fetchData();
     }, [])
   );
 

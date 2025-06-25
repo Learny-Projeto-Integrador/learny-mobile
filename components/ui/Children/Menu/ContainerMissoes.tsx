@@ -11,6 +11,7 @@ import { useState, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useGetToken } from "@/hooks/useGetToken";
+import { useLoadData } from "@/hooks/useLoadData";
 
 type MissaoDiaria = {
   nome: string;
@@ -31,33 +32,15 @@ export default function ContainerMissoes() {
   );
   const { getToken } = useGetToken();
 
-  const loadData = async () => {
-    try {
-      const token = await getToken();
-
-      const res = await fetch("http://10.0.2.2:5000/criancas", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        setMissoesDiarias(result.missoesDiarias);
-      } else {
-        alert(result.error);
-      }
-    } catch (err: any) {
-      alert(err.message);
-    }
-  };
-
+  const { loadData } = useLoadData();
+  
   useFocusEffect(
     useCallback(() => {
-      loadData();
+      const fetchData = async () => {
+        const data = await loadData("http://10.0.2.2:5000/criancas");
+        setMissoesDiarias(data.missoesDiarias ?? null);
+      };
+      fetchData();
     }, [])
   );
 

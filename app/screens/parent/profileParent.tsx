@@ -17,11 +17,9 @@ import ContainerMundoAtual from "@/components/ui/Parent/ContainerMundoAtual";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { AlertData, RootStackParamList } from "@/types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import GradientText from "@/components/ui/GradientText";
-import { useGetToken } from "@/hooks/useGetToken";
 import CustomAlert from "@/components/ui/CustomAlert";
 import HeaderParent from "@/components/ui/Parent/HeaderParent";
+import { useLoadData } from "@/hooks/useLoadData";
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -45,83 +43,22 @@ export default function ProfileParentScreen() {
   const [alertData, setAlertData] = useState<AlertData | null>(null);
   const [alertVisible, setAlertVisible] = useState(false);
 
-  const { getToken } = useGetToken();
-
-  const loadData = async () => {
-    try {
-      const token = await getToken();
-
-      const res = await fetch("http://10.0.2.2:5000/pais", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        setData(result);
-        setId(result._id.$oid);
-      } else {
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
-      });
-      setAlertVisible(true);
-    }
+  const { loadData } = useLoadData();
+  
+  const fetchParentData = async () => {
+    const data = await loadData("http://10.0.2.2:5000/pais");
+    setData(data ?? null);
+    setId(data._id.$oid);
   };
-
-  const loadChildren = async () => {
-    try {
-      const token = await getToken();
-
-      const res = await fetch("http://10.0.2.2:5000/pais/criancas", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        setChildrenData(result);
-      } else {
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
-      });
-      setAlertVisible(true);
-    }
+  const fetchChildrenData = async () => {
+    const data = await loadData("http://10.0.2.2:5000/pais/criancas");
+    setChildrenData(data ?? null);
   };
 
   useFocusEffect(
     useCallback(() => {
-      loadData();
-      loadChildren();
+      fetchParentData();
+      fetchChildrenData();
     }, [])
   );
 
@@ -190,8 +127,8 @@ export default function ProfileParentScreen() {
           filhoSelecionado={filhoSelecionado ? filhoSelecionado : {}}
           handleRedirect={handleRedirectCadastro}
           onSelectFilho={async () => {
-            await loadData();
-            await loadChildren();
+            await fetchParentData();
+            await fetchChildrenData();
           }}
         />
         <ContainerActions />

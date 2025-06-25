@@ -14,6 +14,7 @@ import type { AlertData, RootStackParamList } from "@/types";
 import { useGetToken } from "@/hooks/useGetToken";
 import GradientText from "@/components/ui/GradientText";
 import CustomAlert from "@/components/ui/CustomAlert";
+import { useLoadData } from "@/hooks/useLoadData";
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -61,42 +62,15 @@ export default function IconChildrenScreen() {
     }
   };
 
-  const loadData = async () => {
-    try {
-      const token = await getToken();
-      const res = await fetch("http://10.0.2.2:5000/criancas", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-      if (res.ok) {
-        setData(result);
-      } else {
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
-      });
-      setAlertVisible(true);
-    }
-  };
-
+  const { loadData } = useLoadData();
+  
   useFocusEffect(
     useCallback(() => {
-      loadData();
+      const fetchData = async () => {
+        const data = await loadData("http://10.0.2.2:5000/criancas");
+        setData(data ?? null);
+      };
+      fetchData();
     }, [])
   );
 

@@ -21,21 +21,22 @@ import LoginInput from "@/components/ui/LoginInput";
 import { useFocusEffect } from "expo-router";
 import CustomAlert from "@/components/ui/CustomAlert";
 import { useGetToken } from "@/hooks/useGetToken";
+import { useLoadData } from "@/hooks/useLoadData";
 
 export default function EditScreen({ route, navigation }: Props) {
   const { userFilho } = route.params ?? {};
-
+  
+  const [data, setData] = useState<any>(null);
   const [alertData, setAlertData] = useState<AlertData | null>(null);
   const [alertVisible, setAlertVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [id, setId] = useState("");
-  const [image, setImage] = useState<string | null>("");
-  const [usuario, setUsuario] = useState("");
-  const [senha, setSenha] = useState("");
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [dataNasc, setDataNasc] = useState("");
+  const updateField = (field: any, value: any) => {
+    setData((prevData: any) => ({
+      ...prevData,
+      [field]: value
+    }));
+  };
 
   const { getToken } = useGetToken();
 
@@ -57,7 +58,7 @@ export default function EditScreen({ route, navigation }: Props) {
           from: originalUri,
           to: newPath,
         });
-        setImage(newPath); // Atualiza o estado com a nova URI
+        updateField('foto', newPath);
       } catch (error) {
         console.error("Erro ao copiar a imagem:", error);
       }
@@ -66,56 +67,24 @@ export default function EditScreen({ route, navigation }: Props) {
 
   let pathGet = "pais";
   let pathPut = "pais";
-  let pathDelete = `pais/${id}`;
+  let pathDelete = `pais`;
+
   if (userFilho) {
     pathGet = "pais/crianca/" + userFilho;
     pathDelete = "pais/crianca/" + userFilho;
     pathPut = "pais/criancas";
   }
 
-  const loadData = async () => {
-    try {
-      const token = await getToken();
-
-      const res = await fetch(`http://10.0.2.2:5000/${pathGet}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        setId(result._id.$oid);
-        setImage(result.foto);
-        setUsuario(result.usuario);
-        setNome(result.nome);
-        setEmail(result.email);
-        setDataNasc(result.dataNasc);
-      } else {
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
-      });
-      setAlertVisible(true);
-    }
-  };
-
+  const { loadData } = useLoadData();
+  
   useFocusEffect(
     useCallback(() => {
-      loadData();
+      const fetchData = async () => {
+        const data = await loadData(`http://10.0.2.2:5000/${pathGet}`);
+        console.log(data)
+        setData(data ?? null);
+      };
+      fetchData();
     }, [])
   );
 
@@ -123,12 +92,12 @@ export default function EditScreen({ route, navigation }: Props) {
     setLoading(true);
 
     const body: any = {
-      foto: image,
-      usuario: usuario,
-      nome: nome,
-      senha: senha,
-      email: email,
-      dataNasc: dataNasc,
+      foto: data?.foto,
+      usuario: data?.usuario,
+      nome: data?.nome,
+      senha: data?.senha,
+      email: data?.email,
+      dataNasc: data?.dataNasc,
     };
 
     try {
@@ -240,59 +209,65 @@ export default function EditScreen({ route, navigation }: Props) {
           redirectLabel="Voltar"
         />
       )}
-      <View style={styles.containerFoto}>
-        <TouchableOpacity style={styles.btnVoltar} onPress={handleRedirect}>
-          <Image
-            style={styles.iconVoltar}
-            source={require("@/assets/icons/icon-voltar.png")}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={pickImage}>
-          {image ? (
-            <Image source={{ uri: image }} style={styles.img} />
-          ) : (
-            <Image
-              style={styles.btnImg}
-              source={require("@/assets/icons/icone-camera.png")}
-            />
-          )}
-        </TouchableOpacity>
-      </View>
-      <View style={styles.viewInputs}>
-        <LoginInput campo="Usuário" valor={usuario} atualizar={setUsuario} edit={true} />
-        <LoginInput campo="Nova Senha" valor={senha} atualizar={setSenha} />
-        <LoginInput campo="Nome" valor={nome} atualizar={setNome} />
-        <LoginInput campo="Email" valor={email} atualizar={setEmail} />
-        <DateInput valor={dataNasc} atualizar={setDataNasc} />
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={
-            // @ts-ignore
-            () => handleEdit()
-          }
-        >
-          {loading ? (
-            <ActivityIndicator size="large" color="#547d98" />
-          ) : (
-            <Text style={styles.btnText}>Confirmar</Text>
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={
-            // @ts-ignore
-            () => handleDelete()
-          }
-        >
-          {loading ? (
-            <ActivityIndicator size="large" color="#547d98" />
-          ) : (
-            <Text style={[styles.btnText, { color: "#EF5B6A" }]}>
-              Excluir Conta
-            </Text>
-          )}
-        </TouchableOpacity>
-      </View>
+      {data && (
+        <View style={{width: "100%", alignItems: "center", justifyContent: "center"}}>
+
+          <View style={styles.containerFoto}>
+            <TouchableOpacity style={styles.btnVoltar} onPress={handleRedirect}>
+              <Image
+                style={styles.iconVoltar}
+                source={require("@/assets/icons/icon-voltar.png")}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={pickImage}>
+              {data.foto ? (
+                <Image source={{ uri: data.foto }} style={styles.img} />
+              ) : (
+                <Image
+                  style={styles.btnImg}
+                  source={require("@/assets/icons/icone-camera.png")}
+                />
+              )}
+            </TouchableOpacity>
+          </View>
+          <View style={styles.viewInputs}>
+          <LoginInput campo="Usuário" valor={data.usuario} atualizar={(value) => updateField('usuario', value)} edit={true} />
+          <LoginInput campo="Nova Senha" valor={data.senha} atualizar={(value) => updateField('senha', value)} />
+          <LoginInput campo="Nome" valor={data.nome} atualizar={(value) => updateField('nome', value)} />
+          <LoginInput campo="Email" valor={data.email} atualizar={(value) => updateField('email', value)} />
+          <DateInput valor={data.dataNasc} atualizar={(value) => updateField('dataNasc', value)} />
+
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={
+                // @ts-ignore
+                () => handleEdit()
+              }
+            >
+              {loading ? (
+                <ActivityIndicator size="large" color="#547d98" />
+              ) : (
+                <Text style={styles.btnText}>Confirmar</Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={
+                // @ts-ignore
+                () => handleDelete()
+              }
+            >
+              {loading ? (
+                <ActivityIndicator size="large" color="#547d98" />
+              ) : (
+                <Text style={[styles.btnText, { color: "#EF5B6A" }]}>
+                  Excluir Conta
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </ImageBackground>
   );
 }

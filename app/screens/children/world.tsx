@@ -19,6 +19,7 @@ import { useGetToken } from "@/hooks/useGetToken";
 import ContainerSelectMedalha from "@/components/ui/Children/Menu/ContainerSelectMedalha";
 import CustomAlert from "@/components/ui/CustomAlert";
 import { useArduino } from "@/contexts/ArduinoContext";
+import { useLoadData } from "@/hooks/useLoadData";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
@@ -41,58 +42,22 @@ export default function WorldScreen() {
 
   const { arduinoOnline } = useArduino();
 
-  const loadData = async () => {
-    try {
-      const token = await getToken();
+  const { loadData } = useLoadData();
 
-      const res = await fetch("http://10.0.2.2:5000/criancas", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        setData({
-          pontos: result.pontos,
-          numMedalhas: result.medalhas.length,
-          rankingAtual: result.rankingAtual,
-          mundos: result.mundos,
-          medalhas: result.medalhas,
-          medalhaSelecionada: result.medalhaSelecionada,
-          avatar: result.avatar,
-        });
-      } else {
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
-      });
-      setAlertVisible(true);
-    }
+  const fetchData = async () => {
+    const data = await loadData("http://10.0.2.2:5000/criancas")
+    setData(data ?? null);
   };
-
+  
   useFocusEffect(
     useCallback(() => {
-      loadData();
+      fetchData();
     }, [])
   );
 
   useEffect(() => {
     if (!visible) {
-      loadData(); // só recarrega quando o modal for fechado
+      fetchData(); // só recarrega quando o modal for fechado
     }
   }, [visible]);
 
@@ -114,7 +79,7 @@ export default function WorldScreen() {
     let liberarProxima = true;
     let ultimaFaseLiberadaIndex = -1;
 
-    const renderedFases = fases.map((faseObj, index) => {
+    const renderedFases = fases.map((faseObj: any, index: any) => {
       const { fase, concluida, boss } = faseObj;
       const faseLiberada = liberarProxima;
       if (faseLiberada) ultimaFaseLiberadaIndex = index;
@@ -210,7 +175,7 @@ export default function WorldScreen() {
           visible={visible}
           onClose={() => setVisible(false)}
           onSelectMedalha={() => {
-            loadData(); // sua função de recarregamento aqui
+            fetchData(); // sua função de recarregamento aqui
           }}
         />
       )}

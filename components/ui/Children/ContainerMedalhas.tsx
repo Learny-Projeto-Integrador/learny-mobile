@@ -4,6 +4,7 @@ import Medalha from "./Medalha";
 import { useGetToken } from "@/hooks/useGetToken";
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "expo-router";
+import { useLoadData } from "@/hooks/useLoadData";
 
 type Medalhas = {
   nome: string;
@@ -15,36 +16,19 @@ export default function ContainerMedalhas() {
       null
     );
   const { getToken } = useGetToken();
+
+  const { loadData } = useLoadData();
   
-    const loadData = async () => {
-      try {
-        const token = await getToken();
-  
-        const res = await fetch("http://10.0.2.2:5000/criancas", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        const result = await res.json();
-  
-        if (res.ok) {
-          setMedalhas(result.medalhas);
-        } else {
-          alert(result.error);
-        }
-      } catch (err: any) {
-        alert(err.message);
-      }
-    };
-  
-    useFocusEffect(
-      useCallback(() => {
-        loadData();
-      }, [])
-    );
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const data = await loadData("http://10.0.2.2:5000/criancas");
+        setMedalhas(data.medalhas ?? null);
+      };
+      fetchData();
+    }, [])
+  );
+
   return (
     <View 
     style={styles.container}>

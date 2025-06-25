@@ -19,6 +19,7 @@ import CustomAlert from "@/components/ui/CustomAlert";
 import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
 import ContainerAcessibilidade from "@/components/ui/Children/Profile/ContainerAcessibilidade";
 import ContainerActionChildren from "@/components/ui/Children/Profile/ContainerActionChildren";
+import { useLoadData } from "@/hooks/useLoadData";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profileChildren">;
 
@@ -34,45 +35,15 @@ export default function ProfileChildrenScreen() {
   const [alertData, setAlertData] = useState<AlertData | null>(null);
   const [alertVisible, setAlertVisible] = useState(false);
 
-  const loadData = async () => {
-    try {
-      const token = await getToken();
-      const res = await fetch("http://10.0.2.2:5000/criancas", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        setData(result);
-      } else {
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
-      });
-      setAlertVisible(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { loadData } = useLoadData();
 
   useFocusEffect(
     useCallback(() => {
-      loadData();
+      const fetchData = async () => {
+        const data = await loadData("http://10.0.2.2:5000/criancas");
+        setData(data ?? null);
+      };
+      fetchData();
     }, [])
   );
 
