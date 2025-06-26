@@ -18,7 +18,6 @@ import NavigationBar from "@/components/ui/Children/NavigationBar";
 import { useGetToken } from "@/hooks/useGetToken";
 import ContainerSelectMedalha from "@/components/ui/Children/Menu/ContainerSelectMedalha";
 import CustomAlert from "@/components/ui/CustomAlert";
-import { useArduino } from "@/contexts/ArduinoContext";
 import { useLoadData } from "@/hooks/useLoadData";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
@@ -39,8 +38,6 @@ export default function WorldScreen() {
   const [alertVisible, setAlertVisible] = useState(false);
 
   const { getToken } = useGetToken();
-
-  const { arduinoOnline } = useArduino();
 
   const { loadData } = useLoadData();
 
@@ -89,7 +86,7 @@ export default function WorldScreen() {
         "atvConnect",
         "atvMemory",
         "atvFeeling",
-        arduinoOnline ? "atvListeningArduino" : "atvListening",
+        "atvListening",
       ];
       const screenName = faseScreens[index] ?? "atvConnect";
 
