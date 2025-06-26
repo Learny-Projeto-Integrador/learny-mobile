@@ -79,14 +79,6 @@ export default function ProfileChildrenScreen() {
     setAlertVisible(true);
   };
 
-  if (isLoading) {
-    return (
-      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
-        <ActivityIndicator size="large" color="#EF5B6A" />
-      </View>
-    );
-  }
-
   if (!data) return null;
 
   const { foto, nome, pontos, audio } = data;
