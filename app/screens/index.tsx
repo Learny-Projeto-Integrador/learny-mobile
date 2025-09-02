@@ -16,7 +16,6 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { AlertData, RootStackParamList } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomAlert from "@/components/ui/CustomAlert";
-import { useArduino } from "@/contexts/ArduinoContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
@@ -32,15 +31,11 @@ export default function LoginScreen() {
   const [alertData, setAlertData] = useState<AlertData | null>(null);
   const [alertVisible, setAlertVisible] = useState(false);
 
-  const { setArduinoOnline } = useArduino();
-
-  const saveLoginInfo = async (token: string, arduino: boolean) => {
+  const saveLoginInfo = async (token: string) => {
     try {
       await AsyncStorage.multiSet([
         ["token", token],
-        ["arduino", JSON.stringify(arduino)],
       ]);
-      setArduinoOnline(arduino); // Atualiza o contexto
     } catch (e) {
       console.error("Erro ao salvar dados de login", e);
     }
@@ -64,7 +59,7 @@ export default function LoginScreen() {
       const result = await res.json();
 
       if (res.ok) {
-        await saveLoginInfo(result.access_token, result.arduino);
+        await saveLoginInfo(result.access_token);
         navigation.navigate("transition", {
           name: result.nome,
           type: result.tipo,
