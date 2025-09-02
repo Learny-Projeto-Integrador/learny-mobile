@@ -1,4 +1,4 @@
-import { ImageBackground, Image, Text, StyleSheet, Dimensions, View } from 'react-native';
+import { ImageBackground, Text, StyleSheet, Dimensions, View } from 'react-native';
 
 import React, { useEffect } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -24,7 +24,7 @@ export default function TransitionScreen({ route, navigation }: Props) {
       resizeMode="cover" 
       style={styles.container}
       >
-        <View style={styles.viewText}>
+        <View style={{ marginTop: height * 0.05 }}>
           <Text style={styles.text}>Bem Vindo,</Text>
           <Text style={styles.nameText}>{name}</Text>
         </View>
@@ -39,9 +39,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingLeft: width * 0.08,
-  },
-  viewText: {
-    marginTop: height * 0.05,
   },
   text: {
     fontSize: width * 0.08,
