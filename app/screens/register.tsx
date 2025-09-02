@@ -2,30 +2,29 @@ import {
   ImageBackground,
   StyleSheet,
   Image,
+  Text,
+  View,
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
 } from "react-native";
-import { Text, View } from "react-native";
 import React from "react";
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "@/types";
-
-type Props = NativeStackScreenProps<RootStackParamList, "register">;
-
+import type { RootStackParamList } from "@/types";
 import DateInput from "@/components/ui/DateInput";
 import LoginInput from "@/components/ui/LoginInput";
 import { useGetToken } from "@/hooks/useGetToken";
-import CustomAlert from "@/components/ui/CustomAlert";
+import { useCustomAlert } from "@/hooks/useCustomAlert";
+
+type Props = NativeStackScreenProps<RootStackParamList, "register">;
 
 export default function RegisterScreen({ route, navigation }: Props) {
   const { idParent } = route.params ?? {};
 
-  const [alertData, setAlertData] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
+  const { showAlert, AlertComponent } = useCustomAlert();
   const [loading, setLoading] = useState(false);
 
   const { getToken } = useGetToken();
@@ -66,17 +65,6 @@ export default function RegisterScreen({ route, navigation }: Props) {
     setLoading(true);
 
     let registerRoute;
-
-    const body: any = {
-      foto: image,
-      usuario: usuario,
-      nome: nome,
-      senha: senha,
-      email: email,
-      dataNasc: dataNasc,
-      responsavel: idParent,
-    };
-
     idParent ? (registerRoute = "criancas") : (registerRoute = "pais");
 
     try {
@@ -87,17 +75,21 @@ export default function RegisterScreen({ route, navigation }: Props) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          foto: image,
+          usuario: usuario,
+          nome: nome,
+          senha: senha,
+          email: email,
+          dataNasc: dataNasc,
+          responsavel: idParent,
+        }),
       });
 
       const result = await res.json();
 
       if (res.ok) {
-        if (idParent) {
-          const bodyId: any = {
-            _id: result.dados._id,
-          };
-
+        idParent && (
           // Adicionando a criança na lista de filhos do responsável
           await fetch(`http://10.0.2.2:5000/pais/addcrianca`, {
             method: "PUT",
@@ -105,52 +97,35 @@ export default function RegisterScreen({ route, navigation }: Props) {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(bodyId),
-          });
+            body: JSON.stringify({
+              _id: result.dados._id,
+            }),
+          })
+        );
 
-          setAlertData({
+        showAlert({
             icon: require("@/assets/icons/icon-check-gradiente.png"),
             title: "Sucesso!",
             message: result.message,
             dual: true,
-            label: "Voltar",
+            label: idParent ? "Voltar" : "Fazer Login",
           });
-        } else {
-          setAlertData({
-            icon: require("@/assets/icons/icon-check-gradiente.png"),
-            title: "Sucesso!",
-            message: result.message,
-            dual: true,
-            label: "Fazer Login",
-          });
-        }
-        setAlertVisible(true);
       } else {
-        setAlertData({
+        showAlert({
           icon: require("@/assets/icons/icon-alerta.png"),
           title: "Erro!",
           message: result.error,
         });
-        setAlertVisible(true);
       }
     } catch (err: any) {
-      setAlertData({
+      showAlert({
         icon: require("@/assets/icons/icon-alerta.png"),
         title: "Erro!",
         message:
           "Não foi possível conectar ao servidor. Verifique sua conexão.",
       });
-      setAlertVisible(true);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleRedirect = () => {
-    {
-      idParent
-        ? navigation.navigate("profileParent")
-        : navigation.navigate("index");
     }
   };
 
@@ -160,21 +135,8 @@ export default function RegisterScreen({ route, navigation }: Props) {
       resizeMode="cover"
       style={styles.container}
     >
-      {alertData && (
-        <CustomAlert
-          icon={alertData.icon}
-          visible={alertVisible}
-          title={alertData.title}
-          message={alertData.message}
-          dualAction={alertData.dual}
-          onClose={() => setAlertVisible(false)}
-          onRedirect={() => {
-            setAlertVisible(false);
-            alertData.label == "Voltar" ? navigation.navigate("profileParent") : navigation.navigate("index")
-          }}
-          redirectLabel={alertData.label ? alertData.label : "Voltar"}
-        />
-      )}
+      <AlertComponent />
+      
       <TouchableOpacity onPress={pickImage}>
         {image ? (
           <Image source={{ uri: image }} style={styles.img} />
@@ -194,7 +156,6 @@ export default function RegisterScreen({ route, navigation }: Props) {
         <TouchableOpacity
           style={styles.button}
           onPress={
-            // @ts-ignore
             () => handleSubmit()
           }
         >
@@ -212,7 +173,8 @@ export default function RegisterScreen({ route, navigation }: Props) {
         ) : (
           <Text style={styles.txtLink}>Já possui uma Conta?</Text>
         )}
-        <TouchableOpacity onPress={() => handleRedirect()}>
+        <TouchableOpacity onPress={() => idParent ? navigation.navigate("profileParent")
+        : navigation.navigate("index")}>
           <Text style={styles.link}>{idParent ? "Voltar" : "Entre aqui"}</Text>
         </TouchableOpacity>
       </View>
