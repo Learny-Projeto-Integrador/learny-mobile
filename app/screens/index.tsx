@@ -14,17 +14,15 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCustomAlert } from "@/hooks/useCustomAlert";
+import { useApi } from "@/hooks/useApi";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
 export default function LoginScreen() {
+  const { loading, request, AlertComponent } = useApi();
   const navigation = useNavigation<NavigationProp>();
-  const [loading, setLoading] = useState(false);
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
-
-  const { showAlert, AlertComponent } = useCustomAlert();
 
   const saveLoginInfo = async (token: string) => {
     try {
@@ -35,39 +33,18 @@ export default function LoginScreen() {
   };
 
   const handleLogin = async () => {
-    setLoading(true);
+    const result = await request({
+      endpoint: "/login",
+      method: "POST",
+      body: { usuario, senha },
+    });
 
-    try {
-      const res = await fetch("http://10.0.2.2:5000/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ usuario, senha }),
+    if (result) {
+      await saveLoginInfo(result.access_token);
+      navigation.navigate("transition", {
+        name: result.nome,
+        type: result.tipo,
       });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        await saveLoginInfo(result.access_token);
-        navigation.navigate("transition", {
-          name: result.nome,
-          type: result.tipo,
-        });
-      } else {
-        showAlert({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-      }
-    } catch (err) {
-      showAlert({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
-      });
-    } finally {
-      setLoading(false);
     }
   };
 

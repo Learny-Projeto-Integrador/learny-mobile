@@ -16,19 +16,14 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import DateInput from "@/components/ui/DateInput";
 import LoginInput from "@/components/ui/LoginInput";
-import { useGetToken } from "@/hooks/useGetToken";
-import { useCustomAlert } from "@/hooks/useCustomAlert";
+import { useApi } from "@/hooks/useApi";
 
 type Props = NativeStackScreenProps<RootStackParamList, "register">;
 
 export default function RegisterScreen({ route, navigation }: Props) {
   const { idParent } = route.params ?? {};
 
-  const { showAlert, AlertComponent } = useCustomAlert();
-  const [loading, setLoading] = useState(false);
-
-  const { getToken } = useGetToken();
-
+  const { loading, request, showAlert, AlertComponent } = useApi();
   const [image, setImage] = useState<string | null>("");
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
@@ -62,70 +57,42 @@ export default function RegisterScreen({ route, navigation }: Props) {
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
-
     let registerRoute;
     idParent ? (registerRoute = "criancas") : (registerRoute = "pais");
 
-    try {
-      const token = await getToken();
+    const result = await request({
+      endpoint: `/${registerRoute}`,
+      method: "POST",
+      body: { 
+        foto: image,
+        usuario: usuario,
+        nome: nome,
+        senha: senha,
+        email: email,
+        dataNasc: dataNasc,
+        responsavel: idParent, 
+      },
+    });
 
-      const res = await fetch(`http://10.0.2.2:5000/${registerRoute}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          foto: image,
-          usuario: usuario,
-          nome: nome,
-          senha: senha,
-          email: email,
-          dataNasc: dataNasc,
-          responsavel: idParent,
-        }),
-      });
+    if (result) {
+      idParent && (
+        // Adicionando a criança na lista de filhos do responsável
+        await request({
+          endpoint: `/addcrianca`,
+          method: "PUT",
+          body: { 
+            _id: result.dados._id,
+          },
+        })
+      );
 
-      const result = await res.json();
-
-      if (res.ok) {
-        idParent && (
-          // Adicionando a criança na lista de filhos do responsável
-          await fetch(`http://10.0.2.2:5000/pais/addcrianca`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              _id: result.dados._id,
-            }),
-          })
-        );
-
-        showAlert({
-            icon: require("@/assets/icons/icon-check-gradiente.png"),
-            title: "Sucesso!",
-            message: result.message,
-            dual: true,
-            label: idParent ? "Voltar" : "Fazer Login",
-          });
-      } else {
-        showAlert({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-      }
-    } catch (err: any) {
       showAlert({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+          icon: require("@/assets/icons/icon-check-gradiente.png"),
+          title: "Sucesso!",
+          message: result.message,
+          dual: true,
+          label: idParent ? "Voltar" : "Fazer Login",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
