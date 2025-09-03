@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { useCustomAlert } from "@/hooks/useCustomAlert";
 import { useGetToken } from "./useGetToken";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "@/types";
+import { useNavigation, useRoute } from "@react-navigation/native";
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
@@ -20,6 +25,8 @@ type UseApiReturn<T> = {
 export function useApi<T = any>(
   baseUrl = "http://10.0.2.2:5000"
 ): UseApiReturn<T> {
+  const navigation = useNavigation<NavigationProp>();
+  const route = useRoute(); // pega a rota atual
   const [loading, setLoading] = useState(false);
   const { getToken } = useGetToken();
   const { showAlert, AlertComponent } = useCustomAlert();
@@ -54,6 +61,9 @@ export function useApi<T = any>(
           icon: require("@/assets/icons/icon-alerta.png"),
           title: "Erro!",
           message: result.error || "Erro inesperado.",
+          dualAction: true,
+          redirectLabel: "Reiniciar App",
+          onRedirect: () => navigation.replace("index")
         });
         return null;
       }
@@ -63,8 +73,12 @@ export function useApi<T = any>(
       showAlert({
         icon: require("@/assets/icons/icon-alerta.png"),
         title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+        message: "Não foi possível conectar ao servidor. Verifique sua conexão.",
+        dualAction: true,
+        closeLabel: "Recarregar Tela",
+        redirectLabel: "Reiniciar App",
+        onClose: async () => navigation.navigate(route.name as any),
+        onRedirect: () => navigation.replace("index")
       });
       return null;
     } finally {
