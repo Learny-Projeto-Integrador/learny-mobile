@@ -13,12 +13,12 @@ export type RootStackParamList = {
   ranking: undefined;
   atvFeeling: undefined;
   atvMatch: undefined;
-  atvMatchAnswer: { score: {}, answer: {}};
+  atvMatchAnswer: { score: any; answer: any };
   atvListening: undefined;
   atvMemory: undefined;
   atvConnect: undefined;
-  score: { score: {} };
-  scoreFail: { score: {} };
+  sscore: { score: any };
+  scoreFail: { score: any };
 };
 
 export type ParentData = {
@@ -31,27 +31,20 @@ export type ParentData = {
 
 export type AlertProps = {
   icon: any;
-  visible: boolean;
+  visible?: boolean;
   title: string;
   message: string;
   dualAction?: boolean;
-  onClose: () => void;
-  onRedirect?: () => void; // ação do segundo botão
   closeLabel?: string;
-  redirectLabel?: string; // texto do segundo botão
+  redirectLabel?: string;
+  onClose?: () => void;
+  onRedirect?: () => void;
 };
 
-export type AlertData = {
-  icon?: any;
-  title: string;
-  message: string;
-  dual?: boolean;
-  label?: string;
-  redirectLabel?: string;
-  onRedirect?: () => void;
+export type AlertData = AlertProps & {
   score?: {
     pontos: number;
     porcentagem: number;
     tempo: string;
   };
-}
+};
