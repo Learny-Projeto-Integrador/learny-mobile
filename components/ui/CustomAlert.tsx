@@ -1,3 +1,4 @@
+import { AlertProps } from "@/types";
 import React from "react";
 import {
   Modal,
@@ -8,18 +9,6 @@ import {
   Image,
   Dimensions,
 } from "react-native";
-
-type AlertProps = {
-  icon: any;
-  visible: boolean;
-  onClose: () => void;
-  title: string;
-  message: string;
-  dualAction?: boolean; // se verdadeiro, mostra dois botões
-  onRedirect?: () => void; // ação do segundo botão
-  closeLabel?: string;
-  redirectLabel?: string; // texto do segundo botão
-};
 
 export default function CustomAlert({
   icon,
