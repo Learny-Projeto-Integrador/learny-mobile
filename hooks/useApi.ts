@@ -42,6 +42,11 @@ export function useApi<T = any>(
         body: method !== "GET" && body ? JSON.stringify(body) : undefined,
       });
 
+      // se a resposta for 204 (No Content), não tenta parsear JSON
+      if (res.status === 204) {
+        return {} as T; // retorna um objeto vazio tipado para não quebrar o fluxo
+      }
+
       const result = await res.json();
 
       if (!res.ok) {
