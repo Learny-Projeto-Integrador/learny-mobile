@@ -16,7 +16,7 @@ import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import SoundCard from "@/components/ui/Children/Phases/SoundCard";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
 import CustomAlert from "@/components/ui/CustomAlert";
-import { useCheckMedalha } from "@/hooks/useChceckMedalha";
+import { useCheckMedalha } from "@/hooks/useCheckMedalha";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
 import { useCheckAudio } from "@/hooks/useCheckAudio";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";

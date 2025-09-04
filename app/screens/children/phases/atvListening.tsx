@@ -19,7 +19,7 @@ import { useScreenDuration } from "@/hooks/useScreenDuration";
 import CustomAlert from "@/components/ui/CustomAlert";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
 import { AlertData } from "@/types";
-import { useCheckMedalha } from "@/hooks/useChceckMedalha";
+import { useCheckMedalha } from "@/hooks/useCheckMedalha";
 import { useCheckAudio } from "@/hooks/useCheckAudio";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 

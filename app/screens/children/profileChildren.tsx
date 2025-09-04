@@ -1,4 +1,3 @@
-import React, { useCallback, useState } from "react";
 import {
   ScrollView,
   View,
@@ -7,19 +6,17 @@ import {
   Image,
   Dimensions,
   StyleSheet,
-  ActivityIndicator,
 } from "react-native";
+import React, { useCallback, useState } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "@/types";
-
-import { useGetToken } from "@/hooks/useGetToken";
+import type { RootStackParamList } from "@/types";
 import GradientText from "@/components/ui/GradientText";
-import CustomAlert from "@/components/ui/CustomAlert";
 import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
 import ContainerAcessibilidade from "@/components/ui/Children/Profile/ContainerAcessibilidade";
 import ContainerActionChildren from "@/components/ui/Children/Profile/ContainerActionChildren";
-import { useLoadData } from "@/hooks/useLoadData";
+import { useLoading } from "@/contexts/LoadingContext";
+import { useApi } from "@/hooks/useApi";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profileChildren">;
 
@@ -27,56 +24,49 @@ const { width, height } = Dimensions.get("window");
 
 export default function ProfileChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { getToken } = useGetToken();
-
+  const { showLoading, hideLoading } = useLoading();
+  const { request, showAlert, AlertComponent } = useApi();
   const [data, setData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const [alertData, setAlertData] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
-
-  const { loadData } = useLoadData();
+  const fetchData = async () => {
+    showLoading();
+    const result = await request({
+      endpoint: "/criancas",
+    });
+    setData(result ?? null);
+    hideLoading();
+  };
 
   useFocusEffect(
     useCallback(() => {
-      const fetchData = async () => {
-        const data = await loadData("http://10.0.2.2:5000/criancas");
-        setData(data ?? null);
-      };
       fetchData();
     }, [])
   );
 
   const atualizarAudio = async (novoValor: boolean) => {
-    try {
-      const token = await getToken();
-      await fetch("http://10.0.2.2:5000/criancas", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ audio: novoValor }),
-      });
+    const result = await request({
+      endpoint: "/criancas",
+      method: "PUT",
+      body: { 
+        audio: novoValor,
+      },
+    })
+    
+    if (result) {
       setData((prev: any) => ({ ...prev, audio: novoValor }));
-    } catch (e) {
-      setAlertData({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message: `Erro ao atualizar o áudio: ${e}`,
-      });
-      setAlertVisible(true);
     }
   };
 
   const handleSair = () => {
-    setAlertData({
+    showAlert({
       icon: require("@/assets/icons/icon-alerta.png"),
       title: "Alerta",
       message: "Deseja mesmo sair?",
-      dual: true,
+      dualAction: true,
+      closeLabel: "Cancelar",
+      redirectLabel: "Sair",
+      onRedirect: () => navigation.replace("index")
     });
-    setAlertVisible(true);
   };
 
   if (!data) return null;
@@ -87,22 +77,7 @@ export default function ProfileChildrenScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      {alertData && (
-        <CustomAlert
-          icon={alertData.icon}
-          visible={alertVisible}
-          title={alertData.title}
-          message={alertData.message}
-          dualAction={alertData.dual}
-          onClose={() => setAlertVisible(false)}
-          onRedirect={() => {
-            setAlertVisible(false);
-            navigation.navigate("index");
-          }}
-          closeLabel="Cancelar"
-          redirectLabel="Sair"
-        />
-      )}
+      <AlertComponent />
       <View style={styles.containerDados}>
         <TouchableOpacity
           onPress={() => navigation.navigate("iconChildren")}

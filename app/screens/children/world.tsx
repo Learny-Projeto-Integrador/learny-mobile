@@ -1,5 +1,3 @@
-//@ts-nocheck
-import { useEffect, useCallback, useState } from "react";
 import {
   ImageBackground,
   Image,
@@ -9,41 +7,40 @@ import {
   View,
   Dimensions,
   ScrollView,
+  ViewStyle,
 } from "react-native";
+import { useCallback, useState } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "@/types";
+import type { RootStackParamList, RoutesWithoutParams } from "@/types";
 import Header from "@/components/ui/Children/Header";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
-import { useGetToken } from "@/hooks/useGetToken";
 import ContainerSelectMedalha from "@/components/ui/Children/Menu/ContainerSelectMedalha";
-import CustomAlert from "@/components/ui/CustomAlert";
-import { useLoadData } from "@/hooks/useLoadData";
+import { useLoading } from "@/contexts/LoadingContext";
+import { useApi } from "@/hooks/useApi";
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, "world">;
 
-const imgMedalhas = {
+const imgMedalhas: any = {
   "Iniciando!": require("@/assets/icons/medalha-verde.png"),
   "A todo o vapor!": require("@/assets/icons/medalha-vermelha.png"),
-  Desvendando: require("@/assets/icons/medalha-azul.png"),
+  "Desvendando": require("@/assets/icons/medalha-azul.png"),
 };
 
 export default function WorldScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { showLoading, hideLoading } = useLoading();
+  const { request, AlertComponent } = useApi();
   const [data, setData] = useState<any>(null);
-  const [dadosMundo, setDadosMundo] = useState<any>(null);
-
   const [visible, setVisible] = useState(false);
-  const [alertData, setAlertData] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
-
-  const { getToken } = useGetToken();
-
-  const { loadData } = useLoadData();
 
   const fetchData = async () => {
-    const data = await loadData("http://10.0.2.2:5000/criancas")
-    setData(data ?? null);
+    showLoading();
+    const result = await request({
+      endpoint: "/criancas",
+    });
+    setData(result ?? null);
+    hideLoading();
   };
   
   useFocusEffect(
@@ -51,23 +48,6 @@ export default function WorldScreen() {
       fetchData();
     }, [])
   );
-
-  useEffect(() => {
-    if (!visible) {
-      fetchData(); // só recarrega quando o modal for fechado
-    }
-  }, [visible]);
-
-  const getAvatarImage = (name: string) => {
-    switch (name) {
-      case "avatar1":
-        return require("@/assets/icons/avatars/avatar1.png");
-      case "avatar2":
-        return require("@/assets/icons/avatars/avatar2.png");
-      default:
-        return null;
-    }
-  };
 
   const renderFases = () => {
     if (!data?.mundos || data.mundos.length === 0) return null;
@@ -82,13 +62,14 @@ export default function WorldScreen() {
       if (faseLiberada) ultimaFaseLiberadaIndex = index;
       if (!concluida) liberarProxima = false;
 
-      const faseScreens = [
+      const faseScreens: RoutesWithoutParams[] = [
         "atvConnect",
         "atvMemory",
         "atvFeeling",
         "atvListening",
       ];
-      const screenName = faseScreens[index] ?? "atvConnect";
+
+      const screenName: RoutesWithoutParams = faseScreens[index] ?? "atvConnect";
 
       if (boss) {
         return (
@@ -115,7 +96,7 @@ export default function WorldScreen() {
             faseLiberada ? () => navigation.navigate(screenName) : undefined
           }
           disabled={!faseLiberada}
-          style={[styles[`fase${fase}`], { flexDirection: "row" }]}
+          style={[faseStyles[fase], { flexDirection: "row" }]}
         >
           {faseLiberada ? (
             <Text style={styles.fase}>{String(fase).padStart(2, "0")}</Text>
@@ -132,47 +113,18 @@ export default function WorldScreen() {
     return renderedFases;
   };
 
-  const renderAvatar = () => {
-    if (!data?.avatar || !data.mundos) return null;
-
-    const faseAtual = data.mundos[0].faseAtual;
-
-    // Define o estilo baseado na faseAtual ou inicio
-    const avatarStyle =
-      faseAtual === ""
-        ? styles.inicio
-        : styles[`fase${faseAtual}`] || styles.inicio;
-
-    return (
-      <View style={avatarStyle}>
-        <Image
-          source={getAvatarImage(data.avatar)}
-          style={{ width: width * 0.1, height: width * 0.1 }}
-          resizeMode="contain"
-        />
-      </View>
-    );
-  };
 
   return (
     <View style={styles.container}>
-      {alertData && (
-        <CustomAlert
-          icon={alertData.icon}
-          visible={alertVisible}
-          title={alertData.title}
-          message={alertData.message}
-          dualAction={false}
-          onClose={() => setAlertVisible(false)}
-        />
-      )}
+      <AlertComponent />
       {data && (
         <ContainerSelectMedalha
+          title="Medalhas"
           medalhas={data?.medalhas}
           visible={visible}
           onClose={() => setVisible(false)}
           onSelectMedalha={() => {
-            fetchData(); // sua função de recarregamento aqui
+            fetchData();
           }}
         />
       )}
@@ -184,13 +136,13 @@ export default function WorldScreen() {
           />
         </View>
         <View style={styles.containerDados}>
-          {data ? (
+          {data && (
             <Header
               pontos={data.pontos}
               medalhas={data.numMedalhas}
               ranking={data.rankingAtual}
             />
-          ) : null}
+          )}
           <View style={{ flexDirection: "row", alignItems: "center", gap: 50 }}>
             <TouchableOpacity onPress={() => setVisible(true)}>
               <ImageBackground
@@ -229,7 +181,6 @@ export default function WorldScreen() {
             />
           </View>
           {renderFases()}
-          {renderAvatar()}
         </View>
       </ScrollView>
       <View style={styles.navigationBarWrapper}>
@@ -334,3 +285,9 @@ const styles = StyleSheet.create({
     aspectRatio: 73 / 70,
   },
 });
+
+const faseStyles: Record<number, ViewStyle> = {
+  1: styles.fase1,
+  2: styles.fase2,
+  3: styles.fase3,
+};

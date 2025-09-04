@@ -64,6 +64,7 @@ export default function ProfileParentScreen() {
       title: "Alerta",
       message: "Deseja mesmo sair?",
       dualAction: true,
+      closeLabel: "Cancelar",
       redirectLabel: "Sair",
       onRedirect: () => navigation.replace("index")
     });

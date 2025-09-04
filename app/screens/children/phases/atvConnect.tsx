@@ -1,5 +1,3 @@
-//@ts-nocheck
-import React, { useState, useCallback } from "react";
 import {
   ScrollView,
   View,
@@ -8,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import React, { useState, useCallback } from "react";
 import Svg, { Line } from "react-native-svg";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -17,9 +16,11 @@ import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
 import CustomAlert from "@/components/ui/CustomAlert";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
-import { useCheckMedalha } from "@/hooks/useChceckMedalha";
+import { useCheckMedalha } from "@/hooks/useCheckMedalha";
 import { useCheckAudio } from "@/hooks/useCheckAudio";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
+import { useLoading } from "@/contexts/LoadingContext";
+import { useApi } from "@/hooks/useApi";
 
 const { width, height } = Dimensions.get("window");
 
@@ -45,7 +46,7 @@ const animalColors: Record<string, string> = {
   snake: "#80D25B", // verde
 };
 
-const imgsMedalhas = {
+const imgsMedalhas: any = {
   "Iniciando!": require("@/assets/icons/icon-medalha-verde.png"),
   "A todo o vapor!": require("@/assets/icons/icon-medalha-vermelha.png"),
   Desvendando: require("@/assets/icons/icon-medalha-azul.png"),
@@ -57,7 +58,6 @@ export default function AtvConnectScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [selected, setSelected] = useState<CardInfo[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
-
   const [alertDica, setAlertDica] = useState<AlertData | null>(null);
   const [alertQueue, setAlertQueue] = useState<AlertData[]>([]);
   const [currentAlert, setCurrentAlert] = useState<AlertData | null>(null);
@@ -73,16 +73,18 @@ export default function AtvConnectScreen() {
   const { checkMedalha } = useCheckMedalha();
   const { checkAudio } = useCheckAudio();
 
+  const fetchMedalha = async () => {
+    const nomeMedalha = await checkMedalha();
+    setMedalha(nomeMedalha ?? null);
+  };
+
+  const fetchAudio = async () => {
+    const audio = await checkAudio();
+    setAudio(audio ?? null);
+  };
+
   useFocusEffect(
     useCallback(() => {
-      const fetchMedalha = async () => {
-        const nomeMedalha = await checkMedalha();
-        setMedalha(nomeMedalha ?? null);
-      };
-      const fetchAudio = async () => {
-        const audio = await checkAudio();
-        setAudio(audio ?? null);
-      };
       fetchAudio();
       fetchMedalha();
     }, [])
@@ -159,6 +161,7 @@ export default function AtvConnectScreen() {
 
       if (response.result.missaoConcluida) {
         newAlerts.push({
+          icon: "",
           title: "Diária concluída!",
           message: response.result.missaoConcluida.descricao,
           score,
@@ -188,6 +191,7 @@ export default function AtvConnectScreen() {
       }
     } else {
       setCurrentAlert({
+        icon: "",
         title: "Erro!",
         message: response.error ? response.error : "Erro desconhecido",
       });
@@ -244,7 +248,7 @@ export default function AtvConnectScreen() {
     const pair = unusedPairs[Math.floor(Math.random() * unusedPairs.length)];
     const color = animalColors[pair.left.type];
 
-    setConnections((prev) => [
+    setConnections((prev: any) => [
       ...prev,
       {
         from: 0,
