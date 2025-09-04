@@ -1,43 +1,19 @@
-import { useEffect, useRef, useState } from "react";
-import { Audio } from "expo-av";
 import {
   Image,
   TouchableOpacity,
-  useWindowDimensions,
-  ImageSourcePropType,
   View,
   Text,
   Dimensions,
   StyleSheet,
 } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Audio } from "expo-av";
 import { useCheckAudio } from "@/hooks/useCheckAudio";
-
-const dinoOptions = {
-  dino1: {
-    image: require("@/assets/images/dinos/dino1.png"),
-    imageApagado: require("@/assets/images/dinos/dino1-apagado.png"),
-    source: require("@/assets/audios/sad.wav"),
-  },
-  dino2: {
-    image: require("@/assets/images/dinos/dino2.png"),
-    imageApagado: require("@/assets/images/dinos/dino2-apagado.png"),
-    source: require("@/assets/audios/angry.wav"),
-  },
-  dino3: {
-    image: require("@/assets/images/dinos/dino3.png"),
-    imageApagado: require("@/assets/images/dinos/dino3-apagado.png"),
-    source: require("@/assets/audios/happy.wav"),
-  },
-  dino4: {
-    image: require("@/assets/images/dinos/dino4.png"),
-    imageApagado: require("@/assets/images/dinos/dino4-apagado.png"),
-    source: require("@/assets/audios/afraid.wav"),
-  },
-};
+import { dinoOptions } from "@/constants/phaseData";
 
 type DinoKey = keyof typeof dinoOptions;
 
-type ContainerEmotionProps = {
+type Props = {
   dino: DinoKey;
   emotion: string;
   color: string;
@@ -47,7 +23,7 @@ export default function ContainerEmotion({
   dino,
   emotion,
   color,
-}: ContainerEmotionProps) {
+}: Props) {
   const [imageIndex, setImageIndex] = useState(0);
 
   const images = [dinoOptions[dino].imageApagado, dinoOptions[dino].image];

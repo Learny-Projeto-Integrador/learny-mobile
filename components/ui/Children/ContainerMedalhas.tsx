@@ -8,12 +8,7 @@ import Medalha from "./Medalha";
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import { useApi } from "@/hooks/useApi";
-
-type Medalhas = {
-  nome: string;
-  descricao: string;
-  dataConquista: string;
-};
+import { Medalhas } from "@/types";
 
 export default function ContainerMedalhas() {
   const [medalhas, setMedalhas] = useState<Medalhas[] | null>(null);
@@ -33,8 +28,7 @@ export default function ContainerMedalhas() {
   );
 
   return (
-    <View 
-    style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>Medalhas</Text>
       <View style={{gap: 20, marginTop: 20}}>
         {medalhas?.map((medalha, index) => (

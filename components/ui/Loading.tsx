@@ -1,5 +1,9 @@
-// components/Loading.tsx
-import { ActivityIndicator, View, StyleSheet, Modal } from "react-native";
+import { 
+  ActivityIndicator, 
+  View, 
+  StyleSheet, 
+  Modal 
+} from "react-native";
 
 export default function Loading({ visible }: { visible: boolean }) {
   return (

@@ -6,6 +6,7 @@ import {
   Dimensions,
   ImageBackground,
   TouchableOpacity,
+  ImageSourcePropType,
 } from "react-native";
 import ProgressBarMundo from "./ProgressBarMundo";
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -14,8 +15,8 @@ import { useNavigation } from "expo-router";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-type ContainerMundoProps = {
-  imagem: string;
+type Props = {
+  imagem: ImageSourcePropType;
   nome: string;
   nomeIngles: string;
   num: number;
@@ -23,13 +24,12 @@ type ContainerMundoProps = {
   cor: string
 }
 
-export default function ContainerMundo({imagem, nome, nomeIngles, num, progresso, cor} : ContainerMundoProps) {
+export default function ContainerMundo({ imagem, nome, nomeIngles, num, progresso, cor } : Props) {
   const navigation = useNavigation<NavigationProp>();
   return (
     <TouchableOpacity onPress={() => num == 1 ? navigation.navigate("world") : null} activeOpacity={1} style={styles.container}>
       <ImageBackground
         style={styles.container}
-        //@ts-ignore
         source={imagem}
       >
         <View style={styles.containerDadosMundo}>

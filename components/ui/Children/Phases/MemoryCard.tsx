@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState } from "react";
-import { Audio } from "expo-av";
 import {
   Image,
   TouchableOpacity,
   useWindowDimensions,
   ImageSourcePropType,
 } from "react-native";
+import { useEffect, useState } from "react";
+import { Audio } from "expo-av";
 import { useCheckAudio } from "@/hooks/useCheckAudio";
 
-type MemoryCardProps = {
+type Props = {
   id: string;
   image: ImageSourcePropType;
   source: any;
@@ -22,7 +22,7 @@ export default function MemoryCard({
   source,
   onPress,
   disabled,
-}: MemoryCardProps) {
+}: Props) {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const { width } = useWindowDimensions();
 

@@ -1,5 +1,3 @@
-import { AlertProps } from "@/types";
-import React from "react";
 import {
   Modal,
   View,
@@ -9,6 +7,8 @@ import {
   Image,
   Dimensions,
 } from "react-native";
+import { AlertProps } from "@/types";
+import React from "react";
 
 export default function CustomAlert({
   icon,

@@ -1,7 +1,13 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 
-const OtherRanking = ({ rank, name, points, image, borderColor }: any) => {
+type Props = {
+  rank: string;
+  name: string;
+  points: number;
+}
+
+export default function OtherRanking ({ rank, name, points }: Props) {
   return (
     <View style={styles.container}>
       <Image source={require("@/assets/images/circulo-gradiente.png")} style={styles.avatar} />
@@ -17,7 +23,6 @@ const OtherRanking = ({ rank, name, points, image, borderColor }: any) => {
     </View>
   );
 };
-
 
 const { width, height } = Dimensions.get("window");
 
@@ -54,5 +59,3 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 });
-
-export default OtherRanking;

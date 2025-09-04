@@ -5,10 +5,11 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   ImageSourcePropType,
+  View,
 } from "react-native";
 import { useCheckAudio } from "@/hooks/useCheckAudio";
 
-type AnimalCardProps = {
+type Props = {
   image: ImageSourcePropType;
   source: any;
   title: string;
@@ -30,10 +31,9 @@ export default function AnimalCard({
   id,
   column,
   onSelect,
-}: AnimalCardProps) {
+}: Props) {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
-  //@ts-ignore
-  const cardRef = useRef<TouchableOpacity>(null);
+  const cardRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
   const { width } = useWindowDimensions();
 
   const { checkAudio } = useCheckAudio();
@@ -48,7 +48,7 @@ export default function AnimalCard({
       }
     };
     verifyAudio();
-  }, []);
+  }, [checkAudio]);
 
   const playSound = async () => {
     if (sound) await sound.unloadAsync();
@@ -64,18 +64,22 @@ export default function AnimalCard({
   }, [sound]);
 
   const handlePress = () => {
-    canPlayAudio ? playSound() : null;
+    if (canPlayAudio) {
+      playSound();
+    }
+
     // Mede a posição do componente na tela
-    //@ts-ignore
-    cardRef.current?.measure((x, y, w, h, pageX, pageY) => {
-      onSelect({
-        id,
-        type: title,
-        x: pageX + w / 2,
-        y: pageY + h / 2,
-        column,
-      });
-    });
+    cardRef.current?.measure?.(
+      (x: number, y: number, w: number, h: number, pageX: number, pageY: number) => {
+        onSelect({
+          id,
+          type: title,
+          x: pageX + w / 2,
+          y: pageY + h / 2,
+          column,
+        });
+      }
+    );
   };
 
   return (

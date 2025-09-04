@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,8 +7,14 @@ import {
   ImageBackground,
   Dimensions,
 } from "react-native";
+import React, { useState, useEffect } from "react";
 
-const ProgressBarLvl = ({ pontos, progresso }: any) => {
+type Props = {
+  pontos: string;
+  progresso: number;
+}
+
+const ProgressBarLvl = ({ pontos, progresso }: Props) => {
   const [widthAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {

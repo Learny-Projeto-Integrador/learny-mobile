@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 
-type PodiumCardProps = {
+type Props = {
   rank: number;
   name: string;
   points: number;
   image: any;
 }
 
-export default function PodiumCard({ rank, name, points, image }: PodiumCardProps){
+export default function PodiumCard({ rank, name, points, image }: Props){
   const colors = ["#E3AC0A", "#B8B9BB", "#C55A1D"]
   const borderColor = colors[rank - 1] || "#000";
   const color = colors[rank - 1] || "#000";

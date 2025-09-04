@@ -1,5 +1,3 @@
-import { useEffect, useRef, useState } from "react";
-import { Audio } from "expo-av";
 import {
   Image,
   TouchableOpacity,
@@ -8,21 +6,18 @@ import {
   View,
   Text,
 } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Audio } from "expo-av";
 import { useCheckAudio } from "@/hooks/useCheckAudio";
+import { colorMap } from "@/constants/phaseData";
 
-type SoundCardProps = {
+type Props = {
   image?: ImageSourcePropType;
   source?: any;
   id: string;
   type?: string;
   text?: string;
   onPress?: () => void;
-};
-
-const colorMap: Record<string, string> = {
-  Sad: "#EF5B6A", // vermelho
-  Happy: "#6CD2FF", // amarelo
-  Angry: "#80D25B", // azul
 };
 
 export default function SoundCard({
@@ -32,10 +27,9 @@ export default function SoundCard({
   type,
   text,
   onPress,
-}: SoundCardProps) {
+}: Props) {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
-  //@ts-ignore
-  const cardRef = useRef<TouchableOpacity>(null);
+  const cardRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
   const { width } = useWindowDimensions();
 
   const { checkAudio } = useCheckAudio();
@@ -92,8 +86,7 @@ export default function SoundCard({
       ) : (
         <View
           style={{
-            //@ts-ignore
-            backgroundColor: colorMap[text] || "#ccc",
+            backgroundColor: colorMap[text ? text : ""] || "#ccc",
             width: width * 0.23,
             alignItems: "center",
             justifyContent: "center",

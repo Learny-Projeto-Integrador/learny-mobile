@@ -1,22 +1,21 @@
-import React, { useState } from "react";
 import {
   Pressable,
   TextInput,
-  Text,
   Image,
   View,
   Platform,
   StyleSheet,
   Dimensions,
 } from "react-native";
+import React, { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-interface DateInputProps {
+interface Props {
   valor: string;
   atualizar: (valor: string) => void;
 }
 
-export default function DateInput({ valor, atualizar }: DateInputProps) {
+export default function DateInput({ valor, atualizar }: Props) {
   const [showPicker, setShowPicker] = useState(false);
   const [date, setDate] = useState(new Date());
 

@@ -1,5 +1,3 @@
-import { useGetToken } from "@/hooks/useGetToken";
-import React, { useState } from "react";
 import {
   Modal,
   View,
@@ -9,8 +7,9 @@ import {
   Image,
   Dimensions,
 } from "react-native";
+import React, { useState } from "react";
 
-type ContainerInfoProps = {
+type Props = {
   message: string;
   visible: boolean;
   onClose: () => void;
@@ -20,7 +19,7 @@ export default function ContainerInfo({
   message,
   visible,
   onClose,
-}: ContainerInfoProps) {
+}: Props) {
   return (
     <Modal transparent visible={visible} animationType="fade">
       <TouchableOpacity style={styles.overlay} onPress={onClose}>
