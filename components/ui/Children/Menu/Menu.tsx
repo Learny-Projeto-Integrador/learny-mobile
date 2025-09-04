@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
 import {
   View,
-  Text,
-  Animated,
   Image,
   StyleSheet,
   ImageBackground,
   Dimensions,
   TouchableOpacity,
 } from "react-native";
+import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
