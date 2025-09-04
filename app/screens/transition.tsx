@@ -1,5 +1,10 @@
-import { ImageBackground, Text, StyleSheet, Dimensions, View } from 'react-native';
-
+import { 
+  ImageBackground, 
+  Text, 
+  StyleSheet, 
+  Dimensions, 
+  View 
+} from 'react-native';
 import React, { useEffect } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/types';

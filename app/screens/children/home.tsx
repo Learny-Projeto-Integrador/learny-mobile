@@ -13,6 +13,7 @@ import ContainerMundo from "@/components/ui/Children/ContainerMundo";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
+import { LinearGradient } from "expo-linear-gradient";
 
 const { width, height } = Dimensions.get("window");
 
@@ -43,11 +44,10 @@ export default function HomeScreen() {
     <View style={{ flex: 1 }}>
       <AlertComponent />
       <ScrollView style={styles.container}>
-        <ImageBackground
-          source={require("@/assets/images/fundo-gradiente.png")}
-          resizeMode="cover"
-          style={styles.gradiente}
-        >
+        <LinearGradient
+            colors={['#973e4a', '#4b85a1']}
+            style={styles.gradiente}
+          >
           <View style={{ alignItems: "center" }}>
             {data && (
               <Header
@@ -111,7 +111,7 @@ export default function HomeScreen() {
               </View>
             </ImageBackground>
           </View>
-        </ImageBackground>
+        </LinearGradient>
       </ScrollView>
       <View style={styles.navigationBarWrapper}>
         <NavigationBar />

@@ -1,7 +1,4 @@
-import LoginInput from "@/components/ui/LoginInput";
-import { useState } from "react";
 import {
-  ImageBackground,
   Image,
   Text,
   StyleSheet,
@@ -10,11 +7,14 @@ import {
   ActivityIndicator,
   Dimensions,
 } from "react-native";
+import { useState } from "react";
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useApi } from "@/hooks/useApi";
+import LoginInput from "@/components/ui/LoginInput";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
@@ -49,9 +49,10 @@ export default function LoginScreen() {
   };
 
   return (
-    <ImageBackground
-      source={require("@/assets/images/fundo-gradiente.png")}
-      resizeMode="cover"
+    <LinearGradient
+      colors={['#973e4a', '#4b85a1']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={styles.container}
     >
       <AlertComponent />
@@ -87,7 +88,7 @@ export default function LoginScreen() {
           <Text style={styles.link}>Começe aqui</Text>
         </TouchableOpacity>
       </View>
-    </ImageBackground>
+    </LinearGradient>
   );
 }
 

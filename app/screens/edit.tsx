@@ -1,5 +1,4 @@
 import {
-  ImageBackground,
   StyleSheet,
   Image,
   Text,
@@ -17,6 +16,7 @@ import { useFocusEffect } from "expo-router";
 import { useApi } from "@/hooks/useApi";
 import { useLoading } from "@/contexts/LoadingContext";
 import { pickImage } from "@/utils/pickImage";
+import { LinearGradient } from "expo-linear-gradient";
 
 type Props = NativeStackScreenProps<RootStackParamList, "edit">;
 
@@ -103,9 +103,8 @@ export default function EditScreen({ route, navigation }: Props) {
   );
 
   return (
-    <ImageBackground
-      source={require("@/assets/images/fundo-gradiente.png")}
-      resizeMode="cover"
+    <LinearGradient
+      colors={['#973e4a', '#4b85a1']}
       style={styles.container}
     >
       <AlertComponent />
@@ -165,7 +164,7 @@ export default function EditScreen({ route, navigation }: Props) {
           </View>
         </View>
       )}
-    </ImageBackground>
+    </LinearGradient>
   );
 }
 

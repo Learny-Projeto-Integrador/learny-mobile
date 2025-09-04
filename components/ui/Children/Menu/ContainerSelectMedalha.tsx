@@ -5,11 +5,11 @@ import {
   StyleSheet,
   Image,
   Dimensions,
-  ImageBackground,
 } from "react-native";
 import React from "react";
 import { imgMedalhas } from "@/constants/dadosMedalhas";
 import { useApi } from "@/hooks/useApi";
+import { LinearGradient } from "expo-linear-gradient";
 
 type Props = {
   title: string;
@@ -44,10 +44,10 @@ export default function ContainerSelectMedalha({
   return (
     <Modal transparent visible={visible} animationType="fade">
       <TouchableOpacity style={styles.overlay} onPress={onClose}>
-        <ImageBackground
-          source={require("@/assets/images/fundo-gradiente.png")}
-          style={styles.medalBox}
-        >
+        <LinearGradient
+            colors={['#973e4a', '#4b85a1']}
+            style={styles.medalBox}
+          >
           {medalhas.length === 0 ? (
             <Text style={[styles.message, { color: "#fff" }]}>
               Ainda não possui medalhas
@@ -78,7 +78,7 @@ export default function ContainerSelectMedalha({
               );
             })
           )}
-        </ImageBackground>
+        </LinearGradient>
       </TouchableOpacity>
     </Modal>
   );

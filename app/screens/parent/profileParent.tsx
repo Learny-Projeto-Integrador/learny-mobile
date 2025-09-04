@@ -81,7 +81,7 @@ export default function ProfileParentScreen() {
         )
       }
       <View style={styles.containerWidgets}>
-        <ProgressBarLvl pontos="50" progresso="50" />
+        <ProgressBarLvl pontos="50" progresso={50} />
         <ContainerFilhos
           filhos={childrenData ? childrenData : [{}]}
           filhoSelecionado={filhoSelecionado ? filhoSelecionado : {}}

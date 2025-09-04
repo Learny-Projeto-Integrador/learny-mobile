@@ -1,5 +1,4 @@
 import {
-  ImageBackground,
   StyleSheet,
   Image,
   Text,
@@ -16,6 +15,7 @@ import DateInput from "@/components/ui/DateInput";
 import LoginInput from "@/components/ui/LoginInput";
 import { useApi } from "@/hooks/useApi";
 import { pickImage } from "@/utils/pickImage";
+import { LinearGradient } from "expo-linear-gradient";
 
 type Props = NativeStackScreenProps<RootStackParamList, "register">;
 
@@ -76,9 +76,8 @@ export default function RegisterScreen({ route, navigation }: Props) {
   };
 
   return (
-    <ImageBackground
-      source={require("@/assets/images/fundo-gradiente.png")}
-      resizeMode="cover"
+    <LinearGradient
+      colors={['#973e4a', '#4b85a1']}
       style={styles.container}
     >
       <AlertComponent />
@@ -123,7 +122,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
           <Text style={styles.link}>{idParent ? "Voltar" : "Entre aqui"}</Text>
         </TouchableOpacity>
       </View>
-    </ImageBackground>
+    </LinearGradient>
   );
 }
 
