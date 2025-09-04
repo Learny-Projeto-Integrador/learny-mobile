@@ -10,19 +10,17 @@ import {
 } from "react-native";
 import React from "react";
 import { useState } from "react";
-import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import DateInput from "@/components/ui/DateInput";
 import LoginInput from "@/components/ui/LoginInput";
 import { useApi } from "@/hooks/useApi";
+import { pickImage } from "@/utils/pickImage";
 
 type Props = NativeStackScreenProps<RootStackParamList, "register">;
 
 export default function RegisterScreen({ route, navigation }: Props) {
   const { idParent } = route.params ?? {};
-
   const { loading, request, showAlert, AlertComponent } = useApi();
   const [image, setImage] = useState<string | null>("");
   const [usuario, setUsuario] = useState("");
@@ -31,30 +29,10 @@ export default function RegisterScreen({ route, navigation }: Props) {
   const [email, setEmail] = useState("");
   const [dataNasc, setDataNasc] = useState("");
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const originalUri = result.assets[0].uri;
-      const filename = originalUri.split("/").pop(); // Obtém o nome do arquivo
-      const newPath = `${FileSystem.documentDirectory}${filename}`; // Novo caminho
-
-      try {
-        await FileSystem.copyAsync({
-          from: originalUri,
-          to: newPath,
-        });
-        setImage(newPath); // Atualiza o estado com a nova URI
-      } catch (error) {
-        console.error("Erro ao copiar a imagem:", error);
-      }
-    }
-  };
+  const handlePickImage = async () => {
+    const uri = await pickImage();
+    if (uri) setImage(uri);
+  }
 
   const handleSubmit = async () => {
     let registerRoute;
@@ -90,8 +68,9 @@ export default function RegisterScreen({ route, navigation }: Props) {
           icon: require("@/assets/icons/icon-check-gradiente.png"),
           title: "Sucesso!",
           message: result.message,
-          dual: true,
-          label: idParent ? "Voltar" : "Fazer Login",
+          dualAction: true,
+          redirectLabel: idParent ? "Voltar" : "Fazer Login",
+          onRedirect: () => idParent ? navigation.navigate("profileParent") : navigation.navigate("index"),
       });
     }
   };
@@ -103,8 +82,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
       style={styles.container}
     >
       <AlertComponent />
-      
-      <TouchableOpacity onPress={pickImage}>
+      <TouchableOpacity onPress={handlePickImage}>
         {image ? (
           <Image source={{ uri: image }} style={styles.img} />
         ) : (

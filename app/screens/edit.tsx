@@ -9,53 +9,22 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useState, useCallback } from "react";
-import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import DateInput from "@/components/ui/DateInput";
 import LoginInput from "@/components/ui/LoginInput";
 import { useFocusEffect } from "expo-router";
 import { useApi } from "@/hooks/useApi";
+import { useLoading } from "@/contexts/LoadingContext";
+import { pickImage } from "@/utils/pickImage";
 
 type Props = NativeStackScreenProps<RootStackParamList, "edit">;
 
 export default function EditScreen({ route, navigation }: Props) {
   const { userFilho } = route.params ?? {};
+  const { showLoading, hideLoading } = useLoading();
   const { loading, request, showAlert, AlertComponent } = useApi();
   const [data, setData] = useState<any>(null);
-
-  const updateField = (field: any, value: any) => {
-    setData((prevData: any) => ({
-      ...prevData,
-      [field]: value
-    }));
-  };
-
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const originalUri = result.assets[0].uri;
-      const filename = originalUri.split("/").pop(); // Obtém o nome do arquivo
-      const newPath = `${FileSystem.documentDirectory}${filename}`; // Novo caminho
-
-      try {
-        await FileSystem.copyAsync({
-          from: originalUri,
-          to: newPath,
-        });
-        updateField('foto', newPath);
-      } catch (error) {
-        console.error("Erro ao copiar a imagem:", error);
-      }
-    }
-  };
 
   let pathGet = "pais";
   let pathPut = "pais";
@@ -66,18 +35,27 @@ export default function EditScreen({ route, navigation }: Props) {
     pathDelete = "pais/crianca/" + userFilho;
     pathPut = "pais/criancas";
   }
-  
-  useFocusEffect(
-    useCallback(() => {
-      const fetchData = async () => {
-        const result = await request({
-          endpoint: `/${pathGet}`,
-        });
-        setData(result ?? null);
-      };
-      fetchData();
-    }, [])
-  );
+
+  const fetchData = async () => {
+    showLoading();
+    const result = await request({
+      endpoint: `/${pathGet}`,
+    });
+    setData(result ?? null);
+    hideLoading();
+  };
+
+  const updateField = (field: any, value: any) => {
+    setData((prevData: any) => ({
+      ...prevData,
+      [field]: value
+    }));
+  };
+
+  const handlePickImage = async () => {
+    const uri = await pickImage();
+    if (uri) updateField('foto', uri);
+  }
 
   const handleEdit = async () => {
     const result = await request({
@@ -98,7 +76,7 @@ export default function EditScreen({ route, navigation }: Props) {
         icon: require("@/assets/icons/icon-check-gradiente.png"),
         title: "Sucesso!",
         message: result.message,
-        dual: true,
+        dualAction: true,
       });
     }
   };
@@ -117,6 +95,12 @@ export default function EditScreen({ route, navigation }: Props) {
       });
     }
   };
+  
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   return (
     <ImageBackground
@@ -134,7 +118,7 @@ export default function EditScreen({ route, navigation }: Props) {
                 source={require("@/assets/icons/icon-voltar.png")}
               />
             </TouchableOpacity>
-            <TouchableOpacity onPress={pickImage}>
+            <TouchableOpacity onPress={handlePickImage}>
               {data.foto ? (
                 <Image source={{ uri: data.foto }} style={styles.img} />
               ) : (
