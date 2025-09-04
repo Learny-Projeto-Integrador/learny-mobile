@@ -4,9 +4,7 @@ import {
   Dimensions,
   View,
   TouchableOpacity,
-  Alert,
 } from "react-native";
-
 import React, { useCallback, useState } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -15,11 +13,10 @@ import { useGetToken } from "@/hooks/useGetToken";
 import GradientText from "@/components/ui/GradientText";
 import CustomAlert from "@/components/ui/CustomAlert";
 import { useLoadData } from "@/hooks/useLoadData";
+import { useLoading } from "@/contexts/LoadingContext";
+import { useApi } from "@/hooks/useApi";
 
-type NavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "iconChildren"
->;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList,"iconChildren">;
 
 type ChildData = {
   nome: string;
@@ -27,29 +24,27 @@ type ChildData = {
   avatar: string;
 };
 
-// IMPORT MANUAL DOS AVATARES
-const avatarNames = [
-  "avatar1",
-  "avatar2",
-  "avatar3",
-  "avatar4",
-  "avatar5",
-  "avatar6",
-  "avatar7",
-  "avatar8",
-  "avatar9",
-];
-
 export default function IconChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { showLoading, hideLoading } = useLoading();
+  const { request, showAlert, AlertComponent } = useApi();
   const [data, setData] = useState<ChildData | undefined>(undefined);
-
-  const [alertData, setAlertData] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
-
-  const { getToken } = useGetToken();
-
   const avatarNames = ["avatar1", "avatar2"];
+
+  const fetchData = async () => {
+    showLoading();
+    const result = await request({
+      endpoint: "/criancas",
+    });
+    setData(result ?? null);
+    hideLoading();
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   const getAvatarImage = (name: string) => {
     switch (name) {
@@ -61,71 +56,29 @@ export default function IconChildrenScreen() {
         return undefined;
     }
   };
-
-  const { loadData } = useLoadData();
   
-  useFocusEffect(
-    useCallback(() => {
-      const fetchData = async () => {
-        const data = await loadData("http://10.0.2.2:5000/criancas");
-        setData(data ?? null);
-      };
-      fetchData();
-    }, [])
-  );
 
   const changeAvatar = async (avatarName: string) => {
-    const body = { avatar: avatarName }; // salva o nome apenas
+    const result = await request({
+      endpoint: "/criancas",
+      method: "PUT",
+      body: { 
+        avatar: avatarName,
+      },
+    })
 
-    try {
-      const token = await getToken();
-      const res = await fetch("http://10.0.2.2:5000/criancas", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-      });
-
-      const result = await res.json();
-      if (res.ok) {
-        setAlertData({
-          icon: require("@/assets/icons/icon-check-gradiente.png"),
-          title: "Sucesso!",
-          message: "Avatar alterado com sucesso!",
-        });
-        setAlertVisible(true);
-      } else {
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+    if (result) {
+      showAlert({
+        icon: require("@/assets/icons/icon-check-gradiente.png"),
+        title: "Sucesso!",
+        message: "Avatar alterado com sucesso!",
       });
     }
   };
 
   return (
     <View style={styles.container}>
-      {alertData && (
-        <CustomAlert
-          icon={alertData.icon}
-          visible={alertVisible}
-          onClose={() => setAlertVisible(false)}
-          dualAction={false}
-          title={alertData.title}
-          message={alertData.message}
-        />
-      )}
+      <AlertComponent />
       <View style={styles.scrollContainer}>
         <View style={styles.fundoBranco}></View>
         <View style={styles.containerDados}>

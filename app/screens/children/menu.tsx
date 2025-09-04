@@ -14,7 +14,7 @@ import NavigationBar from "@/components/ui/Children/NavigationBar";
 import ContainerMissoes from "@/components/ui/Children/Menu/ContainerMissoes";
 import Menu from "@/components/ui/Children/Menu/Menu";
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, "menu">;
 
 export default function MenuScreen() {
   const navigation = useNavigation<NavigationProp>();

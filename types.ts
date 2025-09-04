@@ -17,9 +17,16 @@ export type RootStackParamList = {
   atvListening: undefined;
   atvMemory: undefined;
   atvConnect: undefined;
-  sscore: { score: any };
+  score: { score: any };
   scoreFail: { score: any };
 };
+
+// rotas que não exigem parâmetros
+export type RoutesWithoutParams = {
+  [K in keyof RootStackParamList]: RootStackParamList[K] extends undefined
+    ? K
+    : never;
+}[keyof RootStackParamList];
 
 export type ParentData = {
   idParent: string;
