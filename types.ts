@@ -36,6 +36,12 @@ export type ParentData = {
   filhoSelecionado: {fasesConcluidas: any};
 };
 
+export type Medalhas = {
+  nome: string;
+  descricao: string;
+  dataConquista: string;
+};
+
 export type AlertProps = {
   icon: any;
   visible?: boolean;
