@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
+    textAlign: "center",
     fontFamily: "Montserrat_700Bold",
     fontSize: width * 0.04,
     fontWeight: "bold",
