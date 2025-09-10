@@ -20,37 +20,57 @@ import { useFocusEffect } from "expo-router";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
+import Error from "@/components/ui/Error";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "ranking">;
 
 export default function RankingScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { showLoading, hideLoading } = useLoading();
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const { loading, request, showAlert, AlertComponent } = useApi();
   const [pontos, setPontos] = useState(0);
   const [numMedalhas, setNumMedalhas] = useState(0);
   const [rankingAtual, setRankingAtual] = useState(0);
   const [ranking, setRanking] = useState([{}]);
   const [infoVisible, setInfoVisible] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
-    showLoading();
+    showLoadingModal();
+    setError(null);
+
     const result = await request({
       endpoint: "/criancas",
     });
+
+    if (result.error) {
+      setError(result.message);
+      hideLoadingModal();
+      return null;
+    }
+
     setPontos(result.pontos);
     setNumMedalhas(result.medalhas.length);
     setRankingAtual(result.rankingAtual);
-    hideLoading();
+    hideLoadingModal();
   };
 
   const loadRanking = async () => {
-    showLoading();
+    showLoadingModal();
+    setError(null);
+
     const result = await request({
       endpoint: "/criancas/ranking",
     });
+
+    if (result.error) {
+      setError(result.message);
+      hideLoadingModal();
+      return null;
+    }
+    
     setRanking(result);
-    hideLoading();
+    hideLoadingModal();
   };
 
   useFocusEffect(
@@ -73,6 +93,7 @@ export default function RankingScreen() {
 
   return (
     <View style={styles.container}>
+      {error && <Error error={error} onReload={fetchData} />}
       <ContainerInfo
         message={
           "Esse é o ranking. Aqui você entrontra as crianças com a melhor pontuação do 1° ao 7° colocados. Os integrantes do pódios tem um cardespecias, mostrando a foto. Se você ainda não está aqui não fique triste, uma hora você consegue!"

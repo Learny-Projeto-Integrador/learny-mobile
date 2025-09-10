@@ -14,22 +14,24 @@ import DateInput from "@/components/ui/DateInput";
 import LoginInput from "@/components/ui/LoginInput";
 import { useFocusEffect } from "expo-router";
 import { useApi } from "@/hooks/useApi";
-import { useLoading } from "@/contexts/LoadingContext";
 import { pickImage } from "@/utils/pickImage";
 import { LinearGradient } from "expo-linear-gradient";
+import Error from "@/components/ui/Error";
+import { useLoading } from "@/contexts/LoadingContext";
 
 type Props = NativeStackScreenProps<RootStackParamList, "edit">;
 
 export default function EditScreen({ route, navigation }: Props) {
   const { userFilho } = route.params ?? {};
-  const { showLoading, hideLoading } = useLoading();
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const { loading, request, showAlert, AlertComponent } = useApi();
   const [data, setData] = useState<any>(null);
-
+  const [error, setError] = useState<string | null>(null);
+  
   let pathGet = "pais";
   let pathPut = "pais";
   let pathDelete = "pais";
-
+  
   if (userFilho) {
     pathGet = "pais/crianca/" + userFilho;
     pathDelete = "pais/crianca/" + userFilho;
@@ -37,12 +39,19 @@ export default function EditScreen({ route, navigation }: Props) {
   }
 
   const fetchData = async () => {
-    showLoading();
-    const result = await request({
-      endpoint: `/${pathGet}`,
-    });
-    setData(result ?? null);
-    hideLoading();
+    showLoadingModal();
+    setError(null);
+
+    const result = await request({ endpoint: `/${pathGet}` });
+
+    if (result.error) {
+      setError(result.message);
+      hideLoadingModal();
+      return null;
+    }
+
+    setData(result);
+    hideLoadingModal();
   };
 
   const updateField = (field: any, value: any) => {
@@ -107,6 +116,7 @@ export default function EditScreen({ route, navigation }: Props) {
       colors={['#973e4a', '#4b85a1']}
       style={styles.container}
     >
+      {error && <Error error={error} onReload={fetchData} />}
       <AlertComponent />
       {data && (
         <View style={{width: "100%", alignItems: "center", justifyContent: "center"}}>

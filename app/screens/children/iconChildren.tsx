@@ -12,6 +12,7 @@ import type { RootStackParamList } from "@/types";
 import GradientText from "@/components/ui/GradientText";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
+import Error from "@/components/ui/Error";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList,"iconChildren">;
 
@@ -23,18 +24,28 @@ type ChildData = {
 
 export default function IconChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { showLoading, hideLoading } = useLoading();
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const { request, showAlert, AlertComponent } = useApi();
   const [data, setData] = useState<ChildData | undefined>(undefined);
+  const [error, setError] = useState<string | null>(null)
   const avatarNames = ["avatar1", "avatar2"];
 
   const fetchData = async () => {
-    showLoading();
+    showLoadingModal();
+    setError(null)
+
     const result = await request({
       endpoint: "/criancas",
     });
+
+    if (result.error) {
+      setError(result.message);
+      hideLoadingModal();
+      return null;
+    }
+
     setData(result ?? null);
-    hideLoading();
+    hideLoadingModal();
   };
 
   useFocusEffect(
@@ -54,7 +65,6 @@ export default function IconChildrenScreen() {
     }
   };
   
-
   const changeAvatar = async (avatarName: string) => {
     const result = await request({
       endpoint: "/criancas",
@@ -75,6 +85,7 @@ export default function IconChildrenScreen() {
 
   return (
     <View style={styles.container}>
+      {error && <Error error={error} onReload={fetchData} />}
       <AlertComponent />
       <View style={styles.scrollContainer}>
         <View style={styles.fundoBranco}></View>

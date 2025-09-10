@@ -18,6 +18,7 @@ import NavigationBar from "@/components/ui/Children/NavigationBar";
 import ContainerSelectMedalha from "@/components/ui/Children/Menu/ContainerSelectMedalha";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
+import Error from "@/components/ui/Error";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "world">;
 
@@ -29,18 +30,28 @@ const imgMedalhas: any = {
 
 export default function WorldScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { showLoading, hideLoading } = useLoading();
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const { request, AlertComponent } = useApi();
   const [data, setData] = useState<any>(null);
   const [visible, setVisible] = useState(false);
+  const [error, setError] = useState<string | null>(null)
 
   const fetchData = async () => {
-    showLoading();
+    showLoadingModal();
+    setError(null);
+
     const result = await request({
       endpoint: "/criancas",
     });
+
+    if (result.error) {
+      setError(result.message);
+      hideLoadingModal();
+      return null;
+    }
+
     setData(result ?? null);
-    hideLoading();
+    hideLoadingModal();
   };
   
   useFocusEffect(
@@ -98,6 +109,7 @@ export default function WorldScreen() {
           disabled={!faseLiberada}
           style={[faseStyles[fase], { flexDirection: "row" }]}
         >
+          {error && <Error error={error} onReload={fetchData} />}
           {faseLiberada ? (
             <Text style={styles.fase}>{String(fase).padStart(2, "0")}</Text>
           ) : (

@@ -17,6 +17,7 @@ import ContainerAcessibilidade from "@/components/ui/Children/Profile/ContainerA
 import ContainerActionChildren from "@/components/ui/Children/Profile/ContainerActionChildren";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
+import Error from "@/components/ui/Error";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profileChildren">;
 
@@ -24,17 +25,27 @@ const { width, height } = Dimensions.get("window");
 
 export default function ProfileChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { showLoading, hideLoading } = useLoading();
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const { request, showAlert, AlertComponent } = useApi();
   const [data, setData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null)
 
   const fetchData = async () => {
-    showLoading();
+    showLoadingModal();
+    setError(null);
+
     const result = await request({
       endpoint: "/criancas",
     });
+
+    if (result.error) {
+      setError(result.message);
+      hideLoadingModal();
+      return null;
+    }
+
     setData(result ?? null);
-    hideLoading();
+    hideLoadingModal();
   };
 
   useFocusEffect(
@@ -77,6 +88,7 @@ export default function ProfileChildrenScreen() {
 
   return (
     <ScrollView style={styles.container}>
+      {error && <Error error={error} onReload={fetchData} />}
       <AlertComponent />
       <View style={styles.containerDados}>
         <TouchableOpacity
@@ -112,7 +124,7 @@ export default function ProfileChildrenScreen() {
       </View>
 
       <View style={styles.containerWidgets}>
-        <ProgressBarLvl pontos={progressoNivel} progresso={progressoNivel} />
+        <ProgressBarLvl pontos={progressoNivel.toString()} progresso={progressoNivel} />
         <View style={{ gap: 10 }}>
           <ContainerAcessibilidade
             audioAtivo={audio}

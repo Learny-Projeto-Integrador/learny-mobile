@@ -1,15 +1,22 @@
 import { 
-  ActivityIndicator, 
   View, 
   StyleSheet, 
-  Modal 
+  Modal,
+  Dimensions,
 } from "react-native";
+import { Image } from "expo-image";
+
+const { width, height } = Dimensions.get("window");
 
 export default function Loading({ visible }: { visible: boolean }) {
   return (
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.overlay}>
-        <ActivityIndicator size="large" color="#fff" />
+        <Image
+          source={require("@/assets/gifs/loading.gif")}
+          style={{ width: width * 0.5, height: height * 0.5 }}
+          contentFit="contain"
+        />
       </View>
     </Modal>
   );

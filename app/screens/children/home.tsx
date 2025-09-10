@@ -14,24 +14,35 @@ import NavigationBar from "@/components/ui/Children/NavigationBar";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
 import { LinearGradient } from "expo-linear-gradient";
+import Error from "@/components/ui/Error";
 
 const { width, height } = Dimensions.get("window");
 
 export default function HomeScreen() {
-  const { showLoading, hideLoading } = useLoading();
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const { request, AlertComponent } = useApi();
   const [data, setData] = useState<any>(null);
   const [progressoMundo, setProgressoMundo] = useState(0);
+  const [error, setError] = useState<string | null>(null)
 
   const fetchData = async () => {
-    showLoading();
+    showLoadingModal();
+    setError(null)
+
     const result = await request({
       endpoint: "/criancas",
     });
+
+    if (result.error) {
+      setError(result.message);
+      hideLoadingModal();
+      return null;
+    }
+
     const progresso = (result?.mundos[0].faseAtual/4) * 100
     setData(result ?? null);
     setProgressoMundo(progresso)
-    hideLoading();
+    hideLoadingModal();
   };
 
   useFocusEffect(
@@ -42,6 +53,7 @@ export default function HomeScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      {error && <Error error={error} onReload={fetchData} />}
       <AlertComponent />
       <ScrollView style={styles.container}>
         <LinearGradient
