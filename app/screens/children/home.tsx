@@ -15,14 +15,12 @@ import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
 import { LinearGradient } from "expo-linear-gradient";
 import Error from "@/components/ui/Error";
-import { useCustomAlert } from "@/contexts/AlertContext";
 
 const { width, height } = Dimensions.get("window");
 
 export default function HomeScreen() {
   const { showLoadingModal, hideLoadingModal } = useLoading();
   const { request } = useApi();
-  const { showAlert } = useCustomAlert();
   const [data, setData] = useState<any>(null);
   const [progressoMundo, setProgressoMundo] = useState(0);
   const [error, setError] = useState<string | null>(null)
@@ -65,7 +63,7 @@ export default function HomeScreen() {
             {data && (
               <Header
                 pontos={data.pontos}
-                medalhas={data.numMedalhas || 0}
+                medalhas={data.medalhas?.length || 0}
                 ranking={data.rankingAtual}
               />
             )}

@@ -27,7 +27,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, "ranking">;
 export default function RankingScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { showLoadingModal, hideLoadingModal } = useLoading();
-  const { loading, request, showAlert, AlertComponent } = useApi();
+  const { request } = useApi();
   const [pontos, setPontos] = useState(0);
   const [numMedalhas, setNumMedalhas] = useState(0);
   const [rankingAtual, setRankingAtual] = useState(0);
@@ -101,7 +101,6 @@ export default function RankingScreen() {
         visible={infoVisible}
         onClose={() => setInfoVisible(false)}
       />
-      <AlertComponent />
       <ScrollView>
         <View style={{ flexDirection: "row" }}>
           <Image

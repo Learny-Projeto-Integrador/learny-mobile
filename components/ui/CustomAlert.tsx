@@ -44,7 +44,10 @@ export default function CustomAlert({
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.button, styles.redirectButton]}
-                onPress={onRedirect}
+                onPress={() => {
+                  onClose?.()
+                  onRedirect?.()
+                }}
               >
                 <Text style={styles.buttonText}>{redirectLabel}</Text>
               </TouchableOpacity>

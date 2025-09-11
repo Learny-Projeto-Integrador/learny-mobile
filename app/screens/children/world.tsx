@@ -19,7 +19,6 @@ import ContainerSelectMedalha from "@/components/ui/Children/Menu/ContainerSelec
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
 import Error from "@/components/ui/Error";
-import { useCustomAlert } from "@/contexts/AlertContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "world">;
 
@@ -33,7 +32,6 @@ export default function WorldScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { showLoadingModal, hideLoadingModal } = useLoading();
   const { request } = useApi();
-  const { showAlert } = useCustomAlert();
   const [data, setData] = useState<any>(null);
   const [visible, setVisible] = useState(false);
   const [error, setError] = useState<string | null>(null)
@@ -152,7 +150,7 @@ export default function WorldScreen() {
           {data && (
             <Header
               pontos={data.pontos}
-              medalhas={data.numMedalhas}
+              medalhas={data.medalhas?.length || 0}
               ranking={data.rankingAtual}
             />
           )}

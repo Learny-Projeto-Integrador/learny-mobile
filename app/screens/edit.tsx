@@ -28,6 +28,7 @@ export default function EditScreen({ route, navigation }: Props) {
   const { loading, request } = useApi();
   const { showAlert } = useCustomAlert();
   const [data, setData] = useState<any>(null);
+  const [novaSenha, setNovaSenha] = useState("");
   const [error, setError] = useState<string | null>(null);
   
   let pathGet = "pais";
@@ -69,17 +70,19 @@ export default function EditScreen({ route, navigation }: Props) {
   }
 
   const handleEdit = async () => {
+    const body: Record<string, any> = {
+      foto: data?.foto,
+      usuario: data?.usuario,
+      nome: data?.nome,
+      email: data?.email,
+      dataNasc: data?.dataNasc,
+      ...(novaSenha ? { senha: novaSenha } : {}),
+    }
+
     const result = await request({
       endpoint: `/${pathPut}`,
       method: "PUT",
-      body: { 
-        foto: data?.foto,
-        usuario: data?.usuario,
-        nome: data?.nome,
-        senha: data?.senha,
-        email: data?.email,
-        dataNasc: data?.dataNasc,
-      },
+      body,
     })
 
     if (result && !result.error) {
@@ -153,7 +156,7 @@ export default function EditScreen({ route, navigation }: Props) {
           </View>
           <View style={styles.viewInputs}>
           <LoginInput campo="Usuário" valor={data.usuario} atualizar={(value) => updateField('usuario', value)} edit={true} />
-          <LoginInput campo="Nova Senha" valor={data.senha} atualizar={(value) => updateField('senha', value)} />
+          <LoginInput campo="Nova Senha" valor={novaSenha} atualizar={setNovaSenha} />
           <LoginInput campo="Nome" valor={data.nome} atualizar={(value) => updateField('nome', value)} />
           <LoginInput campo="Email" valor={data.email} atualizar={(value) => updateField('email', value)} />
           <DateInput valor={data.dataNasc} atualizar={(value) => updateField('dataNasc', value)} />
@@ -232,11 +235,13 @@ const styles = StyleSheet.create({
     width: width * 0.3,
     height: width * 0.3,
     borderRadius: 20,
+    marginBottom: height * 0.04
   },
   img: {
     width: width * 0.34,
     height: width * 0.34,
     borderRadius: 20,
+    marginBottom: height * 0.04
   },
   viewInputs: {
     backgroundColor: "rgba(52, 52, 52, 0)",

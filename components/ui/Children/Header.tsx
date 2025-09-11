@@ -1,14 +1,10 @@
-import { useState } from "react";
 import {
   ImageBackground,
   Image,
   Text,
   StyleSheet,
-  TouchableOpacity,
   View,
-  ActivityIndicator,
   Dimensions,
-  Alert,
 } from "react-native";
 
 type Props = {
@@ -16,6 +12,7 @@ type Props = {
   medalhas: number;
   ranking: number;
 }
+
 export default function Header({ pontos, medalhas, ranking }: Props) {
   return (
       <View style={styles.container}>

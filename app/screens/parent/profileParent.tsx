@@ -17,12 +17,14 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { ParentData, RootStackParamList } from "@/types";
 import HeaderParent from "@/components/ui/Parent/HeaderParent";
 import { useApi } from "@/hooks/useApi";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profileParent">;
 
 export default function ProfileParentScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { loading, request, showAlert, AlertComponent } = useApi();
+  const { loading, request } = useApi();
+  const { showAlert } = useCustomAlert();
   const [data, setData] = useState<ParentData | undefined>(undefined);
   const [childrenData, setChildrenData] = useState<any>(undefined);
   const [id, setId] = useState("");
@@ -72,7 +74,6 @@ export default function ProfileParentScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <AlertComponent />
       {data && (
           <HeaderParent 
             foto={data.foto}

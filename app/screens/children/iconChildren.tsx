@@ -105,7 +105,7 @@ export default function IconChildrenScreen() {
                   source={
                     data && data.foto
                       ? { uri: data.foto }
-                      : require("@/assets/images/joana.png")
+                      : require("@/assets/images/logo.png")
                   }
                 />
               </View>
