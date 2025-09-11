@@ -1,8 +1,24 @@
-import { useState } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 import CustomAlert from "@/components/ui/CustomAlert";
 import type { AlertData } from "@/types";
 
+type AlertContextType = {
+  showAlert: (data: AlertData) => void;
+};
+
+const AlertContext = createContext<AlertContextType | undefined>(undefined);
+
 export function useCustomAlert() {
+  const context = useContext(AlertContext);
+  if (!context) {
+    throw new Error("useAlert must be used within AlertProvider");
+  }
+  return context;
+}
+
+type Props = { children: ReactNode };
+
+export function AlertProvider({ children }: Props) {
   const [alertData, setAlertData] = useState<AlertData | null>(null);
   const [visible, setVisible] = useState(false);
 
@@ -11,7 +27,6 @@ export function useCustomAlert() {
     setVisible(true);
   };
 
-  // componente pronto para renderizar
   const AlertComponent = () =>
     alertData ? (
       <CustomAlert
@@ -27,5 +42,10 @@ export function useCustomAlert() {
       />
     ) : null;
 
-  return { showAlert, AlertComponent };
+  return (
+    <AlertContext.Provider value={{ showAlert }}>
+      {children}
+      <AlertComponent />
+    </AlertContext.Provider>
+  );
 }
