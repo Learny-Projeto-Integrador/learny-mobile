@@ -16,12 +16,14 @@ import LoginInput from "@/components/ui/LoginInput";
 import { useApi } from "@/hooks/useApi";
 import { pickImage } from "@/utils/pickImage";
 import { LinearGradient } from "expo-linear-gradient";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
 type Props = NativeStackScreenProps<RootStackParamList, "register">;
 
 export default function RegisterScreen({ route, navigation }: Props) {
   const { idParent } = route.params ?? {};
-  const { loading, request, showAlert, AlertComponent } = useApi();
+  const { loading, request } = useApi();
+  const { showAlert } = useCustomAlert();
   const [image, setImage] = useState<string | null>("");
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
@@ -52,17 +54,25 @@ export default function RegisterScreen({ route, navigation }: Props) {
       },
     });
 
-    if (result) {
-      idParent && (
-        // Adicionando a criança na lista de filhos do responsável
-        await request({
+    if (result && !result.error) {
+
+      if (idParent) {
+        const result2 = await request({
           endpoint: `/addcrianca`,
           method: "PUT",
           body: { 
             _id: result.dados._id,
           },
         })
-      );
+
+        if (result2 && result2.error) {
+          showAlert({
+            icon: require("@/assets/icons/icon-alerta.png"),
+            title: "Erro ao vincular a criança!",
+            message: result.message,
+          });
+        }
+      };
 
       showAlert({
           icon: require("@/assets/icons/icon-check-gradiente.png"),
@@ -72,6 +82,12 @@ export default function RegisterScreen({ route, navigation }: Props) {
           redirectLabel: idParent ? "Voltar" : "Fazer Login",
           onRedirect: () => idParent ? navigation.navigate("profileParent") : navigation.navigate("index"),
       });
+    } else {
+      showAlert({
+        icon: require("@/assets/icons/icon-alerta.png"),
+        title: "Erro ao cadastrar os dados!",
+        message: result.message,
+      });
     }
   };
 
@@ -80,7 +96,6 @@ export default function RegisterScreen({ route, navigation }: Props) {
       colors={['#973e4a', '#4b85a1']}
       style={styles.container}
     >
-      <AlertComponent />
       <TouchableOpacity onPress={handlePickImage}>
         {image ? (
           <Image source={{ uri: image }} style={styles.img} />

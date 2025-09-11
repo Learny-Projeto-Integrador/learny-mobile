@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useCustomAlert } from "@/hooks/useCustomAlert";
 import { useGetToken } from "./useGetToken";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
@@ -11,16 +10,14 @@ type RequestParams = {
 };
 
 type ApiError = {
-  error: true;
-  type: string;
-  message: string;
+  error: boolean;
+  status: number;
+  message?: string;
 };
 
 type UseApiReturn<T> = {
   loading: boolean;
   request: (params: RequestParams) => Promise<T | ApiError>;
-  AlertComponent: () => JSX.Element | null;
-  showAlert: ReturnType<typeof useCustomAlert>["showAlert"];
 };
 
 export function useApi<T = any>(
@@ -28,7 +25,6 @@ export function useApi<T = any>(
 ): UseApiReturn<T> {
   const [loading, setLoading] = useState(false);
   const { getToken } = useGetToken();
-  const { showAlert, AlertComponent } = useCustomAlert();
 
   const request = async ({
     endpoint,
@@ -50,22 +46,22 @@ export function useApi<T = any>(
 
       // se a resposta for 204 (No Content), não tenta parsear JSON
       if (res.status === 204) {
-        return {} as T; // retorna um objeto vazio tipado para não quebrar o fluxo
+        return { error: false, status: 204 };
       }
 
       const result = await res.json();
 
       if (!res.ok) {
-        return { error: true, type: "api", message: result.error || "Erro inesperado." };
+        return { error: true, status: 400, message: result.error || "Erro inesperado." };
       }
 
       return result;
     } catch (err) {
-      return { error: true, type: "network", message: "Não foi possível conectar ao servidor." };
+      return { error: true, status: 500, message: "Não foi possível conectar ao servidor." };
     } finally {
       setLoading(false);
     }
   };
 
-  return { loading, request, showAlert, AlertComponent };
+  return { loading, request };
 }

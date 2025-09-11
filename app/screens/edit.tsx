@@ -18,13 +18,15 @@ import { pickImage } from "@/utils/pickImage";
 import { LinearGradient } from "expo-linear-gradient";
 import Error from "@/components/ui/Error";
 import { useLoading } from "@/contexts/LoadingContext";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
 type Props = NativeStackScreenProps<RootStackParamList, "edit">;
 
 export default function EditScreen({ route, navigation }: Props) {
   const { userFilho } = route.params ?? {};
   const { showLoadingModal, hideLoadingModal } = useLoading();
-  const { loading, request, showAlert, AlertComponent } = useApi();
+  const { loading, request } = useApi();
+  const { showAlert } = useCustomAlert();
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   
@@ -80,12 +82,18 @@ export default function EditScreen({ route, navigation }: Props) {
       },
     })
 
-    if (result) {
+    if (result && !result.error) {
       showAlert({
         icon: require("@/assets/icons/icon-check-gradiente.png"),
         title: "Sucesso!",
         message: result.message,
         dualAction: true,
+      });
+    } else {
+      showAlert({
+        icon: require("@/assets/icons/icon-alerta.png"),
+        title: "Erro ao editar os dados!",
+        message: result.message,
       });
     }
   };
@@ -96,11 +104,17 @@ export default function EditScreen({ route, navigation }: Props) {
       method: "DELETE",
     })
 
-    if (result !== null) {
+    if (result && result.status == 204) {
       showAlert({
         icon: require("@/assets/icons/icon-check-gradiente.png"),
         title: "Sucesso!",
         message: "A conta foi excluída com sucesso",
+      });
+    } else {
+      showAlert({
+        icon: require("@/assets/icons/icon-alerta.png"),
+        title: "Erro ao excluir a conta!",
+        message: result.message,
       });
     }
   };
@@ -117,7 +131,6 @@ export default function EditScreen({ route, navigation }: Props) {
       style={styles.container}
     >
       {error && <Error error={error} onReload={fetchData} />}
-      <AlertComponent />
       {data && (
         <View style={{width: "100%", alignItems: "center", justifyContent: "center"}}>
           <View style={styles.containerFoto}>

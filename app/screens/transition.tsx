@@ -11,7 +11,6 @@ import type { RootStackParamList } from '@/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'transition'>;
 
-
 export default function TransitionScreen({ route, navigation }: Props) {
   const { name, type } = route.params;
 

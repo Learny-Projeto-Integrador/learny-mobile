@@ -13,6 +13,7 @@ import GradientText from "@/components/ui/GradientText";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
 import Error from "@/components/ui/Error";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList,"iconChildren">;
 
@@ -25,7 +26,8 @@ type ChildData = {
 export default function IconChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { showLoadingModal, hideLoadingModal } = useLoading();
-  const { request, showAlert, AlertComponent } = useApi();
+  const { request } = useApi();
+  const { showAlert } = useCustomAlert();
   const [data, setData] = useState<ChildData | undefined>(undefined);
   const [error, setError] = useState<string | null>(null)
   const avatarNames = ["avatar1", "avatar2"];
@@ -74,11 +76,17 @@ export default function IconChildrenScreen() {
       },
     })
 
-    if (result) {
+    if (result && !result.error) {
       showAlert({
         icon: require("@/assets/icons/icon-check-gradiente.png"),
         title: "Sucesso!",
         message: "Avatar alterado com sucesso!",
+      });
+    } else {
+      showAlert({
+        icon: require("@/assets/icons/icon-alerta.png"),
+        title: "Erro ao alterar o avatar!",
+        message: result.message,
       });
     }
   };
@@ -86,7 +94,6 @@ export default function IconChildrenScreen() {
   return (
     <View style={styles.container}>
       {error && <Error error={error} onReload={fetchData} />}
-      <AlertComponent />
       <View style={styles.scrollContainer}>
         <View style={styles.fundoBranco}></View>
         <View style={styles.containerDados}>

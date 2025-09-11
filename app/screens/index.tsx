@@ -15,11 +15,13 @@ import type { RootStackParamList } from "@/types";
 import { useApi } from "@/hooks/useApi";
 import LoginInput from "@/components/ui/LoginInput";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
 export default function LoginScreen() {
-  const { loading, request, AlertComponent } = useApi();
+  const { loading, request } = useApi();
+  const { showAlert } = useCustomAlert();
   const navigation = useNavigation<NavigationProp>();
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
@@ -39,11 +41,17 @@ export default function LoginScreen() {
       body: { usuario, senha },
     });
 
-    if (result) {
+    if (result && !result.error) {
       await saveLoginInfo(result.access_token);
       navigation.navigate("transition", {
         name: result.nome,
         type: result.tipo,
+      });
+    } else {
+      showAlert({
+        icon: require("@/assets/icons/icon-alerta.png"),
+        title: "Erro ao logar!",
+        message: result.message,
       });
     }
   };
@@ -55,8 +63,6 @@ export default function LoginScreen() {
       end={{ x: 1, y: 1 }}
       style={styles.container}
     >
-      <AlertComponent />
-      
       <Image style={styles.logo} source={require("@/assets/images/logo.png")} />
       <View style={styles.viewTitle}>
         <Text style={styles.title}>Entre em sua conta Learny</Text>

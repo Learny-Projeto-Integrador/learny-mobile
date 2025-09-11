@@ -18,6 +18,7 @@ import ContainerActionChildren from "@/components/ui/Children/Profile/ContainerA
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
 import Error from "@/components/ui/Error";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profileChildren">;
 
@@ -26,7 +27,8 @@ const { width, height } = Dimensions.get("window");
 export default function ProfileChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { showLoadingModal, hideLoadingModal } = useLoading();
-  const { request, showAlert, AlertComponent } = useApi();
+  const { request } = useApi();
+  const { showAlert } = useCustomAlert();
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null)
 
@@ -63,8 +65,14 @@ export default function ProfileChildrenScreen() {
       },
     })
     
-    if (result) {
+    if (result && !result.error) {
       setData((prev: any) => ({ ...prev, audio: novoValor }));
+    } else {
+      showAlert({
+        icon: require("@/assets/icons/icon-alerta.png"),
+        title: "Erro ao atualizar o áudio!",
+        message: result.message,
+      });
     }
   };
 
@@ -89,7 +97,6 @@ export default function ProfileChildrenScreen() {
   return (
     <ScrollView style={styles.container}>
       {error && <Error error={error} onReload={fetchData} />}
-      <AlertComponent />
       <View style={styles.containerDados}>
         <TouchableOpacity
           onPress={() => navigation.navigate("iconChildren")}

@@ -15,12 +15,14 @@ import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
 import { LinearGradient } from "expo-linear-gradient";
 import Error from "@/components/ui/Error";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
 const { width, height } = Dimensions.get("window");
 
 export default function HomeScreen() {
   const { showLoadingModal, hideLoadingModal } = useLoading();
-  const { request, AlertComponent } = useApi();
+  const { request } = useApi();
+  const { showAlert } = useCustomAlert();
   const [data, setData] = useState<any>(null);
   const [progressoMundo, setProgressoMundo] = useState(0);
   const [error, setError] = useState<string | null>(null)
@@ -54,7 +56,6 @@ export default function HomeScreen() {
   return (
     <View style={{ flex: 1 }}>
       {error && <Error error={error} onReload={fetchData} />}
-      <AlertComponent />
       <ScrollView style={styles.container}>
         <LinearGradient
             colors={['#973e4a', '#4b85a1']}
