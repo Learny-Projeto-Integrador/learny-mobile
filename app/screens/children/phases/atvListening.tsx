@@ -20,7 +20,7 @@ import CustomAlert from "@/components/ui/CustomAlert";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
 import { AlertData } from "@/types";
 import { useCheckMedalha } from "@/hooks/useCheckMedalha";
-import { useCheckAudio } from "@/hooks/useCheckAudio";
+import { useAudio } from "@/contexts/AudioContext";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 
 const { width, height } = Dimensions.get("window");
@@ -76,7 +76,7 @@ export default function AtvListeningScreen() {
   const { getDuration } = useScreenDuration();
   const { submitMission } = useSubmitMission();
   const { checkMedalha } = useCheckMedalha();
-  const { checkAudio } = useCheckAudio();
+  const { checkAudio } = useAudio();
 
   useFocusEffect(
     useCallback(() => {

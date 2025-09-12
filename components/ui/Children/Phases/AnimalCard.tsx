@@ -7,7 +7,7 @@ import {
   ImageSourcePropType,
   View,
 } from "react-native";
-import { useCheckAudio } from "@/hooks/useCheckAudio";
+import { useAudio } from "@/contexts/AudioContext";
 
 type Props = {
   image: ImageSourcePropType;
@@ -36,7 +36,7 @@ export default function AnimalCard({
   const cardRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
   const { width } = useWindowDimensions();
 
-  const { checkAudio } = useCheckAudio();
+  const { checkAudio } = useAudio();
 
   const [canPlayAudio, setCanPlayAudio] = useState(false);
 

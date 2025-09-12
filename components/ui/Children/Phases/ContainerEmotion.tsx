@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
-import { useCheckAudio } from "@/hooks/useCheckAudio";
+import { useAudio } from "@/contexts/AudioContext";
 import { dinoOptions } from "@/constants/phaseData";
 
 type DinoKey = keyof typeof dinoOptions;
@@ -28,7 +28,7 @@ export default function ContainerEmotion({
 
   const images = [dinoOptions[dino].imageApagado, dinoOptions[dino].image];
 
-  const { checkAudio } = useCheckAudio();
+  const { checkAudio } = useAudio();
 
   const [canPlayAudio, setCanPlayAudio] = useState(false);
 

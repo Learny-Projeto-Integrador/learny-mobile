@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
-import { useCheckAudio } from "@/hooks/useCheckAudio";
+import { useAudio } from "@/contexts/AudioContext";
 import { colorMap } from "@/constants/phaseData";
 
 type Props = {
@@ -32,7 +32,7 @@ export default function SoundCard({
   const cardRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
   const { width } = useWindowDimensions();
 
-  const { checkAudio } = useCheckAudio();
+  const { checkAudio } = useAudio();
 
   const [canPlayAudio, setCanPlayAudio] = useState(false);
 

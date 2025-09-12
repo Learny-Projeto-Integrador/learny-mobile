@@ -1,10 +1,17 @@
-import { useGetToken } from "./useGetToken"; // ajuste o caminho se necessário
+import { useCustomAlert } from "@/contexts/AlertContext";
+import { useApi } from "./useApi";
+import { useCheckMedalha } from "./useCheckMedalha";
 
-type MissionData = {
-  pontos: number;
-  fasesConcluidas: number;
-  tipoFase: string;
+const imgsMedalhas: any = {
+  "Iniciando!": require("@/assets/icons/icon-medalha-verde.png"),
+  "A todo o vapor!": require("@/assets/icons/icon-medalha-vermelha.png"),
+  "Desvendando": require("@/assets/icons/icon-medalha-azul.png"),
 };
+
+type Params = {
+  pontos: number,
+  tipoFase: string,
+}
 
 type SubmitMissionResponse = {
   success: boolean;
@@ -13,30 +20,66 @@ type SubmitMissionResponse = {
 };
 
 export const useSubmitMission = () => {
-  const { getToken } = useGetToken();
+  const { showAlert } = useCustomAlert();
+  const { checkMedalha } = useCheckMedalha();
+  const { request } = useApi();
 
-  const submitMission = async (
-    body: MissionData
-  ): Promise<SubmitMissionResponse> => {
+  const submitMission = async ({
+    pontos,
+    tipoFase,
+  }: Params): Promise<SubmitMissionResponse> => {
     try {
-      const token = await getToken();
-
-      const res = await fetch(`http://10.0.2.2:5000/criancas/faseconcluida`, {
+      const result = await request({
+        endpoint: "/criancas/faseconcluida",
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          pontos: pontos,
+          tipoFase: tipoFase
+        }),
       });
 
-      const result = await res.json();
+      console.log(pontos, tipoFase)
+      console.log(result)
 
-      if (res.ok) {
-        return { success: true, result };
+      if (result && !result.error) {
+        const medalha = await checkMedalha();
+
+        if (medalha == "Iniciando!") {
+          pontos != 0 ? pontos += 50 : null
+        } else if (medalha == "A todo o vapor!") {
+          pontos = pontos * 2;
+        }
+
+        if (result.missaoConcluida) {
+          showAlert({
+            icon: require("@/assets/icons/icon-check-gradiente.png"),
+            title: "Missão diária concluída!",
+            message: result.missaoConcluida.descricao,
+          });
+        }
+
+        if (result.medalhaGanha) {
+          for (const medalha of result.medalhasGanhas) {
+            showAlert({
+              icon: imgsMedalhas[medalha.nome],
+              title: "Medalha conquistada!",
+              message: medalha.descricao,
+            });
+          }
+        }
+
+        return { success: true };
+
       } else {
-        return { success: false, error: result.error };
+        showAlert({
+          icon: require("@/assets/icons/icon-check-gradiente.png"),
+          title: "Erro ao adicionar pontução!",
+          message: result.message,
+        });
+
+        return { success: false };
       }
+
     } catch (err) {
       return {
         success: false,

@@ -9,7 +9,7 @@ import {
 import { useState, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 import { useApi } from "@/hooks/useApi";
-import { imgsMissoes } from "@/constants/dadosMissoes";
+import { imgsMissoes } from "@/constants/dadosFases";
 
 type MissaoDiaria = {
   nome: string;

@@ -17,7 +17,7 @@ import { useScreenDuration } from "@/hooks/useScreenDuration";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
 import { useCheckMedalha } from "@/hooks/useCheckMedalha";
 import CustomAlert from "@/components/ui/CustomAlert";
-import { useCheckAudio } from "@/hooks/useCheckAudio";
+import { useAudio } from "@/contexts/AudioContext";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -95,7 +95,7 @@ export default function AtvMemoryScreen() {
   const { getDuration } = useScreenDuration();
   const { submitMission } = useSubmitMission();
   const { checkMedalha } = useCheckMedalha();
-  const { checkAudio } = useCheckAudio();
+  const { checkAudio } = useAudio();
 
   useFocusEffect(
     useCallback(() => {

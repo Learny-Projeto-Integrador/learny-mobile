@@ -61,3 +61,18 @@ export type AlertData = AlertProps & {
     tempo: string;
   };
 };
+
+export type CardInfo = {
+  id: string;
+  type: string;
+  x: number;
+  y: number;
+  column: "left" | "right";
+};
+
+export type Connection = {
+  from: CardInfo;
+  to: CardInfo;
+  isCorrect: boolean;
+  color: string;
+};

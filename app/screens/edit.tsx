@@ -90,7 +90,6 @@ export default function EditScreen({ route, navigation }: Props) {
         icon: require("@/assets/icons/icon-check-gradiente.png"),
         title: "Sucesso!",
         message: result.message,
-        dualAction: true,
       });
     } else {
       showAlert({

@@ -7,3 +7,10 @@ export const imgsMissoes: Record<string, ImageSourcePropType> = {
   "fase feeling": require("@/assets/images/diarias/diaria-emocoes.png"),
   "fase memoria": require("@/assets/images/diarias/diaria-memoria.png"),
 };
+
+export const animalColors: Record<string, string> = {
+  monkey: "#FFB300", // amarelo
+  bird: "#6CD2FF", // azul
+  horse: "#EF5B6A", // marrom
+  snake: "#80D25B", // verde
+};

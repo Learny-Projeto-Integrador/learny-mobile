@@ -6,7 +6,7 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import { Audio } from "expo-av";
-import { useCheckAudio } from "@/hooks/useCheckAudio";
+import { useAudio } from "@/contexts/AudioContext";
 
 type Props = {
   id: string;
@@ -26,7 +26,7 @@ export default function MemoryCard({
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const { width } = useWindowDimensions();
 
-  const { checkAudio } = useCheckAudio();
+  const { checkAudio } = useAudio();
 
   const [canPlayAudio, setCanPlayAudio] = useState(false);
 
