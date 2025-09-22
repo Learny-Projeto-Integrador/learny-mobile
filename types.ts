@@ -76,3 +76,23 @@ export type Connection = {
   isCorrect: boolean;
   color: string;
 };
+
+export type MemoryCardType = {
+  text: string;
+  icon: string;
+  iconText: string;
+  audio: string;
+};
+
+export type SoundItem = {
+  id: string;
+  audio: any;
+  image: any;
+  icon: any;
+  expectedLabel: string;
+};
+
+export type Score = {
+  pontos: number;
+  tempo: number;
+};

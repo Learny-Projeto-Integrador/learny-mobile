@@ -7,34 +7,19 @@ import {
   ImageBackground,
   ScrollView,
 } from "react-native";
-
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import SoundCard from "@/components/ui/Children/Phases/SoundCard";
-
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
+import type { DinoOption, RootStackParamList, Score } from "@/types";
 import GradientText from "@/components/ui/GradientText";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type RouteProp = NativeStackScreenProps<RootStackParamList, "atvMatchAnswer">;
 
-type DinoOption = {
-  id: string;
-  image: string;
-  emotion: string;
-};
-
-type Score = {
-  pontos: number;
-  tempo: number;
-};
-
 export default function AtvMatchAnswerScreen({ route }: RouteProp) {
-  //@ts-ignore
   const { answer }: { answer: DinoOption } = route.params;
-  //@ts-ignore
   const { score }: { score: Score } = route.params;
   const navigation = useNavigation<NavigationProp>();
 

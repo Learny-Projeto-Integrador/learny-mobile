@@ -6,7 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -24,12 +23,12 @@ export default function AtvFeelingScreen() {
   return (
     <ScrollView style={styles.container}>
       <ContainerInfo
-              message={
-                "Essa é a fase feeling. A primeira parte é um reconhecimento, para você descobrir quais são as emoções e seus respectivos dinos. Na segunda etapa você deve selecionar a emoção correta do dino entre as opções."
-              }
-              visible={infoVisible}
-              onClose={() => setInfoVisible(false)}
-            />
+          message={
+            "Essa é a fase feeling. A primeira parte é um reconhecimento, para você descobrir quais são as emoções e seus respectivos dinos. Na segunda etapa você deve selecionar a emoção correta do dino entre as opções."
+          }
+          visible={infoVisible}
+          onClose={() => setInfoVisible(false)}
+        />
       <HeaderFase
         image={require("@/assets/images/watch.png")}
         title="Look & Listen"

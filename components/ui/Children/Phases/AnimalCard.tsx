@@ -1,17 +1,15 @@
-import { useEffect, useRef, useState } from "react";
-import { Audio } from "expo-av";
+import {  useRef } from "react";
+import { useAudioPlayer } from 'expo-audio';
 import {
   Image,
   TouchableOpacity,
   useWindowDimensions,
   ImageSourcePropType,
-  View,
 } from "react-native";
-import { useAudio } from "@/contexts/AudioContext";
 
 type Props = {
   image: ImageSourcePropType;
-  source: any;
+  audio: any;
   title: string;
   id: string;
   column: "left" | "right";
@@ -26,47 +24,23 @@ type Props = {
 
 export default function AnimalCard({
   image,
-  source,
+  audio,
   title,
   id,
   column,
   onSelect,
 }: Props) {
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const sound = useAudioPlayer(audio);
   const cardRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
   const { width } = useWindowDimensions();
 
-  const { checkAudio } = useAudio();
-
-  const [canPlayAudio, setCanPlayAudio] = useState(false);
-
-  useEffect(() => {
-    const verifyAudio = async () => {
-      const result = await checkAudio();
-      if (result !== undefined) {
-        setCanPlayAudio(result);
-      }
-    };
-    verifyAudio();
-  }, [checkAudio]);
-
   const playSound = async () => {
-    if (sound) await sound.unloadAsync();
-    const { sound: newSound } = await Audio.Sound.createAsync(source);
-    setSound(newSound);
-    await newSound.playAsync();
+    sound.seekTo(0);
+    await sound.play();
   };
 
-  useEffect(() => {
-    return () => {
-      if (sound) sound.unloadAsync();
-    };
-  }, [sound]);
-
   const handlePress = () => {
-    if (canPlayAudio) {
-      playSound();
-    }
+    playSound();
 
     // Mede a posição do componente na tela
     cardRef.current?.measure?.(

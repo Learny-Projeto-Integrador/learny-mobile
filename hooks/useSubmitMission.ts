@@ -15,6 +15,7 @@ type Params = {
 
 type SubmitMissionResponse = {
   success: boolean;
+  pontosAtualizados?: number;
   result?: any;
   error?: string;
 };
@@ -29,26 +30,25 @@ export const useSubmitMission = () => {
     tipoFase,
   }: Params): Promise<SubmitMissionResponse> => {
     try {
+
+      const medalha = await checkMedalha();
+
+      if (medalha == "Iniciando!") {
+        pontos != 0 ? pontos += 50 : null
+      } else if (medalha == "A todo o vapor!") {
+        pontos = pontos * 2;
+      }
+
       const result = await request({
         endpoint: "/criancas/faseconcluida",
         method: "PUT",
-        body: JSON.stringify({
+        body: {
           pontos: pontos,
           tipoFase: tipoFase
-        }),
+        },
       });
 
-      console.log(pontos, tipoFase)
-      console.log(result)
-
       if (result && !result.error) {
-        const medalha = await checkMedalha();
-
-        if (medalha == "Iniciando!") {
-          pontos != 0 ? pontos += 50 : null
-        } else if (medalha == "A todo o vapor!") {
-          pontos = pontos * 2;
-        }
 
         if (result.missaoConcluida) {
           showAlert({
@@ -58,7 +58,7 @@ export const useSubmitMission = () => {
           });
         }
 
-        if (result.medalhaGanha) {
+        if (result.medalhasGanhas) {
           for (const medalha of result.medalhasGanhas) {
             showAlert({
               icon: imgsMedalhas[medalha.nome],
@@ -68,7 +68,7 @@ export const useSubmitMission = () => {
           }
         }
 
-        return { success: true };
+        return { success: true, pontosAtualizados: pontos };
 
       } else {
         showAlert({

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   ScrollView,
@@ -11,46 +11,36 @@ import {
 import {
   useNavigation,
   NavigationProp,
-  useFocusEffect,
 } from "@react-navigation/native";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import SoundCard from "@/components/ui/Children/Phases/SoundCard";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
-import CustomAlert from "@/components/ui/CustomAlert";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
-import { AlertData } from "@/types";
-import { useCheckMedalha } from "@/hooks/useCheckMedalha";
+import { SoundItem } from "@/types";
 import { useAudio } from "@/contexts/AudioContext";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
+import { useCheckHint } from "@/hooks/useCheckHint";
 
 const { width, height } = Dimensions.get("window");
-
-type SoundItem = {
-  id: string;
-  source: any;
-  image: any;
-  icon: any;
-  expectedLabel: string;
-};
 
 const sounds: SoundItem[] = [
   {
     id: "1",
-    source: require("@/assets/audios/cow.wav"),
+    audio: require("@/assets/audios/cow.wav"),
     image: require("@/assets/images/som-vermelho.png"),
     icon: require("@/assets/icons/icon-vaca.png"),
     expectedLabel: "Cow",
   },
   {
     id: "2",
-    source: require("@/assets/audios/bird.wav"),
+    audio: require("@/assets/audios/bird.wav"),
     image: require("@/assets/images/som-amarelo.png"),
     icon: require("@/assets/icons/icon-passaro.png"),
     expectedLabel: "Bird",
   },
   {
     id: "3",
-    source: require("@/assets/audios/dog.wav"),
+    audio: require("@/assets/audios/dog.wav"),
     image: require("@/assets/images/som-azul.png"),
     icon: require("@/assets/icons/icon-cachorro.png"),
     expectedLabel: "Dog",
@@ -61,66 +51,22 @@ const colors = ["#EF5B6A", "#FFB300", "#6CD2FF"];
 
 export default function AtvListeningScreen() {
   const navigation = useNavigation<NavigationProp<any>>();
-  const [assignments, setAssignments] = useState<{ [soundId: string]: string }>(
-    {}
-  );
-
-  const [alertDica, setAlertDica] = useState<AlertData | null>(null);
-  const [alertQueue, setAlertQueue] = useState<AlertData[]>([]);
-  const [currentAlert, setCurrentAlert] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [medalha, setMedalha] = useState<string | null>(null);
-  const [audio, setAudio] = useState<any>(null);
+  const [assignments, setAssignments] = useState<{ [soundId: string]: string }>({});
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
 
   const { getDuration } = useScreenDuration();
   const { submitMission } = useSubmitMission();
-  const { checkMedalha } = useCheckMedalha();
-  const { checkAudio } = useAudio();
+  const { audioEnabled, checkAudio } = useAudio();
+  const { setHintUsed, checkHint } = useCheckHint();
 
-  useFocusEffect(
-    useCallback(() => {
-      const fetchMedalha = async () => {
-        const nomeMedalha = await checkMedalha();
-        setMedalha(nomeMedalha ?? null);
-      };
-      const fetchAudio = async () => {
-        const audio = await checkAudio();
-        setAudio(audio ?? null);
-      };
-      fetchAudio();
-      fetchMedalha();
-    }, [])
-  );
-
-  const showNextAlert = () => {
-    if (alertQueue.length > 0) {
-      const [next, ...rest] = alertQueue;
-      setCurrentAlert(next);
-      setAlertQueue(rest);
-      setAlertVisible(true);
-    } else {
-      setCurrentAlert(null);
-      // Vai para a tela de score quando todos os alertas forem fechados
-      navigation.navigate("score", {
-        score: currentAlert?.score,
-      });
-    }
-  };
   const handleAssign = (soundId: string, label: string) => {
     setAssignments((prev) => ({ ...prev, [soundId]: label }));
   };
 
-  const handleHint = () => {
-    if (medalha != "Desvendando") {
-      setAlertDica({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message: 'Você precisa estar com a medalha "Desvendando"',
-      });
-      setAlertVisible(true);
-      return;
-    }
+  const handleHint = async () => {
+    const canUse = await checkHint();
+    if (!canUse) return;
+
     for (const sound of sounds) {
       const isAssigned = assignments[sound.id];
       if (!isAssigned) {
@@ -131,6 +77,8 @@ export default function AtvListeningScreen() {
         break; // Aplica a dica a apenas um item
       }
     }
+
+    setHintUsed(true); // marca que a dica foi usada
   };
 
   const handleConfirm = async () => {
@@ -143,66 +91,24 @@ export default function AtvListeningScreen() {
     let pontos = (correct / sounds.length) * 100;
     let porcentagem = parseFloat(((correct / sounds.length) * 100).toFixed(0)); // arredondado
 
-    if (medalha == "Iniciando!") {
-      pontos != 0 ? pontos += 50 : null
-    } else if (medalha == "A todo o vapor!") {
-      pontos = pontos * 2;
-    }
-
     // Arredonda pontos depois dos bônus/multiplicadores
     pontos = parseFloat(pontos.toFixed(0));
 
-    const body: any = {
-      pontos: pontos,
-      fasesConcluidas: 1,
-      tipoFase: "listening",
-    };
-
-    const response = await submitMission(body);
+    const response = await submitMission({
+      pontos: pontos, 
+      tipoFase: "listening"
+    });
 
     if (response.success) {
-      const score = { pontos, porcentagem, tempo: durationFormatted };
-      const newAlerts: AlertData[] = [];
-
-      if (response.result.missaoConcluida) {
-        newAlerts.push({
-          title: "Diária concluída!",
-          message: response.result.missaoConcluida.descricao,
-          score,
-        });
-      }
-
-      if (
-        response.result.medalhasGanhas &&
-        response.result.medalhasGanhas.length > 0
-      ) {
-        for (const medalha of response.result.medalhasGanhas) {
-          newAlerts.push({
-            //@ts-ignore
-            icon: imgsMedalhas[medalha.nome],
-            title: "Medalha conquistada!",
-            message: medalha.descricao || "Você ganhou uma medalha!",
-            score,
-          });
-        }
-      }
-
-      if (newAlerts.length > 0) {
-        setCurrentAlert(newAlerts[0]);
-        setAlertQueue(newAlerts.slice(1)); // Apenas o restante entra na fila
-        setAlertVisible(true);
-      } else {
-        navigation.navigate("score", { score });
-      }
-    } else {
-      setCurrentAlert({
-        title: "Erro!",
-        message: response.error ? response.error : "Erro desconhecido",
-      });
-      setAlertQueue([]);
-      setAlertVisible(true);
+      let pontosAtualizados = response.pontosAtualizados ?? pontos;
+      const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
+      navigation.navigate("score", { score });
     }
   };
+
+  useEffect(() => {
+    checkAudio();
+  }, []);
 
   return (
     <ScrollView style={styles.container}>
@@ -213,37 +119,6 @@ export default function AtvListeningScreen() {
         visible={infoVisible}
         onClose={() => setInfoVisible(false)}
       />
-      {currentAlert && (
-        <CustomAlert
-          icon={
-            currentAlert.icon ??
-            require("@/assets/icons/icon-check-gradiente.png")
-          }
-          visible={alertVisible}
-          onClose={() => {
-            setAlertVisible(false);
-            showNextAlert();
-          }}
-          dualAction={false}
-          title={currentAlert.title}
-          message={currentAlert.message}
-        />
-      )}
-      {alertDica && (
-        <CustomAlert
-          icon={
-            alertDica.icon ??
-            require("@/assets/icons/icon-check-gradiente.png")
-          }
-          visible={alertVisible}
-          onClose={() => {
-            setAlertVisible(false);
-          }}
-          dualAction={false}
-          title={alertDica.title}
-          message={alertDica.message}
-        />
-      )}
       <HeaderFase
         image={require("@/assets/images/listen.png")}
         title="Listen & Answer"
@@ -254,12 +129,12 @@ export default function AtvListeningScreen() {
 
       <View style={styles.containerSounds}>
         {sounds.map((sound) =>
-          audio ? (
+          audioEnabled ? (
             <SoundCard
               key={sound.id}
               id={sound.id}
               image={sound.image}
-              source={sound.source}
+              audio={sound.audio}
             />
           ) : (
             <View

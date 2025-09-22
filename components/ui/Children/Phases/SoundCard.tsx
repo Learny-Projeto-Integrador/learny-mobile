@@ -6,14 +6,13 @@ import {
   View,
   Text,
 } from "react-native";
-import { useEffect, useRef, useState } from "react";
-import { Audio } from "expo-av";
-import { useAudio } from "@/contexts/AudioContext";
+import { useRef } from "react";
+import { useAudioPlayer } from 'expo-audio';
 import { colorMap } from "@/constants/phaseData";
 
 type Props = {
   image?: ImageSourcePropType;
-  source?: any;
+  audio?: any;
   id: string;
   type?: string;
   text?: string;
@@ -22,45 +21,22 @@ type Props = {
 
 export default function SoundCard({
   image,
-  source,
-  id,
+  audio,
   type,
   text,
   onPress,
 }: Props) {
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const sound = useAudioPlayer(audio);
   const cardRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
   const { width } = useWindowDimensions();
 
-  const { checkAudio } = useAudio();
-
-  const [canPlayAudio, setCanPlayAudio] = useState(false);
-
-  useEffect(() => {
-    const verifyAudio = async () => {
-      const result = await checkAudio();
-      if (result !== undefined) {
-        setCanPlayAudio(result);
-      }
-    };
-    verifyAudio();
-  }, []);
-
   const playSound = async () => {
-    if (sound) await sound.unloadAsync();
-    const { sound: newSound } = await Audio.Sound.createAsync(source);
-    setSound(newSound);
-    await newSound.playAsync();
+    sound.seekTo(0);
+    sound.play();
   };
-
-  useEffect(() => {
-    return () => {
-      if (sound) sound.unloadAsync();
-    };
-  }, [sound]);
-
+  
   const press = () => {
-    canPlayAudio ? playSound() : null;
+    playSound();
     onPress ? onPress() : null;
   };
 

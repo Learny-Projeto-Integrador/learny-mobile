@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import CustomAlert from "@/components/ui/CustomAlert";
 import type { AlertData } from "@/types";
 
@@ -23,25 +23,21 @@ export function AlertProvider({ children }: Props) {
 
   const showAlert = (data: AlertData) => {
     setQueue(prev => [...prev, data]);
-    // se não tiver alerta atual, mostra imediatamente
-    if (!current) {
-      setCurrent(data);
+  };
+
+  // quando não há alerta atual e a fila tem itens, pega o próximo
+  useEffect(() => {
+    if (!current && queue.length > 0) {
+      const [next, ...rest] = queue;
+      setCurrent(next);
+      setQueue(rest);
       setVisible(true);
     }
-  };
+  }, [queue, current]);
 
   const handleClose = () => {
     setVisible(false);
-    setQueue(prevQueue => {
-      const [, ...rest] = prevQueue; // remove o primeiro
-      if (rest.length > 0) {
-        setCurrent(rest[0]);
-        setVisible(true);
-      } else {
-        setCurrent(null);
-      }
-      return rest;
-    });
+    setCurrent(null); // isso vai ativar o useEffect acima e puxar o próximo da fila
   };
 
   const AlertComponent = () =>

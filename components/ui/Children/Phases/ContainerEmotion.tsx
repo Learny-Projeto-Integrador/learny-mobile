@@ -6,15 +6,12 @@ import {
   Dimensions,
   StyleSheet,
 } from "react-native";
-import { useEffect, useRef, useState } from "react";
-import { Audio } from "expo-av";
-import { useAudio } from "@/contexts/AudioContext";
+import { useState } from "react";
+import { useAudioPlayer } from 'expo-audio';
 import { dinoOptions } from "@/constants/phaseData";
 
-type DinoKey = keyof typeof dinoOptions;
-
 type Props = {
-  dino: DinoKey;
+  dino: any;
   emotion: string;
   color: string;
 };
@@ -24,43 +21,17 @@ export default function ContainerEmotion({
   emotion,
   color,
 }: Props) {
+  const sound = useAudioPlayer(dinoOptions[dino].audio);
   const [imageIndex, setImageIndex] = useState(0);
-
   const images = [dinoOptions[dino].imageApagado, dinoOptions[dino].image];
 
-  const { checkAudio } = useAudio();
-
-  const [canPlayAudio, setCanPlayAudio] = useState(false);
-
-  useEffect(() => {
-    const verifyAudio = async () => {
-      const result = await checkAudio();
-      if (result !== undefined) {
-        setCanPlayAudio(result);
-      }
-    };
-    verifyAudio();
-  }, []);
-
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
-
   const playSound = async () => {
-    if (sound) await sound.unloadAsync();
-    const { sound: newSound } = await Audio.Sound.createAsync(
-      dinoOptions[dino].source
-    );
-    setSound(newSound);
-    await newSound.playAsync();
+    sound.seekTo(0);
+    sound.play();
   };
 
-  useEffect(() => {
-    return () => {
-      if (sound) sound.unloadAsync();
-    };
-  }, [sound]);
-
   const handlePress = () => {
-    canPlayAudio ? playSound() : null;
+    playSound();
     setImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 

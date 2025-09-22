@@ -19,7 +19,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type RouteProp = NativeStackScreenProps<RootStackParamList, "score">;
 
 type Score = {
-  pontos: number;
+  pontosAtualizados: number;
   porcentagem: number;
   tempo: number;
 };
@@ -71,7 +71,7 @@ export default function ScoreScreen({ route }: RouteProp) {
             source={require("@/assets/images/pontos.png")}
             style={styles.containerScore}
           >
-            <Text style={styles.txtScore}>{score.pontos}</Text>
+            <Text style={styles.txtScore}>{score.pontosAtualizados}</Text>
           </ImageBackground>
           <ImageBackground
             source={require("@/assets/images/porcentagem.png")}

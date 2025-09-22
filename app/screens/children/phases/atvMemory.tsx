@@ -6,30 +6,22 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-
-import React, { useCallback, useEffect, useState } from "react";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "@/types";
+import type { MemoryCardType, RootStackParamList } from "@/types";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import MemoryCard from "@/components/ui/Children/Phases/MemoryCard";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
-import { useCheckMedalha } from "@/hooks/useCheckMedalha";
 import CustomAlert from "@/components/ui/CustomAlert";
 import { useAudio } from "@/contexts/AudioContext";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
+import { useCheckHint } from "@/hooks/useCheckHint";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-type AnimalCard = {
-  text: string;
-  icon: string;
-  iconText: string;
-  audio: string;
-};
-
-const animalCards: Record<string, AnimalCard> = {
+const animalCards: Record<string, MemoryCardType> = {
   monkey: {
     text: require("@/assets/images/cards/memory/card-monkey-text.png"),
     icon: require("@/assets/images/cards/memory/card-monkey-icon.png"),
@@ -54,7 +46,7 @@ export default function AtvMemoryScreen() {
   const navigation = useNavigation<NavigationProp>();
 
   const generateCards = () => {
-    if (audio === null) return [];
+    if (audioEnabled === null) return [];
     
     const cards = [];
     let id = 1;
@@ -70,7 +62,7 @@ export default function AtvMemoryScreen() {
         id: `${id++}`,
         animal,
         type: "icon",
-        image: audio ? animalCards[animal].icon : animalCards[animal].iconText,
+        image: audioEnabled ? animalCards[animal].icon : animalCards[animal].iconText,
         audio: animalCards[animal].audio,
       });
     }
@@ -83,70 +75,16 @@ export default function AtvMemoryScreen() {
   const [selected, setSelected] = useState<string[]>([]);
   const [matched, setMatched] = useState<string[]>([]);
   const [isChecking, setIsChecking] = useState(false);
-
-  const [alertDica, setAlertDica] = useState<AlertData | null>(null);
-  const [alertQueue, setAlertQueue] = useState<AlertData[]>([]);
-  const [currentAlert, setCurrentAlert] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [medalha, setMedalha] = useState<string | null>(null);
-  const [audio, setAudio] = useState<boolean | null>(null);
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
-
-  const { getDuration } = useScreenDuration();
-  const { submitMission } = useSubmitMission();
-  const { checkMedalha } = useCheckMedalha();
-  const { checkAudio } = useAudio();
-
-  useFocusEffect(
-    useCallback(() => {
-      const fetchMedalha = async () => {
-        const nomeMedalha = await checkMedalha();
-        setMedalha(nomeMedalha ?? null);
-      };
-      const fetchAudio = async () => {
-        const audio = await checkAudio();
-        setAudio(audio ?? null);
-      };
-      fetchAudio();
-      fetchMedalha();
-    }, [])
-  );
-
-  useEffect(() => {
-    if (audio !== null) {
-      setCards(generateCards());
-    }
-  }, [audio]);
   
-
-  const showNextAlert = () => {
-    if (alertQueue.length > 0) {
-      const [next, ...rest] = alertQueue;
-      setCurrentAlert(next);
-      setAlertQueue(rest);
-      setAlertVisible(true);
-    } else {
-      setCurrentAlert(null);
-      // Vai para a tela de score quando todos os alertas forem fechados
-      navigation.navigate("score", {
-        //@ts-ignore
-        score: currentAlert?.score,
-      });
-    }
-  };
-
-  const handleHint = () => {
-    if (medalha != "Desvendando") {
-      setAlertDica({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message: 'Você precisa estar com a medalha "Desvendando"',
-      });
-      setAlertVisible(true);
-      return;
-    }
-
-    if (isChecking) return;
+  const { getDuration } = useScreenDuration();
+  const { audioEnabled, checkAudio } = useAudio();
+  const { submitMission } = useSubmitMission();
+  const { setHintUsed, checkHint } = useCheckHint();
+  
+  const handleHint = async () => {
+    const canUse = await checkHint();
+    if (!canUse) return;
 
     // Filtra cartas disponíveis (não selecionadas nem combinadas)
     const availableCards = cards.filter(
@@ -182,7 +120,10 @@ export default function AtvMemoryScreen() {
         }
       }
     }
+
+    setHintUsed(true); // marca que a dica foi usada
   };
+
   const handleCardPress = (id: string, animal: string, type: string) => {
     if (isChecking || selected.includes(id) || matched.includes(id)) return;
 
@@ -214,74 +155,38 @@ export default function AtvMemoryScreen() {
     }
   };
 
-  useEffect(() => {
-    if (matched.length === cards.length) {
-      handleConfirm();
-    }
-  }, [matched]);
-
   const handleConfirm = async () => {
     const { durationFormatted } = getDuration();
     let pontos = 100;
     let porcentagem = 100;
 
-    if (medalha == "Iniciando!") {
-      pontos != 0 ? pontos += 50 : null
-    } else if (medalha == "A todo o vapor!") {
-      pontos = pontos * 2;
-    }
-
-    const body: any = {
-      pontos: pontos,
-      fasesConcluidas: 1,
-      tipoFase: "memory",
-    };
-
-    const response = await submitMission(body);
+    const response = await submitMission({
+      pontos: pontos, 
+      tipoFase: "memory"
+    });
 
     if (response.success) {
-      const score = { pontos, porcentagem, tempo: durationFormatted };
-      const newAlerts: AlertData[] = [];
-
-      if (response.result.missaoConcluida) {
-        newAlerts.push({
-          title: "Diária concluída!",
-          message: response.result.missaoConcluida.descricao,
-          score,
-        });
-      }
-
-      if (
-        response.result.medalhasGanhas &&
-        response.result.medalhasGanhas.length > 0
-      ) {
-        for (const medalha of response.result.medalhasGanhas) {
-          newAlerts.push({
-            //@ts-ignore
-            icon: imgsMedalhas[medalha.nome],
-            title: "Medalha conquistada!",
-            message: medalha.descricao || "Você ganhou uma medalha!",
-            score,
-          });
-        }
-      }
-
-      if (newAlerts.length > 0) {
-        setCurrentAlert(newAlerts[0]);
-        setAlertQueue(newAlerts.slice(1)); // Apenas o restante entra na fila
-        setAlertVisible(true);
-      } else {
-        navigation.navigate("score", { score });
-      }
-    } else {
-      setCurrentAlert({
-        title: "Erro!",
-        message: response.error ? response.error : "Erro desconhecido",
-      });
-      setAlertQueue([]);
-      setAlertVisible(true);
+      let pontosAtualizados = response.pontosAtualizados ?? pontos;
+      const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
+      navigation.navigate("score", { score });
     }
   };
+
+  useEffect(() => {
+    checkAudio();
+  }, []);
+
+  useEffect(() => {
+    if (audioEnabled !== null) {
+      setCards(generateCards());
+    }
+  }, [audioEnabled]);
+
+  useEffect(() => {
+    if (matched.length === cards.length) {
+      handleConfirm();
+    }
+  }, [matched]);
 
   return (
     <ScrollView style={styles.container}>
@@ -292,37 +197,6 @@ export default function AtvMemoryScreen() {
         visible={infoVisible}
         onClose={() => setInfoVisible(false)}
       />
-      {currentAlert && (
-        <CustomAlert
-          icon={
-            currentAlert.icon ??
-            require("@/assets/icons/icon-check-gradiente.png")
-          }
-          visible={alertVisible}
-          onClose={() => {
-            setAlertVisible(false);
-            showNextAlert();
-          }}
-          dualAction={false}
-          title={currentAlert.title}
-          message={currentAlert.message}
-        />
-      )}
-      {alertDica && (
-        <CustomAlert
-          icon={
-            alertDica.icon ??
-            require("@/assets/icons/icon-check-gradiente.png")
-          }
-          visible={alertVisible}
-          onClose={() => {
-            setAlertVisible(false);
-          }}
-          dualAction={false}
-          title={alertDica.title}
-          message={alertDica.message}
-        />
-      )}
       <HeaderFase
         image={require("@/assets/images/memory.png")}
         title="Memory Game"
@@ -341,7 +215,7 @@ export default function AtvMemoryScreen() {
                 ? card.image
                 : require("@/assets/images/cards/memory/card-base.png")
             }
-            source={audio ? card.audio : null}
+            audio={audioEnabled ? card.audio : null}
             onPress={() => handleCardPress(card.id, card.animal, card.type)}
             disabled={isChecking}
           />
