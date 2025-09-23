@@ -38,6 +38,8 @@ export default function ContainerSelectMedalha({
 
     if (result) {
       onClose();
+      // recarrega a tela após o modal ser fechado
+      onSelectMedalha();
     }
   };
 
@@ -64,7 +66,6 @@ export default function ContainerSelectMedalha({
                   style={{ flexDirection: "row", marginHorizontal: 10 }}
                   onPress={() => {
                     changeMedalha(medalha);
-                    onSelectMedalha(medalha);
                   }}
                 >
                   <Image
