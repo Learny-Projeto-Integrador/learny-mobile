@@ -9,7 +9,6 @@ import {
 import { CustomSwitch } from "../../CutsomSwitch";
 import GradientText from "../../GradientText";
 
-
 type Props = {
   audioAtivo: boolean;
   onChangeAudio: (val: boolean) => void;

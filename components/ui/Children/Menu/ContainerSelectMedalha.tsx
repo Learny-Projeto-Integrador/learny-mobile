@@ -1,29 +1,22 @@
-//@ts-nocheck
-import { useGetToken } from "@/hooks/useGetToken";
-import React, { useState } from "react";
 import {
   Modal,
-  View,
   Text,
   TouchableOpacity,
   StyleSheet,
   Image,
   Dimensions,
-  ImageBackground,
 } from "react-native";
+import React from "react";
+import { imgMedalhas } from "@/constants/dadosMedalhas";
+import { useApi } from "@/hooks/useApi";
+import { LinearGradient } from "expo-linear-gradient";
 
-type ContainerSelectMedalhaProps = {
+type Props = {
+  title: string;
   medalhas: any;
   visible: boolean;
   onClose: () => void;
-  onSelectMedalha: () => void;
-  title: string;
-};
-
-const imgMedalhas = {
-  "Iniciando!": require("@/assets/icons/medalha-verde-select.png"),
-  "A todo o vapor!": require("@/assets/icons/medalha-vermelha-select.png"),
-  Desvendando: require("@/assets/icons/medalha-azul-select.png"),
+  onSelectMedalha: (medalha?: any) => void;
 };
 
 export default function ContainerSelectMedalha({
@@ -31,50 +24,38 @@ export default function ContainerSelectMedalha({
   visible,
   onClose,
   onSelectMedalha,
-}: ContainerSelectMedalhaProps) {
-  const { getToken } = useGetToken();
+}: Props) {
+  const { request } = useApi();
 
   const changeMedalha = async (medalha: any) => {
-    const body: any = {
-      medalhaSelecionada: medalha,
-    };
+    const result = await request({
+      endpoint: "/criancas",
+      method: "PUT",
+      body: { 
+        medalhaSelecionada: medalha
+      },
+    })
 
-    try {
-      const token = await getToken();
-
-      const res = await fetch(`http://10.0.2.2:5000/criancas`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        onClose();
-      } else {
-        alert(result.error);
-      }
-    } catch (err: any) {
-      alert(err.message);
+    if (result) {
+      onClose();
+      // recarrega a tela após o modal ser fechado
+      onSelectMedalha();
     }
   };
+
   return (
     <Modal transparent visible={visible} animationType="fade">
       <TouchableOpacity style={styles.overlay} onPress={onClose}>
-        <ImageBackground
-          source={require("@/assets/images/fundo-gradiente.png")}
-          style={styles.medalBox}
-        >
+        <LinearGradient
+            colors={['#973e4a', '#4b85a1']}
+            style={styles.medalBox}
+          >
           {medalhas.length === 0 ? (
             <Text style={[styles.message, { color: "#fff" }]}>
               Ainda não possui medalhas
             </Text>
           ) : (
-            medalhas.map((medalha, index) => {
+            medalhas.map((medalha: any, index: any) => {
               const imgSource = imgMedalhas[medalha.nome];
 
               if (!imgSource) return null;
@@ -85,7 +66,6 @@ export default function ContainerSelectMedalha({
                   style={{ flexDirection: "row", marginHorizontal: 10 }}
                   onPress={() => {
                     changeMedalha(medalha);
-                    onSelectMedalha(medalha);
                   }}
                 >
                   <Image
@@ -99,7 +79,7 @@ export default function ContainerSelectMedalha({
               );
             })
           )}
-        </ImageBackground>
+        </LinearGradient>
       </TouchableOpacity>
     </Modal>
   );

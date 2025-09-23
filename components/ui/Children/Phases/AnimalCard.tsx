@@ -1,16 +1,15 @@
-import { useEffect, useRef, useState } from "react";
-import { Audio } from "expo-av";
+import {  useRef } from "react";
+import { useAudioPlayer } from 'expo-audio';
 import {
   Image,
   TouchableOpacity,
   useWindowDimensions,
   ImageSourcePropType,
 } from "react-native";
-import { useCheckAudio } from "@/hooks/useCheckAudio";
 
-type AnimalCardProps = {
+type Props = {
   image: ImageSourcePropType;
-  source: any;
+  audio: any;
   title: string;
   id: string;
   column: "left" | "right";
@@ -25,57 +24,36 @@ type AnimalCardProps = {
 
 export default function AnimalCard({
   image,
-  source,
+  audio,
   title,
   id,
   column,
   onSelect,
-}: AnimalCardProps) {
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
-  //@ts-ignore
-  const cardRef = useRef<TouchableOpacity>(null);
+}: Props) {
+  const sound = useAudioPlayer(audio);
+  const cardRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
   const { width } = useWindowDimensions();
 
-  const { checkAudio } = useCheckAudio();
-
-  const [canPlayAudio, setCanPlayAudio] = useState(false);
-
-  useEffect(() => {
-    const verifyAudio = async () => {
-      const result = await checkAudio();
-      if (result !== undefined) {
-        setCanPlayAudio(result);
-      }
-    };
-    verifyAudio();
-  }, []);
-
   const playSound = async () => {
-    if (sound) await sound.unloadAsync();
-    const { sound: newSound } = await Audio.Sound.createAsync(source);
-    setSound(newSound);
-    await newSound.playAsync();
+    sound.seekTo(0);
+    await sound.play();
   };
 
-  useEffect(() => {
-    return () => {
-      if (sound) sound.unloadAsync();
-    };
-  }, [sound]);
-
   const handlePress = () => {
-    canPlayAudio ? playSound() : null;
+    playSound();
+
     // Mede a posição do componente na tela
-    //@ts-ignore
-    cardRef.current?.measure((x, y, w, h, pageX, pageY) => {
-      onSelect({
-        id,
-        type: title,
-        x: pageX + w / 2,
-        y: pageY + h / 2,
-        column,
-      });
-    });
+    cardRef.current?.measure?.(
+      (x: number, y: number, w: number, h: number, pageX: number, pageY: number) => {
+        onSelect({
+          id,
+          type: title,
+          x: pageX + w / 2,
+          y: pageY + h / 2,
+          column,
+        });
+      }
+    );
   };
 
   return (

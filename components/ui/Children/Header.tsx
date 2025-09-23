@@ -1,23 +1,19 @@
-import { useState } from "react";
 import {
   ImageBackground,
   Image,
   Text,
   StyleSheet,
-  TouchableOpacity,
   View,
-  ActivityIndicator,
   Dimensions,
-  Alert,
 } from "react-native";
 
-type HeaderProps = {
-    pontos: number;
-    medalhas: number;
-    ranking: number;
+type Props = {
+  pontos: number;
+  medalhas: number;
+  ranking: number;
 }
 
-export default function Header({pontos,medalhas,ranking}: HeaderProps) {
+export default function Header({ pontos, medalhas, ranking }: Props) {
   return (
       <View style={styles.container}>
         <View style={styles.areaPontos}>

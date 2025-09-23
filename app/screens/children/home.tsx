@@ -1,4 +1,3 @@
-import { useCallback, useState } from "react";
 import {
   ImageBackground,
   Text,
@@ -7,59 +6,64 @@ import {
   Dimensions,
   ScrollView,
 } from "react-native";
+import { useCallback, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import type { AlertData } from "@/types";
 import Header from "@/components/ui/Children/Header";
 import ContainerMundo from "@/components/ui/Children/ContainerMundo";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
-import CustomAlert from "@/components/ui/CustomAlert";
-import { useLoadData } from "@/hooks/useLoadData";
+import { useLoading } from "@/contexts/LoadingContext";
+import { useApi } from "@/hooks/useApi";
+import { LinearGradient } from "expo-linear-gradient";
+import Error from "@/components/ui/Error";
 
 const { width, height } = Dimensions.get("window");
 
 export default function HomeScreen() {
+  const { showLoadingModal, hideLoadingModal } = useLoading();
+  const { request } = useApi();
   const [data, setData] = useState<any>(null);
-  const [alertData, setAlertData] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
   const [progressoMundo, setProgressoMundo] = useState(0);
+  const [error, setError] = useState<string | null>(null)
 
-  const { loadData } = useLoadData();
+  const fetchData = async () => {
+    showLoadingModal();
+    setError(null)
+
+    const result = await request({
+      endpoint: "/criancas",
+    });
+
+    if (result.error) {
+      setError(result.message);
+      hideLoadingModal();
+      return null;
+    }
+
+    const progresso = (result?.mundos[0].faseAtual/4) * 100
+    setData(result ?? null);
+    setProgressoMundo(progresso)
+    hideLoadingModal();
+  };
 
   useFocusEffect(
     useCallback(() => {
-      const fetchData = async () => {
-        const data = await loadData("http://10.0.2.2:5000/criancas");
-        const progresso = (data?.mundos[0].faseAtual/4) * 100
-        setData(data ?? null);
-        setProgressoMundo(progresso)
-      };
       fetchData();
     }, [])
   );
 
   return (
     <View style={{ flex: 1 }}>
-      {alertData && (
-        <CustomAlert
-          icon={alertData.icon}
-          visible={alertVisible}
-          title={alertData.title}
-          message={alertData.message}
-          dualAction={false}
-          onClose={() => setAlertVisible(false)}
-        />
-      )}
+      {error && <Error error={error} onReload={fetchData} />}
       <ScrollView style={styles.container}>
-        <ImageBackground
-          source={require("@/assets/images/fundo-gradiente.png")}
-          resizeMode="cover"
-          style={styles.gradiente}
-        >
+        <LinearGradient
+            colors={['#973e4a', '#4b85a1']}
+            style={styles.gradiente}
+          >
           <View style={{ alignItems: "center" }}>
             {data && (
               <Header
                 pontos={data.pontos}
-                medalhas={data.numMedalhas || 0}
+                medalhas={data.medalhas?.length || 0}
                 ranking={data.rankingAtual}
               />
             )}
@@ -75,8 +79,7 @@ export default function HomeScreen() {
             nome="Floresta do Dino"
             nomeIngles="Dinos's Forest"
             num={1}
-            //@ts-ignore
-            progresso={progressoMundo}
+            progresso={progressoMundo.toString()}
             cor="#329F00"
           />
           <ContainerMundo
@@ -111,7 +114,6 @@ export default function HomeScreen() {
           <View style={styles.viewTimeAttack}>
             <ImageBackground
               style={styles.viewTimeAttack}
-              //@ts-ignore
               source={require("@/assets/images/fundo-timeAttack.png")}
             >
               <View style={styles.containerDadosTimeAttack}>
@@ -120,7 +122,7 @@ export default function HomeScreen() {
               </View>
             </ImageBackground>
           </View>
-        </ImageBackground>
+        </LinearGradient>
       </ScrollView>
       <View style={styles.navigationBarWrapper}>
         <NavigationBar />
@@ -138,8 +140,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: height * 0.07, // ajuste conforme o tamanho da sua barra
-    backgroundColor: "transparent", // ou a cor de fundo da barra
+    height: height * 0.07,
+    backgroundColor: "transparent",
   },
   gradiente: {
     flex: 1,

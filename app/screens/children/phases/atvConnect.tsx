@@ -1,5 +1,3 @@
-//@ts-nocheck
-import React, { useState, useCallback } from "react";
 import {
   ScrollView,
   View,
@@ -8,48 +6,32 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import React, { useState, useEffect } from "react";
 import Svg, { Line } from "react-native-svg";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "@/types";
+import type { CardInfo, Connection, RootStackParamList } from "@/types";
 import AnimalCard from "@/components/ui/Children/Phases/AnimalCard";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
-import CustomAlert from "@/components/ui/CustomAlert";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
-import { useCheckMedalha } from "@/hooks/useChceckMedalha";
-import { useCheckAudio } from "@/hooks/useCheckAudio";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
+import { useCheckHint } from "@/hooks/useCheckHint";
+import { animalColors } from "@/constants/dadosFases";
+import { useAudio } from "@/contexts/AudioContext";
+
+const cards = [
+  { id: "1", title: "monkey", img: require("@/assets/images/cards/connect/card-macaco.png"), audio: require("@/assets/audios/monkey.wav") },
+  { id: "2", title: "horse",  img: require("@/assets/images/cards/connect/card-cavalo.png"), audio: require("@/assets/audios/horse.wav") },
+  { id: "3", title: "snake",  img: require("@/assets/images/cards/connect/card-cobra.png"),  audio: require("@/assets/audios/snake.wav") },
+  { id: "4", title: "bird",   img: require("@/assets/images/cards/connect/card-passaro.png"), audio: require("@/assets/audios/bird.wav") },
+  { id: "5", title: "horse",  img: require("@/assets/images/cards/connect/card-cavalo.png"), audio: require("@/assets/audios/horse.wav") },
+  { id: "6", title: "bird",   img: require("@/assets/images/cards/connect/card-passaro.png"), audio: require("@/assets/audios/bird.wav") },
+  { id: "7", title: "monkey", img: require("@/assets/images/cards/connect/card-macaco.png"), audio: require("@/assets/audios/monkey.wav") },
+  { id: "8", title: "snake",  img: require("@/assets/images/cards/connect/card-cobra.png"),  audio: require("@/assets/audios/snake.wav") },
+];
 
 const { width, height } = Dimensions.get("window");
-
-type CardInfo = {
-  id: string;
-  type: string;
-  x: number;
-  y: number;
-  column: "left" | "right";
-};
-
-type Connection = {
-  from: CardInfo;
-  to: CardInfo;
-  isCorrect: boolean;
-  color: string;
-};
-
-const animalColors: Record<string, string> = {
-  monkey: "#FFB300", // amarelo
-  bird: "#6CD2FF", // azul
-  horse: "#EF5B6A", // marrom
-  snake: "#80D25B", // verde
-};
-
-const imgsMedalhas = {
-  "Iniciando!": require("@/assets/icons/icon-medalha-verde.png"),
-  "A todo o vapor!": require("@/assets/icons/icon-medalha-vermelha.png"),
-  Desvendando: require("@/assets/icons/icon-medalha-azul.png"),
-};
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -57,51 +39,13 @@ export default function AtvConnectScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [selected, setSelected] = useState<CardInfo[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
-
-  const [alertDica, setAlertDica] = useState<AlertData | null>(null);
-  const [alertQueue, setAlertQueue] = useState<AlertData[]>([]);
-  const [currentAlert, setCurrentAlert] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
   const [hiddenCardIds, setHiddenCardIds] = useState<Set<string>>(new Set());
-  const [medalha, setMedalha] = useState<string | null>(null);
-  const [hintUsed, setHintUsed] = useState(false);
-  const [audio, setAudio] = useState<any>(null);
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
-
+  
   const { getDuration } = useScreenDuration();
+  const { audioEnabled, checkAudio } = useAudio();
   const { submitMission } = useSubmitMission();
-  const { checkMedalha } = useCheckMedalha();
-  const { checkAudio } = useCheckAudio();
-
-  useFocusEffect(
-    useCallback(() => {
-      const fetchMedalha = async () => {
-        const nomeMedalha = await checkMedalha();
-        setMedalha(nomeMedalha ?? null);
-      };
-      const fetchAudio = async () => {
-        const audio = await checkAudio();
-        setAudio(audio ?? null);
-      };
-      fetchAudio();
-      fetchMedalha();
-    }, [])
-  );
-
-  const showNextAlert = () => {
-    if (alertQueue.length > 0) {
-      const [next, ...rest] = alertQueue;
-      setCurrentAlert(next);
-      setAlertQueue(rest);
-      setAlertVisible(true);
-    } else {
-      setCurrentAlert(null);
-      // Vai para a tela de score quando todos os alertas forem fechados
-      navigation.navigate("score", {
-        score: currentAlert?.score,
-      });
-    }
-  };
+  const { setHintUsed, checkHint } = useCheckHint();
 
   const handleSelect = (card: CardInfo) => {
     if (connections.some((c) => c.from.id === card.id || c.to.id === card.id))
@@ -139,75 +83,22 @@ export default function AtvConnectScreen() {
     let porcentagem = (correctCount / 4) * 100;
     let pontos = (correctCount / 4) * 100;
 
-    if (medalha == "Iniciando!") {
-      pontos != 0 ? pontos += 50 : null
-    } else if (medalha == "A todo o vapor!") {
-      pontos = pontos * 2;
-    }
-
-    const body = {
-      pontos,
-      fasesConcluidas: 1,
-      tipoFase: "connect",
-    };
-
-    const response = await submitMission(body);
+    const response = await submitMission({
+      pontos: pontos, 
+      tipoFase: "connect"
+    });
 
     if (response.success) {
-      const score = { pontos, porcentagem, tempo: durationFormatted };
-      const newAlerts: AlertData[] = [];
-
-      if (response.result.missaoConcluida) {
-        newAlerts.push({
-          title: "Diária concluída!",
-          message: response.result.missaoConcluida.descricao,
-          score,
-        });
-      }
-
-      if (
-        response.result.medalhasGanhas &&
-        response.result.medalhasGanhas.length > 0
-      ) {
-        for (const medalha of response.result.medalhasGanhas) {
-          newAlerts.push({
-            icon: imgsMedalhas[medalha.nome],
-            title: "Medalha conquistada!",
-            message: medalha.descricao || "Você ganhou uma medalha!",
-            score,
-          });
-        }
-      }
-
-      if (newAlerts.length > 0) {
-        setCurrentAlert(newAlerts[0]);
-        setAlertQueue(newAlerts.slice(1)); // Apenas o restante entra na fila
-        setAlertVisible(true);
-      } else {
-        navigation.navigate("score", { score });
-      }
-    } else {
-      setCurrentAlert({
-        title: "Erro!",
-        message: response.error ? response.error : "Erro desconhecido",
-      });
-      setAlertQueue([]);
-      setAlertVisible(true);
+      let pontosAtualizados = response.pontosAtualizados ?? pontos;
+      const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
+      navigation.navigate("score", { score });
     }
   };
 
-  const handleHint = () => {
-    if (hintUsed) return; // impede uso múltiplo
+  const handleHint = async () => {
+    const canUse = await checkHint();
+    if (!canUse) return;
 
-    if (medalha != "Desvendando") {
-      setAlertDica({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message: 'Você precisa estar com a medalha "Desvendando"',
-      });
-      setAlertVisible(true);
-      return;
-    }
     const allPairs: { left: CardInfo; right: CardInfo }[] = [
       {
         left: { id: "1", type: "monkey", column: "left", x: 100, y: 200 },
@@ -244,7 +135,7 @@ export default function AtvConnectScreen() {
     const pair = unusedPairs[Math.floor(Math.random() * unusedPairs.length)];
     const color = animalColors[pair.left.type];
 
-    setConnections((prev) => [
+    setConnections((prev: any) => [
       ...prev,
       {
         from: 0,
@@ -258,6 +149,10 @@ export default function AtvConnectScreen() {
     setHintUsed(true); // marca que a dica foi usada
   };
 
+  useEffect(() => {
+    checkAudio();
+  }, []);
+
   return (
     <ScrollView style={styles.container}>
       <ContainerInfo
@@ -267,37 +162,6 @@ export default function AtvConnectScreen() {
         visible={infoVisible}
         onClose={() => setInfoVisible(false)}
       />
-      {currentAlert && (
-        <CustomAlert
-          icon={
-            currentAlert.icon ??
-            require("@/assets/icons/icon-check-gradiente.png")
-          }
-          visible={alertVisible}
-          onClose={() => {
-            setAlertVisible(false);
-            showNextAlert();
-          }}
-          dualAction={false}
-          title={currentAlert.title}
-          message={currentAlert.message}
-        />
-      )}
-      {alertDica && (
-        <CustomAlert
-          icon={
-            alertDica.icon ??
-            require("@/assets/icons/icon-check-gradiente.png")
-          }
-          visible={alertVisible}
-          onClose={() => {
-            setAlertVisible(false);
-          }}
-          dualAction={false}
-          title={alertDica.title}
-          message={alertDica.message}
-        />
-      )}
       <HeaderFase
         image={require("@/assets/images/watch.png")}
         title="Look & Connect"
@@ -323,99 +187,34 @@ export default function AtvConnectScreen() {
 
       <View style={styles.containerCards}>
         <View style={{ gap: height * 0.03 }}>
-          {!hiddenCardIds.has("1") && (
-            <AnimalCard
-              id="1"
-              title="monkey"
-              image={require("@/assets/images/cards/connect/card-macaco.png")}
-              source={
-                audio ? require("@/assets/audios/monkey.wav") : null
-              }
-              column="left"
-              onSelect={handleSelect}
-            />
-          )}
-          {!hiddenCardIds.has("2") && (
-            <AnimalCard
-              id="2"
-              title="horse"
-              image={require("@/assets/images/cards/connect/card-cavalo.png")}
-              source={
-                audio ? require("@/assets/audios/horse.wav") : null
-              }
-              column="left"
-              onSelect={handleSelect}
-            />
-          )}
-          {!hiddenCardIds.has("3") && (
-            <AnimalCard
-              id="3"
-              title="snake"
-              image={require("@/assets/images/cards/connect/card-cobra.png")}
-              source={
-                audio ? require("@/assets/audios/snake.wav") : null
-              }
-              column="left"
-              onSelect={handleSelect}
-            />
-          )}
-          {!hiddenCardIds.has("4") && (
-            <AnimalCard
-              id="4"
-              title="bird"
-              image={require("@/assets/images/cards/connect/card-passaro.png")}
-              source={audio ? require("@/assets/audios/bird.wav") : null}
-              column="left"
-              onSelect={handleSelect}
-            />
+          {cards.slice(0, 4).map((card: any) =>
+            !hiddenCardIds.has(card.id) && (
+              <AnimalCard
+                key={card.id}
+                id={card.id}
+                title={card.title}
+                image={card.img}
+                audio={audioEnabled ? card.audio : null}
+                column="left"
+                onSelect={handleSelect}
+              />
+            )
           )}
         </View>
+
         <View style={{ gap: height * 0.03 }}>
-          {!hiddenCardIds.has("5") && (
-            <AnimalCard
-              id="5"
-              title="horse"
-              image={require("@/assets/images/cards/connect/card-cavalo.png")}
-              source={
-                audio ? require("@/assets/audios/horse.wav") : null
-              }
-              column="right"
-              onSelect={handleSelect}
-            />
-          )}
-          {!hiddenCardIds.has("6") && (
-            <AnimalCard
-              id="6"
-              title="bird"
-              image={require("@/assets/images/cards/connect/card-passaro.png")}
-              source={audio ? require("@/assets/audios/bird.wav") : null}
-              column="right"
-              onSelect={handleSelect}
-            />
-          )}
-          {!hiddenCardIds.has("7") && (
-            <AnimalCard
-              id="7"
-              title="monkey"
-              image={require("@/assets/images/cards/connect/card-macaco.png")}
-              source={
-                audio ? require("@/assets/audios/monkey.wav") : null
-              }
-              column="right"
-              onSelect={handleSelect}
-            />
-          )}
-          {!hiddenCardIds.has("8") && (
-            <AnimalCard
-              id="8"
-              title="snake"
-              image={require("@/assets/images/cards/connect/card-cobra.png")}
-              source={
-                audio ? require("@/assets/audios/snake.wav") : null
-              }
-              column="right"
-              onSelect={handleSelect}
-            />
+          {cards.slice(4).map((card: any) =>
+            !hiddenCardIds.has(card.id) && (
+              <AnimalCard
+                key={card.id}
+                id={card.id}
+                title={card.title}
+                image={card.img}
+                audio={audioEnabled ? card.audio : null}
+                column="right"
+                onSelect={handleSelect}
+              />
+            )
           )}
         </View>
       </View>

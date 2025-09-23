@@ -7,13 +7,13 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-type HeaderFaseProps = {
+type Props = {
   image: any;
   title: string;
   description: string;
@@ -27,7 +27,7 @@ export default function HeaderFase({
   description,
   color,
   onPressInfo,
-}: HeaderFaseProps) {
+}: Props) {
   const navigation = useNavigation<NavigationProp>();
   return (
     <View style={{ flex: 1 }}>

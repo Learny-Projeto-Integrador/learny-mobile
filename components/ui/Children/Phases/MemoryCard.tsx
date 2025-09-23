@@ -1,61 +1,36 @@
-import { useEffect, useRef, useState } from "react";
-import { Audio } from "expo-av";
 import {
   Image,
   TouchableOpacity,
   useWindowDimensions,
   ImageSourcePropType,
 } from "react-native";
-import { useCheckAudio } from "@/hooks/useCheckAudio";
+import { useAudioPlayer } from 'expo-audio';
 
-type MemoryCardProps = {
+type Props = {
   id: string;
   image: ImageSourcePropType;
-  source: any;
+  audio: any;
   onPress: () => void;
   disabled: boolean;
 };
 
 export default function MemoryCard({
-  id,
   image,
-  source,
+  audio,
   onPress,
   disabled,
-}: MemoryCardProps) {
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+}: Props) {
+  const sound = useAudioPlayer(audio);
   const { width } = useWindowDimensions();
 
-  const { checkAudio } = useCheckAudio();
-
-  const [canPlayAudio, setCanPlayAudio] = useState(false);
-
-  useEffect(() => {
-    const verifyAudio = async () => {
-      const result = await checkAudio();
-      if (result !== undefined) {
-        setCanPlayAudio(result);
-      }
-    };
-    verifyAudio();
-  }, []);
-
   const playSound = async () => {
-    if (sound) await sound.unloadAsync();
-    const { sound: newSound } = await Audio.Sound.createAsync(source);
-    setSound(newSound);
-    await newSound.playAsync();
+    sound.seekTo(0);
+    sound.play();
   };
-
-  useEffect(() => {
-    return () => {
-      if (sound) sound.unloadAsync();
-    };
-  }, [sound]);
-
+  
   const handlePress = async () => {
     if (disabled) return; // impede ação
-    canPlayAudio ? await playSound() : null;
+    playSound();
     onPress();
   };
 

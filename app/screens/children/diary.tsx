@@ -15,7 +15,7 @@ import ContainerMissoes from "@/components/ui/Children/Menu/ContainerMissoes";
 import ContainerMedalhas from "@/components/ui/Children/ContainerMedalhas";
 import GradientText from "@/components/ui/GradientText";
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, "diary">;
 
 export default function DiaryScreen() {
   const navigation = useNavigation<NavigationProp>();

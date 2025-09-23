@@ -1,7 +1,4 @@
-import LoginInput from "@/components/ui/LoginInput";
-import { useState } from "react";
 import {
-  ImageBackground,
   Image,
   Text,
   StyleSheet,
@@ -9,127 +6,76 @@ import {
   View,
   ActivityIndicator,
   Dimensions,
-  Alert,
 } from "react-native";
+import { useState } from "react";
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "@/types";
+import type { RootStackParamList } from "@/types";
+import { useApi } from "@/hooks/useApi";
+import LoginInput from "@/components/ui/LoginInput";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import CustomAlert from "@/components/ui/CustomAlert";
-import { useArduino } from "@/contexts/ArduinoContext";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
 export default function LoginScreen() {
+  const { loading, request } = useApi();
+  const { showAlert } = useCustomAlert();
   const navigation = useNavigation<NavigationProp>();
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
 
-  const [alertData, setAlertData] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
-
-  const { setArduinoOnline } = useArduino();
-
-  const saveLoginInfo = async (token: string, arduino: boolean) => {
+  const saveLoginInfo = async (token: string) => {
     try {
-      await AsyncStorage.multiSet([
-        ["token", token],
-        ["arduino", JSON.stringify(arduino)],
-      ]);
-      setArduinoOnline(arduino); // Atualiza o contexto
+      await AsyncStorage.setItem("token", token);
     } catch (e) {
       console.error("Erro ao salvar dados de login", e);
     }
   };
-  
+
   const handleLogin = async () => {
-    setLoading(true);
+    const result = await request({
+      endpoint: "/login",
+      method: "POST",
+      body: { usuario, senha },
+    });
 
-    try {
-      const res = await fetch("http://10.0.2.2:5000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          usuario: usuario,
-          senha: senha,
-        }),
+    if (result && !result.error) {
+      await saveLoginInfo(result.access_token);
+      navigation.navigate("transition", {
+        name: result.nome,
+        type: result.tipo,
       });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        await saveLoginInfo(result.access_token, result.arduino);
-        navigation.navigate("transition", {
-          name: result.nome,
-          type: result.tipo,
-        });
-      } else {
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
+    } else {
+      showAlert({
         icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+        title: "Erro ao logar!",
+        message: result.message,
       });
-      setAlertVisible(true);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const handleRedirect = () => {
-    navigation.navigate("register", { idParent: undefined });
-  };
-
   return (
-    <ImageBackground
-      source={require("@/assets/images/fundo-gradiente.png")}
-      resizeMode="cover"
+    <LinearGradient
+      colors={['#973e4a', '#4b85a1']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={styles.container}
     >
-      {alertData && (
-        <CustomAlert
-          icon={alertData.icon}
-          visible={alertVisible}
-          onClose={() => setAlertVisible(false)}
-          dualAction={false}
-          title={alertData.title}
-          message={alertData.message}
-        />
-      )}
-      <Image
-        style={styles.logo}
-        source={require("@/assets/images/logo.png")}
-      />
+      <Image style={styles.logo} source={require("@/assets/images/logo.png")} />
       <View style={styles.viewTitle}>
         <Text style={styles.title}>Entre em sua conta Learny</Text>
         <Text style={styles.subTitle}>
           Faça login com suas informações de cadastro
         </Text>
       </View>
+
       <View style={styles.viewInputs}>
         <LoginInput campo="Usuário" valor={usuario} atualizar={setUsuario} />
         <LoginInput campo="Senha" valor={senha} atualizar={setSenha} />
-        <TouchableOpacity
-          style={styles.button}
-          onPress={
-            // @ts-ignore
-            () => handleLogin()
-          }
-        >
+
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
           {loading ? (
             <ActivityIndicator size="large" color="#547d98" />
           ) : (
@@ -137,13 +83,18 @@ export default function LoginScreen() {
           )}
         </TouchableOpacity>
       </View>
+
       <View style={styles.viewLink}>
         <Text style={styles.txt}>Sem uma Conta?</Text>
-        <TouchableOpacity onPress={() => handleRedirect()}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("register", { idParent: undefined })
+          }
+        >
           <Text style={styles.link}>Começe aqui</Text>
         </TouchableOpacity>
       </View>
-    </ImageBackground>
+    </LinearGradient>
   );
 }
 

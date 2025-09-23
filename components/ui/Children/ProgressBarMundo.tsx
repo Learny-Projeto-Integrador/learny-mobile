@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   Animated,
-  Image,
   StyleSheet,
-  ImageBackground,
   Dimensions,
 } from "react-native";
+import React, { useState, useEffect } from "react";
 
 const ProgressBarMundo = ({ progresso, cor }: any) => {
   const [widthAnim] = useState(new Animated.Value(0));

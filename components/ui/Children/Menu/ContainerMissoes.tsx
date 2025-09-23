@@ -5,41 +5,30 @@ import {
   Dimensions,
   Image,
   ImageBackground,
-  ImageSourcePropType,
 } from "react-native";
 import { useState, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useGetToken } from "@/hooks/useGetToken";
-import { useLoadData } from "@/hooks/useLoadData";
+import { useApi } from "@/hooks/useApi";
+import { imgsMissoes } from "@/constants/dadosFases";
 
 type MissaoDiaria = {
   nome: string;
   descricao: string;
 };
 
-const imgsMissoes: Record<string, ImageSourcePropType> = {
-  "uma fase": require("@/assets/images/diarias/diaria-uma-fase.png"),
-  "fase connect": require("@/assets/images/diarias/diaria-ligar.png"),
-  "fase listening": require("@/assets/images/diarias/diaria-escuta.png"),
-  "fase feeling": require("@/assets/images/diarias/diaria-emocoes.png"),
-  "fase memoria": require("@/assets/images/diarias/diaria-memoria.png"),
-};
-
 export default function ContainerMissoes() {
-  const [missoesDiarias, setMissoesDiarias] = useState<MissaoDiaria[] | null>(
-    null
-  );
-  const { getToken } = useGetToken();
+  const [missoesDiarias, setMissoesDiarias] = useState<MissaoDiaria[] | null>(null);
+  const { request } = useApi();
 
-  const { loadData } = useLoadData();
+  const fetchData = async () => {
+    const result = await request({
+      endpoint: "/criancas",
+    });
+    setMissoesDiarias(result.medalhas ?? null);
+  };
   
   useFocusEffect(
     useCallback(() => {
-      const fetchData = async () => {
-        const data = await loadData("http://10.0.2.2:5000/criancas");
-        setMissoesDiarias(data.missoesDiarias ?? null);
-      };
       fetchData();
     }, [])
   );

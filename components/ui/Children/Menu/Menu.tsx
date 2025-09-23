@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from "react";
 import {
   View,
-  Text,
-  Animated,
   Image,
   StyleSheet,
-  ImageBackground,
   Dimensions,
   TouchableOpacity,
 } from "react-native";
+import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import CustomAlert from "../../CustomAlert";
+import { LinearGradient } from "expo-linear-gradient";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -20,8 +18,8 @@ export default function Menu() {
   const navigation = useNavigation<NavigationProp>();
   const [alertVisible, setAlertVisible] = useState(false);
   return (
-    <ImageBackground
-      source={require("@/assets/images/fundo-gradiente-claro.png")}
+    <LinearGradient
+      colors={['#b25563', '#669bbb']}
       style={styles.container}
     >
       <CustomAlert
@@ -67,7 +65,7 @@ export default function Menu() {
           />
         </TouchableOpacity>
       </View>
-    </ImageBackground>
+    </LinearGradient>
   );
 }
 

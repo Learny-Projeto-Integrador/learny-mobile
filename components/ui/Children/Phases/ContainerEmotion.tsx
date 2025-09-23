@@ -1,44 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import { Audio } from "expo-av";
 import {
   Image,
   TouchableOpacity,
-  useWindowDimensions,
-  ImageSourcePropType,
   View,
   Text,
   Dimensions,
   StyleSheet,
 } from "react-native";
-import { useCheckAudio } from "@/hooks/useCheckAudio";
+import { useState } from "react";
+import { useAudioPlayer } from 'expo-audio';
+import { dinoOptions } from "@/constants/phaseData";
 
-const dinoOptions = {
-  dino1: {
-    image: require("@/assets/images/dinos/dino1.png"),
-    imageApagado: require("@/assets/images/dinos/dino1-apagado.png"),
-    source: require("@/assets/audios/sad.wav"),
-  },
-  dino2: {
-    image: require("@/assets/images/dinos/dino2.png"),
-    imageApagado: require("@/assets/images/dinos/dino2-apagado.png"),
-    source: require("@/assets/audios/angry.wav"),
-  },
-  dino3: {
-    image: require("@/assets/images/dinos/dino3.png"),
-    imageApagado: require("@/assets/images/dinos/dino3-apagado.png"),
-    source: require("@/assets/audios/happy.wav"),
-  },
-  dino4: {
-    image: require("@/assets/images/dinos/dino4.png"),
-    imageApagado: require("@/assets/images/dinos/dino4-apagado.png"),
-    source: require("@/assets/audios/afraid.wav"),
-  },
-};
-
-type DinoKey = keyof typeof dinoOptions;
-
-type ContainerEmotionProps = {
-  dino: DinoKey;
+type Props = {
+  dino: any;
   emotion: string;
   color: string;
 };
@@ -47,44 +20,18 @@ export default function ContainerEmotion({
   dino,
   emotion,
   color,
-}: ContainerEmotionProps) {
+}: Props) {
+  const sound = useAudioPlayer(dinoOptions[dino].audio);
   const [imageIndex, setImageIndex] = useState(0);
-
   const images = [dinoOptions[dino].imageApagado, dinoOptions[dino].image];
 
-  const { checkAudio } = useCheckAudio();
-
-  const [canPlayAudio, setCanPlayAudio] = useState(false);
-
-  useEffect(() => {
-    const verifyAudio = async () => {
-      const result = await checkAudio();
-      if (result !== undefined) {
-        setCanPlayAudio(result);
-      }
-    };
-    verifyAudio();
-  }, []);
-
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
-
   const playSound = async () => {
-    if (sound) await sound.unloadAsync();
-    const { sound: newSound } = await Audio.Sound.createAsync(
-      dinoOptions[dino].source
-    );
-    setSound(newSound);
-    await newSound.playAsync();
+    sound.seekTo(0);
+    sound.play();
   };
 
-  useEffect(() => {
-    return () => {
-      if (sound) sound.unloadAsync();
-    };
-  }, [sound]);
-
   const handlePress = () => {
-    canPlayAudio ? playSound() : null;
+    playSound();
     setImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 

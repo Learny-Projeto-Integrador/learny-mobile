@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Modal,
   View,
@@ -8,18 +7,8 @@ import {
   Image,
   Dimensions,
 } from "react-native";
-
-type AlertProps = {
-  icon: any;
-  visible: boolean;
-  onClose: () => void;
-  title: string;
-  message: string;
-  dualAction?: boolean; // se verdadeiro, mostra dois botões
-  onRedirect?: () => void; // ação do segundo botão
-  closeLabel?: string;
-  redirectLabel?: string; // texto do segundo botão
-};
+import { AlertProps } from "@/types";
+import React from "react";
 
 export default function CustomAlert({
   icon,
@@ -55,7 +44,10 @@ export default function CustomAlert({
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.button, styles.redirectButton]}
-                onPress={onRedirect}
+                onPress={() => {
+                  onClose?.()
+                  onRedirect?.()
+                }}
               >
                 <Text style={styles.buttonText}>{redirectLabel}</Text>
               </TouchableOpacity>
@@ -122,6 +114,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
+    textAlign: "center",
     fontFamily: "Montserrat_700Bold",
     fontSize: width * 0.04,
     fontWeight: "bold",

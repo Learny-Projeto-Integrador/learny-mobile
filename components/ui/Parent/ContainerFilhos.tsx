@@ -14,6 +14,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import { useGetToken } from "@/hooks/useGetToken";
+import { LinearGradient } from "expo-linear-gradient";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -94,8 +95,8 @@ export default function ContainerFilhos({
   };
 
   return (
-    <ImageBackground
-      source={require("@/assets/images/fundo-gradiente-claro.png")}
+    <LinearGradient
+      colors={['#b25563', '#669bbb']}
       style={styles.container}
     >
       {selectedChild == null ? (
@@ -200,7 +201,7 @@ export default function ContainerFilhos({
           )}
         </View>
       )}
-    </ImageBackground>
+    </LinearGradient>
   );
 }
 

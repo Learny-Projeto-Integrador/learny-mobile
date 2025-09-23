@@ -3,11 +3,9 @@ import {
   StyleSheet,
   Dimensions,
   View,
-  Text,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-
 import React, { useCallback, useState } from "react";
 import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
 import ContainerFilhos from "@/components/ui/Parent/ContainerFilhos";
@@ -16,43 +14,30 @@ import ContainerFasesConcluidas from "@/components/ui/Parent/ContainerFasesConcl
 import ContainerMundoAtual from "@/components/ui/Parent/ContainerMundoAtual";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "@/types";
-import CustomAlert from "@/components/ui/CustomAlert";
+import type { ParentData, RootStackParamList } from "@/types";
 import HeaderParent from "@/components/ui/Parent/HeaderParent";
-import { useLoadData } from "@/hooks/useLoadData";
+import { useApi } from "@/hooks/useApi";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
-type NavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "profileParent"
->;
-
-type ParentData = {
-  idParent: string;
-  foto: string;
-  nome: string;
-  filhos: [{}];
-  filhoSelecionado: {fasesConcluidas: any};
-};
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profileParent">;
 
 export default function ProfileParentScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { loading, request } = useApi();
+  const { showAlert } = useCustomAlert();
   const [data, setData] = useState<ParentData | undefined>(undefined);
   const [childrenData, setChildrenData] = useState<any>(undefined);
   const [id, setId] = useState("");
-
-  const [alertData, setAlertData] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
-
-  const { loadData } = useLoadData();
   
   const fetchParentData = async () => {
-    const data = await loadData("http://10.0.2.2:5000/pais");
-    setData(data ?? null);
-    setId(data._id.$oid);
+    const result = await request({endpoint: "/pais"});
+    setData(result ?? null);
+    setId(result._id.$oid);
   };
+
   const fetchChildrenData = async () => {
-    const data = await loadData("http://10.0.2.2:5000/pais/criancas");
-    setChildrenData(data ?? null);
+    const result = await request({endpoint: "/pais/criancas"});
+    setChildrenData(result ?? null);
   };
 
   useFocusEffect(
@@ -70,47 +55,25 @@ export default function ProfileParentScreen() {
     (child: any) => normalizarId(child._id) === filhoSelecionadoId
   );
 
-  const outrosFilhos = childrenData?.filter(
-    (child: any) => normalizarId(child._id) !== filhoSelecionadoId
-  );
-
   const handleRedirectCadastro = () => {
     if (!data) return;
     navigation.navigate("register", { idParent: id });
   };
 
   const handleSair = () => {
-    setAlertData({
+    showAlert({
       icon: require("@/assets/icons/icon-alerta.png"),
       title: "Alerta",
       message: "Deseja mesmo sair?",
-      dual: true,
+      dualAction: true,
+      closeLabel: "Cancelar",
+      redirectLabel: "Sair",
+      onRedirect: () => navigation.replace("index")
     });
-    setAlertVisible(true);
-  };
-
-  const handleEdit = () => {
-    navigation.navigate("edit", { userFilho: undefined });
   };
 
   return (
     <ScrollView style={styles.container}>
-      {alertData && (
-        <CustomAlert
-          icon={alertData.icon}
-          visible={alertVisible}
-          title={alertData.title}
-          message={alertData.message}
-          dualAction={alertData.dual}
-          onClose={() => setAlertVisible(false)}
-          onRedirect={() => {
-            setAlertVisible(false);
-            navigation.navigate("index");
-          }}
-          closeLabel="Cancelar"
-          redirectLabel="Sair"
-        />
-      )}
       {data && (
           <HeaderParent 
             foto={data.foto}
@@ -119,11 +82,9 @@ export default function ProfileParentScreen() {
         )
       }
       <View style={styles.containerWidgets}>
-        <ProgressBarLvl pontos="50" progresso="50" />
+        <ProgressBarLvl pontos="50" progresso={50} />
         <ContainerFilhos
-          //@ts-ignore
           filhos={childrenData ? childrenData : [{}]}
-          //@ts-ignore
           filhoSelecionado={filhoSelecionado ? filhoSelecionado : {}}
           handleRedirect={handleRedirectCadastro}
           onSelectFilho={async () => {
@@ -137,13 +98,13 @@ export default function ProfileParentScreen() {
             filhoSelecionado={!!filhoSelecionado}
           />
           <ContainerFasesConcluidas
-              filhoSelecionado={filhoSelecionado}
-              fasesConcluidas={filhoSelecionado?.fasesConcluidas}
-            />
+            filhoSelecionado={filhoSelecionado}
+            fasesConcluidas={filhoSelecionado?.fasesConcluidas}
+          />
         </View>
         <View style={styles.divider} />
         <View style={{ flexDirection: "row", gap: 40 }}>
-          <TouchableOpacity onPress={handleEdit}>
+          <TouchableOpacity onPress={() => navigation.navigate("edit", { userFilho: undefined })}>
             <Image
               style={styles.btn}
               source={require("@/assets/images/btn-editar.png")}

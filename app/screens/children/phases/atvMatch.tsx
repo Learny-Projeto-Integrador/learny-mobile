@@ -7,109 +7,58 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-
-import React, { useCallback, useEffect, useState } from "react";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "@/types";
+import type { RootStackParamList } from "@/types";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import SoundCard from "@/components/ui/Children/Phases/SoundCard";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
-import CustomAlert from "@/components/ui/CustomAlert";
-import { useCheckMedalha } from "@/hooks/useChceckMedalha";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
-import { useCheckAudio } from "@/hooks/useCheckAudio";
+import { useAudio } from "@/contexts/AudioContext";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
+import { useCheckHint } from "@/hooks/useCheckHint";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-type DinoOption = {
+type Option = {
   id: string;
   image: string;
   emotion: string;
-  source: string;
+  audio: string;
 };
 
-const dinoOptions: DinoOption[] = [
+const options: any = [
   {
     id: "dino1",
     image: require("@/assets/images/dinos/dino1-grande.png"),
     emotion: "Sad",
-    source: require("@/assets/audios/sad.wav"),
+    audio: require("@/assets/audios/sad.wav"),
   },
   {
     id: "dino2",
     image: require("@/assets/images/dinos/dino2-grande.png"),
     emotion: "Angry",
-    source: require("@/assets/audios/angry.wav"),
+    audio: require("@/assets/audios/angry.wav"),
   },
   {
     id: "dino3",
     image: require("@/assets/images/dinos/dino3-grande.png"),
     emotion: "Happy",
-    source: require("@/assets/audios/happy.wav"),
+    audio: require("@/assets/audios/happy.wav"),
   },
 ];
 
 export default function AtvMatchScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const [selectedDino, setSelectedDino] = useState<DinoOption | null>(null);
-  const [shuffledOptions, setShuffledOptions] = useState<DinoOption[]>([]);
-
-  const [alertDica, setAlertDica] = useState<AlertData | null>(null);
-  const [alertQueue, setAlertQueue] = useState<AlertData[]>([]);
-  const [currentAlert, setCurrentAlert] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [medalha, setMedalha] = useState<string | null>(null);
-  const [audio, setAudio] = useState<any>(null);
+  const [selectedDino, setSelectedDino] = useState<Option | null>(null);
+  const [shuffledOptions, setShuffledOptions] = useState<Option[]>([]);
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
 
   const { getDuration } = useScreenDuration();
+  const { audioEnabled, checkAudio } = useAudio();
   const { submitMission } = useSubmitMission();
-  const { checkMedalha } = useCheckMedalha();
-  const { checkAudio } = useCheckAudio();
-
-  useFocusEffect(
-    useCallback(() => {
-      const fetchMedalha = async () => {
-        const nomeMedalha = await checkMedalha();
-        setMedalha(nomeMedalha ?? null);
-      };
-      const fetchAudio = async () => {
-        const audio = await checkAudio();
-        setAudio(audio ?? null);
-      };
-      fetchAudio();
-      fetchMedalha();
-    }, [])
-  );
-
-  const showNextAlert = () => {
-    if (alertQueue.length > 0) {
-      const [next, ...rest] = alertQueue;
-      setCurrentAlert(next);
-      setAlertQueue(rest);
-      setAlertVisible(true);
-    } else {
-      setCurrentAlert(null);
-      // Vai para a tela de score quando todos os alertas forem fechados
-      navigation.navigate("score", {
-        //@ts-ignore
-        score: currentAlert?.score,
-      });
-    }
-  };
-
-  useEffect(() => {
-    // Escolhe um dino aleatoriamente
-    const randomDino =
-      dinoOptions[Math.floor(Math.random() * dinoOptions.length)];
-    setSelectedDino(randomDino);
-
-    // Embaralha as opções
-    const shuffled = shuffleArray([...dinoOptions]);
-    setShuffledOptions(shuffled);
-  }, []);
+  const { setHintUsed, checkHint } = useCheckHint();
 
   function shuffleArray<T>(array: T[]): T[] {
     for (let i = array.length - 1; i > 0; i--) {
@@ -119,16 +68,10 @@ export default function AtvMatchScreen() {
     return array;
   }
 
-  const handleHint = () => {
-    if (medalha != "Desvendando") {
-      setAlertDica({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message: 'Você precisa estar com a medalha "Desvendando"',
-      });
-      setAlertVisible(true);
-      return;
-    }
+  const handleHint = async () => {
+    const canUse = await checkHint();
+    if (!canUse) return;
+
     if (!selectedDino || shuffledOptions.length <= 2) return;
 
     const incorrectOptions = shuffledOptions.filter(
@@ -141,6 +84,8 @@ export default function AtvMatchScreen() {
     setShuffledOptions((prev) =>
       prev.filter((opt) => opt.id !== optionToRemove.id)
     );
+
+    setHintUsed(true); // marca que a dica foi usada
   };
 
   const handleConfirm = async (pontosFase: number, porcentagemFase: number) => {
@@ -148,65 +93,19 @@ export default function AtvMatchScreen() {
     let pontos = pontosFase;
     let porcentagem = porcentagemFase;
 
-    if (medalha == "Iniciando!") {
-      pontos != 0 ? pontos += 50 : null
-    } else if (medalha == "A todo o vapor!") {
-      pontos = pontos * 2;
-    }
-
-    const body: any = {
-      pontos: pontos,
-      fasesConcluidas: 1,
-      tipoFase: "feeling",
-    };
-
-    const response = await submitMission(body);
+    const response = await submitMission({
+      pontos: pontos, 
+      tipoFase: "feeling"
+    });
 
     if (response.success) {
-      const score = { pontos, porcentagem, tempo: durationFormatted };
-      const newAlerts: AlertData[] = [];
-
-      if (response.result.missaoConcluida) {
-        newAlerts.push({
-          title: "Diária concluída!",
-          message: response.result.missaoConcluida.descricao,
-          score,
-        });
-      }
-
-      if (
-        response.result.medalhasGanhas &&
-        response.result.medalhasGanhas.length > 0
-      ) {
-        for (const medalha of response.result.medalhasGanhas) {
-          newAlerts.push({
-            //@ts-ignore
-            icon: imgsMedalhas[medalha.nome],
-            title: "Medalha conquistada!",
-            message: medalha.descricao || "Você ganhou uma medalha!",
-            score,
-          });
-        }
-      }
-
-      if (newAlerts.length > 0) {
-        setCurrentAlert(newAlerts[0]);
-        setAlertQueue(newAlerts.slice(1)); // Apenas o restante entra na fila
-        setAlertVisible(true);
-      } else {
-        navigation.navigate("score", { score });
-      }
-    } else {
-      setCurrentAlert({
-        title: "Erro!",
-        message: response.error ? response.error : "Erro desconhecido",
-      });
-      setAlertQueue([]);
-      setAlertVisible(true);
+      let pontosAtualizados = response.pontosAtualizados ?? pontos;
+      const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
+      navigation.navigate("score", { score });
     }
   };
 
-  const handleError = (dino: DinoOption) => {
+  const handleError = (dino: Option) => {
     const { durationFormatted } = getDuration();
     navigation.navigate("atvMatchAnswer", {
       score: {
@@ -220,46 +119,30 @@ export default function AtvMatchScreen() {
     });
   };
 
+  useEffect(() => {
+    checkAudio();
+  }, []);
+
+  useEffect(() => {
+    // Escolhe um dino aleatoriamente
+    const randomDino =
+      options[Math.floor(Math.random() * options.length)];
+    setSelectedDino(randomDino);
+
+    // Embaralha as opções
+    const shuffled = shuffleArray([...options]);
+    setShuffledOptions(shuffled);
+  }, []);
+
   return (
     <ScrollView style={styles.container}>
       <ContainerInfo
-                    message={
-                      "Essa é a fase feeling. A primeira parte é um reconhecimento, para você descobrir quais são as emoções e seus respectivos dinos. Na segunda etapa você deve selecionar a emoção correta do dino entre as opções."
-                    }
-                    visible={infoVisible}
-                    onClose={() => setInfoVisible(false)}
-                  />
-      {currentAlert && (
-        <CustomAlert
-          icon={
-            currentAlert.icon ??
-            require("@/assets/icons/icon-check-gradiente.png")
-          }
-          visible={alertVisible}
-          onClose={() => {
-            setAlertVisible(false);
-            showNextAlert();
-          }}
-          dualAction={false}
-          title={currentAlert.title}
-          message={currentAlert.message}
-        />
-      )}
-      {alertDica && (
-        <CustomAlert
-          icon={
-            alertDica.icon ??
-            require("@/assets/icons/icon-check-gradiente.png")
-          }
-          visible={alertVisible}
-          onClose={() => {
-            setAlertVisible(false);
-          }}
-          dualAction={false}
-          title={alertDica.title}
-          message={alertDica.message}
-        />
-      )}
+        message={
+          "Essa é a fase feeling. A primeira parte é um reconhecimento, para você descobrir quais são as emoções e seus respectivos dinos. Na segunda etapa você deve selecionar a emoção correta do dino entre as opções."
+        }
+        visible={infoVisible}
+        onClose={() => setInfoVisible(false)}
+      />
       <HeaderFase
         image={require("@/assets/images/eye.png")}
         title="Look & Match"
@@ -293,7 +176,7 @@ export default function AtvMatchScreen() {
               text={
                 option.emotion.charAt(0).toUpperCase() + option.emotion.slice(1)
               }
-              source={audio ? option.source : null}
+              audio={audioEnabled ? option.audio : null}
               type="grande"
               onPress={() => {
                 if (option.emotion === selectedDino?.emotion) {

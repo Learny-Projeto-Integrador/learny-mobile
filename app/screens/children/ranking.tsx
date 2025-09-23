@@ -1,4 +1,3 @@
-import { useState, useCallback } from "react";
 import {
   ImageBackground,
   Image,
@@ -9,80 +8,73 @@ import {
   Dimensions,
   ScrollView,
 } from "react-native";
+import { useState, useCallback } from "react";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "@/types";
+import type { RootStackParamList } from "@/types";
 import Header from "@/components/ui/Children/Header";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
 import PodiumCard from "@/components/ui/Children/Ranking/PodiumCard";
 import OtherRanking from "@/components/ui/Children/Ranking/OtherRanking";
 import { useFocusEffect } from "expo-router";
-import { useGetToken } from "@/hooks/useGetToken";
-import CustomAlert from "@/components/ui/CustomAlert";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
-import { useLoadData } from "@/hooks/useLoadData";
+import { useLoading } from "@/contexts/LoadingContext";
+import { useApi } from "@/hooks/useApi";
+import Error from "@/components/ui/Error";
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, "ranking">;
 
 export default function RankingScreen() {
   const navigation = useNavigation<NavigationProp>();
-
+  const { showLoadingModal, hideLoadingModal } = useLoading();
+  const { request } = useApi();
   const [pontos, setPontos] = useState(0);
   const [numMedalhas, setNumMedalhas] = useState(0);
   const [rankingAtual, setRankingAtual] = useState(0);
-
   const [ranking, setRanking] = useState([{}]);
-  const [alertData, setAlertData] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [infoVisible, setInfoVisible] = useState<boolean>(false);
+  const [infoVisible, setInfoVisible] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const { getToken } = useGetToken();
-  const { loadData } = useLoadData();
+  const fetchData = async () => {
+    showLoadingModal();
+    setError(null);
+
+    const result = await request({
+      endpoint: "/criancas",
+    });
+
+    if (result.error) {
+      setError(result.message);
+      hideLoadingModal();
+      return null;
+    }
+
+    setPontos(result.pontos);
+    setNumMedalhas(result.medalhas.length);
+    setRankingAtual(result.rankingAtual);
+    hideLoadingModal();
+  };
 
   const loadRanking = async () => {
-    try {
-      const token = await getToken();
+    showLoadingModal();
+    setError(null);
 
-      const res = await fetch("http://10.0.2.2:5000/criancas/ranking", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    const result = await request({
+      endpoint: "/criancas/ranking",
+    });
 
-      const result = await res.json();
-
-      if (res.ok) {
-        setRanking(result);
-      } else {
-        console.log(result)
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
-      });
-      setAlertVisible(true);
+    if (result.error) {
+      setError(result.message);
+      hideLoadingModal();
+      return null;
     }
+    
+    setRanking(result);
+    hideLoadingModal();
   };
 
   useFocusEffect(
     useCallback(() => {
-      const fetchData = async () => {
-        const data = await loadData("http://10.0.2.2:5000/criancas");
-        setPontos(data.pontos);
-        setNumMedalhas(data.medalhas.length);
-        setRankingAtual(data.rankingAtual);
-      };
       fetchData();
       loadRanking();
     }, [])
@@ -90,19 +82,18 @@ export default function RankingScreen() {
 
   const podiumItems = [...ranking.slice(0, 3)];
   while (podiumItems.length < 3) {
-    //@ts-ignore
-    podiumItems.push(null);
+    podiumItems.push({});
   }
 
   // Garante que sempre haja 4 elementos no other ranking
-  const otherItems = [...ranking.slice(3, 7)];
+  const otherItems= [...ranking.slice(3, 7)];
   while (otherItems.length < 4) {
-    //@ts-ignore
-    otherItems.push(null);
+    otherItems.push({});
   }
 
   return (
     <View style={styles.container}>
+      {error && <Error error={error} onReload={fetchData} />}
       <ContainerInfo
         message={
           "Esse é o ranking. Aqui você entrontra as crianças com a melhor pontuação do 1° ao 7° colocados. Os integrantes do pódios tem um cardespecias, mostrando a foto. Se você ainda não está aqui não fique triste, uma hora você consegue!"
@@ -110,16 +101,6 @@ export default function RankingScreen() {
         visible={infoVisible}
         onClose={() => setInfoVisible(false)}
       />
-      {alertData && (
-        <CustomAlert
-          icon={alertData.icon}
-          visible={alertVisible}
-          title={alertData.title}
-          message={alertData.message}
-          dualAction={false}
-          onClose={() => setAlertVisible(false)}
-        />
-      )}
       <ScrollView>
         <View style={{ flexDirection: "row" }}>
           <Image

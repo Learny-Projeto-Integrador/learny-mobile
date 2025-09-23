@@ -1,3 +1,4 @@
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -5,14 +6,13 @@ import {
   Animated,
   Image,
   StyleSheet,
-  ImageBackground,
   Dimensions,
 } from "react-native";
 
 const ContainerActions = () => {
   return (
-    <ImageBackground
-      source={require("@/assets/images/fundo-gradiente-claro.png")}
+    <LinearGradient
+      colors={['#b25563', '#669bbb']}
       style={styles.container}
     >
       <View style={styles.containerFilho}>
@@ -29,7 +29,7 @@ const ContainerActions = () => {
         style={styles.icon}
         />
       </View>
-    </ImageBackground>
+    </LinearGradient>
   );
 };
 

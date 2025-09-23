@@ -1,20 +1,18 @@
-// CustomSwitch.tsx
-import React, { useState, useRef, useEffect } from 'react';
 import {
   TouchableWithoutFeedback,
   Animated,
-  View,
   StyleSheet,
   Dimensions,
 } from 'react-native';
+import React, { useRef, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 
-interface CustomSwitchProps {
+type Props = {
   value: boolean;
   onToggle?: (value: boolean) => void;
 }
 
-export const CustomSwitch: React.FC<CustomSwitchProps> = ({
+export const CustomSwitch: React.FC<Props> = ({
   value,
   onToggle,
 }) => {
@@ -33,7 +31,7 @@ export const CustomSwitch: React.FC<CustomSwitchProps> = ({
     outputRange: [2, 28], // posição do botão
   });
 
-  const gradientColors = value
+  const gradientColors: any = value
     ? ['#da6171', '#69bbe3']
     : ['#417e99', '#7b4a57'];
 
@@ -44,7 +42,6 @@ export const CustomSwitch: React.FC<CustomSwitchProps> = ({
   return (
     <TouchableWithoutFeedback onPress={toggleSwitch}>
       <LinearGradient
-        //@ts-ignore
         colors={gradientColors}
         style={styles.container}
         start={{ x: 0, y: 0 }}

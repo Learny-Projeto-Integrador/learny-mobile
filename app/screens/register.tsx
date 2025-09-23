@@ -1,35 +1,29 @@
 import {
-  ImageBackground,
   StyleSheet,
   Image,
+  Text,
+  View,
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
 } from "react-native";
-import { Text, View } from "react-native";
 import React from "react";
 import { useState } from "react";
-import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "@/types";
+import type { RootStackParamList } from "@/types";
+import DateInput from "@/components/ui/DateInput";
+import LoginInput from "@/components/ui/LoginInput";
+import { useApi } from "@/hooks/useApi";
+import { pickImage } from "@/utils/pickImage";
+import { LinearGradient } from "expo-linear-gradient";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
 type Props = NativeStackScreenProps<RootStackParamList, "register">;
 
-import DateInput from "@/components/ui/DateInput";
-import LoginInput from "@/components/ui/LoginInput";
-import { useGetToken } from "@/hooks/useGetToken";
-import CustomAlert from "@/components/ui/CustomAlert";
-
 export default function RegisterScreen({ route, navigation }: Props) {
   const { idParent } = route.params ?? {};
-
-  const [alertData, setAlertData] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const { getToken } = useGetToken();
-
+  const { loading, request } = useApi();
+  const { showAlert } = useCustomAlert();
   const [image, setImage] = useState<string | null>("");
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
@@ -37,145 +31,72 @@ export default function RegisterScreen({ route, navigation }: Props) {
   const [email, setEmail] = useState("");
   const [dataNasc, setDataNasc] = useState("");
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const originalUri = result.assets[0].uri;
-      const filename = originalUri.split("/").pop(); // Obtém o nome do arquivo
-      const newPath = `${FileSystem.documentDirectory}${filename}`; // Novo caminho
-
-      try {
-        await FileSystem.copyAsync({
-          from: originalUri,
-          to: newPath,
-        });
-        setImage(newPath); // Atualiza o estado com a nova URI
-      } catch (error) {
-        console.error("Erro ao copiar a imagem:", error);
-      }
-    }
-  };
+  const handlePickImage = async () => {
+    const uri = await pickImage();
+    if (uri) setImage(uri);
+  }
 
   const handleSubmit = async () => {
-    setLoading(true);
-
     let registerRoute;
-
-    const body: any = {
-      foto: image,
-      usuario: usuario,
-      nome: nome,
-      senha: senha,
-      email: email,
-      dataNasc: dataNasc,
-      responsavel: idParent,
-    };
-
     idParent ? (registerRoute = "criancas") : (registerRoute = "pais");
 
-    try {
-      const token = await getToken();
+    const result = await request({
+      endpoint: `/${registerRoute}`,
+      method: "POST",
+      body: { 
+        foto: image,
+        usuario: usuario,
+        nome: nome,
+        senha: senha,
+        email: email,
+        dataNasc: dataNasc,
+        responsavel: idParent, 
+      },
+    });
 
-      const res = await fetch(`http://10.0.2.2:5000/${registerRoute}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
+    if (result && !result.error) {
 
-      const result = await res.json();
-
-      if (res.ok) {
-        if (idParent) {
-          const bodyId: any = {
+      if (idParent) {
+        const result2 = await request({
+          endpoint: `/pais/addcrianca`,
+          method: "PUT",
+          body: { 
             _id: result.dados._id,
-          };
+          },
+        })
 
-          // Adicionando a criança na lista de filhos do responsável
-          await fetch(`http://10.0.2.2:5000/pais/addcrianca`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(bodyId),
-          });
-
-          setAlertData({
-            icon: require("@/assets/icons/icon-check-gradiente.png"),
-            title: "Sucesso!",
-            message: result.message,
-            dual: true,
-            label: "Voltar",
-          });
-        } else {
-          setAlertData({
-            icon: require("@/assets/icons/icon-check-gradiente.png"),
-            title: "Sucesso!",
-            message: result.message,
-            dual: true,
-            label: "Fazer Login",
+        if (result2 && result2.error) {
+          showAlert({
+            icon: require("@/assets/icons/icon-alerta.png"),
+            title: "Erro ao vincular a criança!",
+            message: result2.message,
           });
         }
-        setAlertVisible(true);
-      } else {
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
-      });
-      setAlertVisible(true);
-    } finally {
-      setLoading(false);
-    }
-  };
+      };
 
-  const handleRedirect = () => {
-    {
-      idParent
-        ? navigation.navigate("profileParent")
-        : navigation.navigate("index");
+      showAlert({
+          icon: require("@/assets/icons/icon-check-gradiente.png"),
+          title: "Sucesso!",
+          message: result.message,
+          dualAction: true,
+          redirectLabel: idParent ? "Voltar" : "Fazer Login",
+          onRedirect: () => idParent ? navigation.navigate("profileParent") : navigation.navigate("index"),
+      });
+    } else {
+      showAlert({
+        icon: require("@/assets/icons/icon-alerta.png"),
+        title: "Erro ao cadastrar os dados!",
+        message: result.message,
+      });
     }
   };
 
   return (
-    <ImageBackground
-      source={require("@/assets/images/fundo-gradiente.png")}
-      resizeMode="cover"
+    <LinearGradient
+      colors={['#973e4a', '#4b85a1']}
       style={styles.container}
     >
-      {alertData && (
-        <CustomAlert
-          icon={alertData.icon}
-          visible={alertVisible}
-          title={alertData.title}
-          message={alertData.message}
-          dualAction={alertData.dual}
-          onClose={() => setAlertVisible(false)}
-          onRedirect={() => {
-            setAlertVisible(false);
-            alertData.label == "Voltar" ? navigation.navigate("profileParent") : navigation.navigate("index")
-          }}
-          redirectLabel={alertData.label ? alertData.label : "Voltar"}
-        />
-      )}
-      <TouchableOpacity onPress={pickImage}>
+      <TouchableOpacity onPress={handlePickImage}>
         {image ? (
           <Image source={{ uri: image }} style={styles.img} />
         ) : (
@@ -194,7 +115,6 @@ export default function RegisterScreen({ route, navigation }: Props) {
         <TouchableOpacity
           style={styles.button}
           onPress={
-            // @ts-ignore
             () => handleSubmit()
           }
         >
@@ -212,11 +132,12 @@ export default function RegisterScreen({ route, navigation }: Props) {
         ) : (
           <Text style={styles.txtLink}>Já possui uma Conta?</Text>
         )}
-        <TouchableOpacity onPress={() => handleRedirect()}>
+        <TouchableOpacity onPress={() => idParent ? navigation.navigate("profileParent")
+        : navigation.navigate("index")}>
           <Text style={styles.link}>{idParent ? "Voltar" : "Entre aqui"}</Text>
         </TouchableOpacity>
       </View>
-    </ImageBackground>
+    </LinearGradient>
   );
 }
 

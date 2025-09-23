@@ -1,35 +1,61 @@
 import {
-  ImageBackground,
   StyleSheet,
   Image,
+  Text,
+  View,
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
 } from "react-native";
-import { Text, View } from "react-native";
-import React, { useCallback } from "react";
-import { useState } from "react";
-import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
+import React, { useState, useCallback } from "react";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { AlertData, RootStackParamList } from "@/types";
-
-type Props = NativeStackScreenProps<RootStackParamList, "edit">;
-
+import type { RootStackParamList } from "@/types";
 import DateInput from "@/components/ui/DateInput";
 import LoginInput from "@/components/ui/LoginInput";
 import { useFocusEffect } from "expo-router";
-import CustomAlert from "@/components/ui/CustomAlert";
-import { useGetToken } from "@/hooks/useGetToken";
-import { useLoadData } from "@/hooks/useLoadData";
+import { useApi } from "@/hooks/useApi";
+import { pickImage } from "@/utils/pickImage";
+import { LinearGradient } from "expo-linear-gradient";
+import Error from "@/components/ui/Error";
+import { useLoading } from "@/contexts/LoadingContext";
+import { useCustomAlert } from "@/contexts/AlertContext";
+
+type Props = NativeStackScreenProps<RootStackParamList, "edit">;
 
 export default function EditScreen({ route, navigation }: Props) {
   const { userFilho } = route.params ?? {};
-  
+  const { showLoadingModal, hideLoadingModal } = useLoading();
+  const { loading, request } = useApi();
+  const { showAlert } = useCustomAlert();
   const [data, setData] = useState<any>(null);
-  const [alertData, setAlertData] = useState<AlertData | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [novaSenha, setNovaSenha] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  
+  let pathGet = "pais";
+  let pathPut = "pais";
+  let pathDelete = "pais";
+  
+  if (userFilho) {
+    pathGet = "pais/crianca/" + userFilho;
+    pathDelete = "pais/crianca/" + userFilho;
+    pathPut = "pais/criancas";
+  }
+
+  const fetchData = async () => {
+    showLoadingModal();
+    setError(null);
+
+    const result = await request({ endpoint: `/${pathGet}` });
+
+    if (result.error) {
+      setError(result.message);
+      hideLoadingModal();
+      return null;
+    }
+
+    setData(result);
+    hideLoadingModal();
+  };
 
   const updateField = (field: any, value: any) => {
     setData((prevData: any) => ({
@@ -38,188 +64,85 @@ export default function EditScreen({ route, navigation }: Props) {
     }));
   };
 
-  const { getToken } = useGetToken();
-
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const originalUri = result.assets[0].uri;
-      const filename = originalUri.split("/").pop(); // Obtém o nome do arquivo
-      const newPath = `${FileSystem.documentDirectory}${filename}`; // Novo caminho
-
-      try {
-        await FileSystem.copyAsync({
-          from: originalUri,
-          to: newPath,
-        });
-        updateField('foto', newPath);
-      } catch (error) {
-        console.error("Erro ao copiar a imagem:", error);
-      }
-    }
-  };
-
-  let pathGet = "pais";
-  let pathPut = "pais";
-  let pathDelete = `pais`;
-
-  if (userFilho) {
-    pathGet = "pais/crianca/" + userFilho;
-    pathDelete = "pais/crianca/" + userFilho;
-    pathPut = "pais/criancas";
+  const handlePickImage = async () => {
+    const uri = await pickImage();
+    if (uri) updateField('foto', uri);
   }
 
-  const { loadData } = useLoadData();
-  
-  useFocusEffect(
-    useCallback(() => {
-      const fetchData = async () => {
-        const data = await loadData(`http://10.0.2.2:5000/${pathGet}`);
-        console.log(data)
-        setData(data ?? null);
-      };
-      fetchData();
-    }, [])
-  );
-
   const handleEdit = async () => {
-    setLoading(true);
-
-    const body: any = {
+    const body: Record<string, any> = {
       foto: data?.foto,
       usuario: data?.usuario,
       nome: data?.nome,
-      senha: data?.senha,
       email: data?.email,
       dataNasc: data?.dataNasc,
-    };
+      ...(novaSenha ? { senha: novaSenha } : {}),
+    }
 
-    try {
-      const token = await getToken();
+    const result = await request({
+      endpoint: `/${pathPut}`,
+      method: "PUT",
+      body,
+    })
 
-      const res = await fetch(`http://10.0.2.2:5000/${pathPut}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
+    if (result && !result.error) {
+      showAlert({
+        icon: require("@/assets/icons/icon-check-gradiente.png"),
+        title: "Sucesso!",
+        message: result.message,
       });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        setAlertData({
-          icon: require("@/assets/icons/icon-check-gradiente.png"),
-          title: "Sucesso!",
-          message: result.message,
-          dual: true,
-        });
-        setAlertVisible(true);
-      } else {
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
+    } else {
+      showAlert({
         icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+        title: "Erro ao editar os dados!",
+        message: result.message,
       });
-      setAlertVisible(true);
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleDelete = async () => {
-    setLoading(true);
-    try {
-      const token = await getToken();
+    const result = await request({
+      endpoint: `/${pathDelete}`,
+      method: "DELETE",
+    })
 
-      const res = await fetch(`http://10.0.2.2:5000/${pathDelete}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    if (result && result.status == 204) {
+      showAlert({
+        icon: require("@/assets/icons/icon-check-gradiente.png"),
+        title: "Sucesso!",
+        message: "A conta foi excluída com sucesso",
       });
-
-      if (res.status === 204) {
-        setAlertData({
-          icon: require("@/assets/icons/icon-check-gradiente.png"),
-          title: "Sucesso!",
-          message: "A conta foi excluída com sucesso",
-        });
-        setAlertVisible(true);
-      } else {
-        const result = await res.json();
-        setAlertData({
-          icon: require("@/assets/icons/icon-alerta.png"),
-          title: "Erro!",
-          message: result.error,
-        });
-        setAlertVisible(true);
-      }
-    } catch (err: any) {
-      setAlertData({
+    } else {
+      showAlert({
         icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro!",
-        message:
-          "Não foi possível conectar ao servidor. Verifique sua conexão.",
+        title: "Erro ao excluir a conta!",
+        message: result.message,
       });
-      setAlertVisible(true);
-    } finally {
-      setLoading(false);
     }
   };
-
-  const handleRedirect = () => {
-    navigation.navigate("profileParent");
-  };
+  
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   return (
-    <ImageBackground
-      source={require("@/assets/images/fundo-gradiente.png")}
-      resizeMode="cover"
+    <LinearGradient
+      colors={['#973e4a', '#4b85a1']}
       style={styles.container}
     >
-      {alertData && (
-        <CustomAlert
-          icon={alertData.icon}
-          visible={alertVisible}
-          title={alertData.title}
-          message={alertData.message}
-          dualAction={alertData.dual}
-          onClose={() => setAlertVisible(false)}
-          onRedirect={() => {
-            setAlertVisible(false);
-            navigation.navigate("profileParent");
-          }}
-          redirectLabel="Voltar"
-        />
-      )}
+      {error && <Error error={error} onReload={fetchData} />}
       {data && (
         <View style={{width: "100%", alignItems: "center", justifyContent: "center"}}>
-
           <View style={styles.containerFoto}>
-            <TouchableOpacity style={styles.btnVoltar} onPress={handleRedirect}>
+            <TouchableOpacity style={styles.btnVoltar} onPress={() => navigation.navigate("profileParent")}>
               <Image
                 style={styles.iconVoltar}
                 source={require("@/assets/icons/icon-voltar.png")}
               />
             </TouchableOpacity>
-            <TouchableOpacity onPress={pickImage}>
+            <TouchableOpacity onPress={handlePickImage}>
               {data.foto ? (
                 <Image source={{ uri: data.foto }} style={styles.img} />
               ) : (
@@ -232,7 +155,7 @@ export default function EditScreen({ route, navigation }: Props) {
           </View>
           <View style={styles.viewInputs}>
           <LoginInput campo="Usuário" valor={data.usuario} atualizar={(value) => updateField('usuario', value)} edit={true} />
-          <LoginInput campo="Nova Senha" valor={data.senha} atualizar={(value) => updateField('senha', value)} />
+          <LoginInput campo="Nova Senha" valor={novaSenha} atualizar={setNovaSenha} />
           <LoginInput campo="Nome" valor={data.nome} atualizar={(value) => updateField('nome', value)} />
           <LoginInput campo="Email" valor={data.email} atualizar={(value) => updateField('email', value)} />
           <DateInput valor={data.dataNasc} atualizar={(value) => updateField('dataNasc', value)} />
@@ -240,7 +163,6 @@ export default function EditScreen({ route, navigation }: Props) {
             <TouchableOpacity
               style={styles.btn}
               onPress={
-                // @ts-ignore
                 () => handleEdit()
               }
             >
@@ -253,7 +175,6 @@ export default function EditScreen({ route, navigation }: Props) {
             <TouchableOpacity
               style={styles.btn}
               onPress={
-                // @ts-ignore
                 () => handleDelete()
               }
             >
@@ -268,7 +189,7 @@ export default function EditScreen({ route, navigation }: Props) {
           </View>
         </View>
       )}
-    </ImageBackground>
+    </LinearGradient>
   );
 }
 
@@ -313,11 +234,13 @@ const styles = StyleSheet.create({
     width: width * 0.3,
     height: width * 0.3,
     borderRadius: 20,
+    marginBottom: height * 0.04
   },
   img: {
     width: width * 0.34,
     height: width * 0.34,
     borderRadius: 20,
+    marginBottom: height * 0.04
   },
   viewInputs: {
     backgroundColor: "rgba(52, 52, 52, 0)",

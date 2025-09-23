@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   Animated,
   Image,
   StyleSheet,
-  ImageBackground,
   Dimensions,
 } from "react-native";
+import React, { useState, useEffect } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 
-const ProgressBarLvl = ({ pontos, progresso }: any) => {
+type Props = {
+  pontos: string;
+  progresso: number;
+}
+
+const ProgressBarLvl = ({ pontos, progresso }: Props) => {
   const [widthAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
@@ -21,10 +26,10 @@ const ProgressBarLvl = ({ pontos, progresso }: any) => {
   }, [progresso]);
 
   return (
-    <ImageBackground
-      source={require("@/assets/images/fundo-gradiente-claro.png")}
-      style={styles.container}
-    >
+    <LinearGradient
+        colors={['#b25563', '#669bbb']}
+        style={styles.container}
+      >
       <View style={styles.containerNumProgresso}>
         <Text style={styles.txtProgresso}>exp: {pontos}</Text>
       </View>
@@ -40,13 +45,15 @@ const ProgressBarLvl = ({ pontos, progresso }: any) => {
             },
           ]}
         >
-          <Image
-            source={require("@/assets/images/fundo-gradiente-claro.png")}
+          <LinearGradient
+            colors={['#b25563', '#669bbb']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
             style={styles.gradientImage}
           />
         </Animated.View>
       </View>
-    </ImageBackground>
+    </LinearGradient>
   );
 };
 

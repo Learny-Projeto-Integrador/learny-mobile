@@ -1,30 +1,38 @@
-import { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Dimensions } from "react-native";
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  StyleSheet, 
+  Dimensions 
+} from "react-native";
 
-interface LoginInputProps {
-    campo: string;
-    valor: string;
-    edit?: boolean;
-    atualizar: (valor: string) => void;
+type Props = {
+  campo: string;
+  valor: string;
+  edit?: boolean;
+  atualizar: (valor: string) => void;
+};
+export default function LoginInput({ campo, valor, edit, atualizar }: Props) {
+  return (
+    <View style={styles.viewInput}>
+      <Text style={styles.title}>{campo}:</Text>
+      <TextInput
+        style={
+          campo === "Nova Senha"
+            ? [styles.input, { width: "60%" }]
+            : styles.input
+        }
+        onChangeText={atualizar}
+        value={valor}
+        placeholderTextColor="#757575"
+        secureTextEntry={campo === "Senha" || campo === "Nova Senha"}
+        editable={!edit}
+      />
+    </View>
+  );
 }
-export default function LoginInput(props: LoginInputProps) {
 
-    return (
-        <View style={styles.viewInput}>
-        <Text style={styles.title}>{props.campo}:</Text>
-        <TextInput
-            style={props.campo === "Nova Senha" ? [styles.input, {width: "60%"}] : styles.input}
-            onChangeText={props.atualizar}
-            value={props.valor}
-            placeholderTextColor="#757575"
-            secureTextEntry={props.campo === "Senha" || props.campo === "Nova Senha"}
-            editable={!props.edit}
-        />
-        </View>
-    );
-}
-
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   viewInput: {
@@ -41,14 +49,14 @@ const styles = StyleSheet.create({
     display: "flex",
     textAlign: "center",
     fontSize: width * 0.036,
-    fontFamily: 'Montserrat_700Bold',
+    fontFamily: "Montserrat_700Bold",
     color: "#fff",
   },
   input: {
     width: "72%",
     backgroundColor: "rgba(0,0,0,0)",
     fontSize: width * 0.04,
-    fontFamily: 'Montserrat_500Medium',
+    fontFamily: "Montserrat_500Medium",
     color: "#fff",
     paddingLeft: width * 0.03,
   },

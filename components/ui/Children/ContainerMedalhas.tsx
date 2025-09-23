@@ -1,41 +1,43 @@
-//@ts-nocheck
-import { View, Text, StyleSheet, Dimensions, Image, ImageBackground } from "react-native";
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  Dimensions, 
+} from "react-native";
 import Medalha from "./Medalha";
-import { useGetToken } from "@/hooks/useGetToken";
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "expo-router";
-import { useLoadData } from "@/hooks/useLoadData";
-
-type Medalhas = {
-  nome: string;
-  descricao: string;
-};
+import { useApi } from "@/hooks/useApi";
+import { Medalhas } from "@/types";
 
 export default function ContainerMedalhas() {
-  const [medalhas, setMedalhas] = useState<Medalhas[] | null>(
-      null
-    );
-  const { getToken } = useGetToken();
+  const [medalhas, setMedalhas] = useState<Medalhas[] | null>(null);
+  const { request } = useApi();
 
-  const { loadData } = useLoadData();
+  const fetchData = async () => {
+    const result = await request({
+      endpoint: "/criancas",
+    });
+    setMedalhas(result.medalhas ?? null);
+  };
   
   useFocusEffect(
     useCallback(() => {
-      const fetchData = async () => {
-        const data = await loadData("http://10.0.2.2:5000/criancas");
-        setMedalhas(data.medalhas ?? null);
-      };
       fetchData();
     }, [])
   );
 
   return (
-    <View 
-    style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>Medalhas</Text>
       <View style={{gap: 20, marginTop: 20}}>
         {medalhas?.map((medalha, index) => (
-          <Medalha key={index} nome={medalha.nome} descricao={medalha.descricao} date={medalha.dataConquista}/>
+          <Medalha 
+            key={index} 
+            fundo={""}
+            nome={medalha.nome} 
+            descricao={medalha.descricao} 
+            date={medalha.dataConquista}/>
         ))}
       </View>
     </View>
