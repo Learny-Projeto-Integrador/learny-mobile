@@ -58,7 +58,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
 
       if (idParent) {
         const result2 = await request({
-          endpoint: `/addcrianca`,
+          endpoint: `/pais/addcrianca`,
           method: "PUT",
           body: { 
             _id: result.dados._id,
@@ -69,7 +69,7 @@ export default function RegisterScreen({ route, navigation }: Props) {
           showAlert({
             icon: require("@/assets/icons/icon-alerta.png"),
             title: "Erro ao vincular a criança!",
-            message: result.message,
+            message: result2.message,
           });
         }
       };
