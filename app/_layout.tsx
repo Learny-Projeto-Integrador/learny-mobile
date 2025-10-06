@@ -39,6 +39,7 @@ import ScoreFailScreen from './screens/children/phases/scoreFail';
 import { LoadingProvider } from '@/contexts/LoadingContext';
 import { AlertProvider } from '@/contexts/AlertContext';
 import { AudioProvider } from '@/contexts/AudioContext';
+import AtvBossScreen from './screens/children/phases/atvBoss';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -161,6 +162,11 @@ export default function RootLayout() {
             <Stack.Screen
               name="atvConnect"
               component={AtvConnectScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="atvBoss"
+              component={AtvBossScreen}
               options={{headerShown: false}}
             />
             <Stack.Screen
