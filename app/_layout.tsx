@@ -15,12 +15,8 @@ import {
 } from '@expo-google-fonts/montserrat';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { RootStackParamList } from '@/types';
-
 import LoginScreen from './screens';
-import RegisterScreen from './screens/register';
 import TransitionScreen from './screens/transition';
-import ProfileParentScreen from './screens/parent/profileParent';
-import EditScreen from './screens/edit';
 import HomeScreen from './screens/children/home';
 import ProfileChildrenScreen from './screens/children/profileChildren';
 import IconChildrenScreen from './screens/children/iconChildren';
@@ -80,23 +76,8 @@ export default function RootLayout() {
               options={{headerShown: false}}
             />
             <Stack.Screen
-              name="register"
-              component={RegisterScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
               name="transition"
               component={TransitionScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="profileParent"
-              component={ProfileParentScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="edit"
-              component={EditScreen}
               options={{headerShown: false}}
             />
             <Stack.Screen

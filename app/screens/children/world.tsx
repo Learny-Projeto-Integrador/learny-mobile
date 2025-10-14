@@ -74,10 +74,10 @@ export default function WorldScreen() {
       if (!concluida) liberarProxima = false;
 
       const faseScreens: RoutesWithoutParams[] = [
-        "atvBoss",
+        "atvConnect",
         "atvMemory",
         "atvFeeling",
-        "atvListening",
+        "atvBoss",
       ];
 
       const screenName: RoutesWithoutParams = faseScreens[index] ?? "atvConnect";

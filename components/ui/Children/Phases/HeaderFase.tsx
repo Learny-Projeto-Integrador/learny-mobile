@@ -30,7 +30,7 @@ export default function HeaderFase({
 }: Props) {
   const navigation = useNavigation<NavigationProp>();
   return (
-    <View style={{ flex: 1 }}>
+    <View>
       <View style={styles.containerDados}>
         <Image style={styles.image} source={image} />
         <View style={{ justifyContent: "center", gap: 10 }}>
