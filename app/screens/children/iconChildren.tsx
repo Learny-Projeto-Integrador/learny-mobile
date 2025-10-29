@@ -14,6 +14,7 @@ import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
 import Error from "@/components/ui/Error";
 import { useCustomAlert } from "@/contexts/AlertContext";
+import CharacterSprite from "@/components/ui/Children/CharacterSprite";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList,"iconChildren">;
 
@@ -30,7 +31,7 @@ export default function IconChildrenScreen() {
   const { showAlert } = useCustomAlert();
   const [data, setData] = useState<ChildData | undefined>(undefined);
   const [error, setError] = useState<string | null>(null)
-  const avatarNames = ["avatar1", "avatar2"];
+  const chacaterSprites = ["boy", "girl"];
 
   const fetchData = async () => {
     showLoadingModal();
@@ -130,23 +131,19 @@ export default function IconChildrenScreen() {
 
           <View style={styles.containerAvatares}>
             {Array.from({ length: 9 }).map((_, index) => {
-              const avatarName = avatarNames[index];
+              const avatar = chacaterSprites[index];
 
               return (
                 <TouchableOpacity
                   key={index}
                   onPress={
-                    avatarName ? () => changeAvatar(avatarName) : undefined
+                    avatar ? () => changeAvatar(avatar) : undefined
                   }
-                  disabled={!avatarName}
+                  disabled={!avatar}
                   style={styles.selectIcon}
                 >
-                  {avatarName && (
-                    <Image
-                      source={getAvatarImage(avatarName)}
-                      style={{ width: width * 0.1, height: width * 0.1 }}
-                      resizeMode="contain"
-                    />
+                  {avatar && (
+                    <CharacterSprite sprite={avatar} direction="down" />
                   )}
                 </TouchableOpacity>
               );

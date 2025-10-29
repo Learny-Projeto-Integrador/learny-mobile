@@ -83,17 +83,6 @@ export default function LoginScreen() {
           )}
         </TouchableOpacity>
       </View>
-
-      <View style={styles.viewLink}>
-        <Text style={styles.txt}>Sem uma Conta?</Text>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("register", { idParent: undefined })
-          }
-        >
-          <Text style={styles.link}>Começe aqui</Text>
-        </TouchableOpacity>
-      </View>
     </LinearGradient>
   );
 }

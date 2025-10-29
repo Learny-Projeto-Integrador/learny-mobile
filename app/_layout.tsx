@@ -15,12 +15,8 @@ import {
 } from '@expo-google-fonts/montserrat';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { RootStackParamList } from '@/types';
-
 import LoginScreen from './screens';
-import RegisterScreen from './screens/register';
 import TransitionScreen from './screens/transition';
-import ProfileParentScreen from './screens/parent/profileParent';
-import EditScreen from './screens/edit';
 import HomeScreen from './screens/children/home';
 import ProfileChildrenScreen from './screens/children/profileChildren';
 import IconChildrenScreen from './screens/children/iconChildren';
@@ -39,6 +35,7 @@ import ScoreFailScreen from './screens/children/phases/scoreFail';
 import { LoadingProvider } from '@/contexts/LoadingContext';
 import { AlertProvider } from '@/contexts/AlertContext';
 import { AudioProvider } from '@/contexts/AudioContext';
+import AtvBossScreen from './screens/children/phases/atvBoss';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -79,23 +76,8 @@ export default function RootLayout() {
               options={{headerShown: false}}
             />
             <Stack.Screen
-              name="register"
-              component={RegisterScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
               name="transition"
               component={TransitionScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="profileParent"
-              component={ProfileParentScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="edit"
-              component={EditScreen}
               options={{headerShown: false}}
             />
             <Stack.Screen
@@ -161,6 +143,11 @@ export default function RootLayout() {
             <Stack.Screen
               name="atvConnect"
               component={AtvConnectScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="atvBoss"
+              component={AtvBossScreen}
               options={{headerShown: false}}
             />
             <Stack.Screen

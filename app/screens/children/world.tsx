@@ -77,7 +77,7 @@ export default function WorldScreen() {
         "atvConnect",
         "atvMemory",
         "atvFeeling",
-        "atvListening",
+        "atvBoss",
       ];
 
       const screenName: RoutesWithoutParams = faseScreens[index] ?? "atvConnect";
