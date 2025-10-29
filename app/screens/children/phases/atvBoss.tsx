@@ -92,12 +92,6 @@ export default function AtvBossScreen() {
       setCurrentLettersSet(letters);
     };
 
-    // Gera diretamente com a letra da palavra para testes
-    // const generateLettersSet = () => {
-    //   const correctLetter = selectedWord[currentLetterIndex];
-    //   setCurrentLettersSet([correctLetter]); // só a letra correta
-    // };
-
     generateLettersSet(); // gera no início da letra atual
   }, [selectedWord, currentLetterIndex]);
 

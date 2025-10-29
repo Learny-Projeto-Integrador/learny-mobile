@@ -102,10 +102,22 @@ export default function ProfileChildrenScreen() {
           onPress={() => navigation.navigate("iconChildren")}
           style={{ flexDirection: "row" }}
         >
-          <Image
-            style={styles.foto}
-            source={foto ? { uri: foto } : require("@/assets/images/logo.png")}
-          />
+          <View style={{position: "relative"}}>
+            <Image
+              style={styles.foto}
+              source={foto ? { uri: foto } : require("@/assets/images/logo.png")}
+            />
+            <Image
+              style={{
+              width: width * 0.07,
+              height: width * 0.07,
+              position: "absolute",
+              bottom: width * 0.02,
+              right: width * 0.02,
+              borderRadius: 20,}}
+              source={require("@/assets/icons/editar.png")}
+            />
+          </View>
         </TouchableOpacity>
         <View style={{ justifyContent: "center" }}>
           <View style={styles.containerNameChildren}>

@@ -111,9 +111,6 @@ const CharacterSprite: React.FC<CharacterSpriteProps> = ({
   return (
     <View
       style={{
-        position: 'absolute',
-        left: position[0],
-        top: position[1],
         width: spriteSize.width,
         height: spriteSize.height,
         overflow: 'hidden',

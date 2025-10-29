@@ -31,8 +31,8 @@ export default function AtvFeelingScreen() {
         />
       <HeaderFase
         image={require("@/assets/images/watch.png")}
-        title="Look & Listen"
-        description="Ligue os animais"
+        title="Watch & Listen"
+        description="Sentimentos"
         color="#94ECA5"
         onPressInfo={() => setInfoVisible(true)}
       />
