@@ -83,7 +83,7 @@ export default function BaloonLetter({ letter, color, isAudioEnabled, onPress }:
             position: "absolute",
           }}
         >
-          <Svg height="120" width="300">
+          <Svg height={height * 0.1} width={width * 0.1}>
             <SvgText
               fill="#fff"
               stroke={color}

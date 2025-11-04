@@ -29,7 +29,7 @@ export default function TransitionScreen({ route, navigation }: Props) {
       style={styles.container}
       >
         <View style={{ marginTop: height * 0.05 }}>
-          <Text style={styles.text}>Bem Vindo,</Text>
+          <Text style={styles.text}>Bem Vindo (a),</Text>
           <Text style={styles.nameText}>{name}</Text>
         </View>
       </ImageBackground>

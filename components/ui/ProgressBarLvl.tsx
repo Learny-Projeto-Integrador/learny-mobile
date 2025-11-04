@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   },
   gradientImage: {
     width: "100%",
-    height: 30,
+    height: height * 0.028,
   },
 });
 

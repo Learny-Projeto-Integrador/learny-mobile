@@ -6,6 +6,11 @@ import {
   View,
   ActivityIndicator,
   Dimensions,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { useState } from "react";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -26,14 +31,6 @@ export default function LoginScreen() {
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
 
-  const saveLoginInfo = async (token: string) => {
-    try {
-      await AsyncStorage.setItem("token", token);
-    } catch (e) {
-      console.error("Erro ao salvar dados de login", e);
-    }
-  };
-
   const handleLogin = async () => {
     const result = await request({
       endpoint: "/login",
@@ -42,7 +39,7 @@ export default function LoginScreen() {
     });
 
     if (result && !result.error) {
-      await saveLoginInfo(result.access_token);
+      await AsyncStorage.setItem("token", result.access_token);
       navigation.navigate("transition", {
         name: result.nome,
         type: result.tipo,
@@ -58,32 +55,46 @@ export default function LoginScreen() {
 
   return (
     <LinearGradient
-      colors={['#973e4a', '#4b85a1']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.container}
-    >
-      <Image style={styles.logo} source={require("@/assets/images/logo.png")} />
-      <View style={styles.viewTitle}>
-        <Text style={styles.title}>Entre em sua conta Learny</Text>
-        <Text style={styles.subTitle}>
-          Faça login com suas informações de cadastro
-        </Text>
-      </View>
+    colors={["#973e4a", "#4b85a1"]}
+    start={{ x: 0, y: 0 }}
+    end={{ x: 1, y: 1 }}
+    style={{ flex: 1 }}
+  >
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <Image style={styles.logo} source={require("@/assets/images/logo.png")} />
 
-      <View style={styles.viewInputs}>
-        <LoginInput campo="Usuário" valor={usuario} atualizar={setUsuario} />
-        <LoginInput campo="Senha" valor={senha} atualizar={setSenha} />
+          <View style={styles.viewTitle}>
+            <Text style={styles.title}>Entre em sua conta Learny</Text>
+            <Text style={styles.subTitle}>
+              Faça login com suas informações de cadastro
+            </Text>
+          </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          {loading ? (
-            <ActivityIndicator size="large" color="#547d98" />
-          ) : (
-            <Text style={styles.buttonText}>Entrar</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-    </LinearGradient>
+          <View style={styles.viewInputs}>
+            <LoginInput campo="Usuário" valor={usuario} atualizar={setUsuario} />
+            <LoginInput campo="Senha" valor={senha} atualizar={setSenha} />
+
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+              {loading ? (
+                <ActivityIndicator size="large" color="#547d98" />
+              ) : (
+                <Text style={styles.buttonText}>Entrar</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
+  </LinearGradient>
   );
 }
 

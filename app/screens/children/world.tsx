@@ -272,24 +272,24 @@ const styles = StyleSheet.create({
   },
   fase1: {
     position: "absolute",
-    top: height * 0.745,
-    paddingLeft: width * 0.2,
+    top: "62%",
+    left: "58%",
   },
   fase2: {
     position: "absolute",
-    top: height * 0.57,
-    paddingLeft: width * 0.48,
+    top: "47.5%",
+    left: "71.5%",
   },
   fase3: {
     position: "absolute",
-    top: height * 0.405,
-    paddingLeft: width * 0.21,
+    top: "34%",
+    left: "58%",
   },
   viewIconBoss: {
     position: "absolute",
     flexDirection: "row",
-    top: height * 0.296,
-    left: width * 0.263,
+    top: "25%",
+    left: "27%",
   },
   boss: {
     width: width * 0.15,

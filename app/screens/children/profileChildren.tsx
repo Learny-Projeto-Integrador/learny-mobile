@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   },
   containerDados: {
     flexDirection: "row",
-    marginTop: height * 0.04,
+    marginTop: height * 0.08,
     gap: width * 0.05,
   },
   foto: {
@@ -207,7 +207,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   nameText: {
-    marginTop: -height * 0.015,
     fontSize: width * 0.07,
     fontFamily: "Montserrat_800ExtraBold",
   },

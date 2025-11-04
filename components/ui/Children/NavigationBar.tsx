@@ -62,11 +62,11 @@ const styles = StyleSheet.create({
   icon: {
     width: width * 0.13,
     aspectRatio: 1 / 1,
-    top: -height * 0.02,
+    top: -height * 0.035,
   },
   iconHome: {
     width: width * 0.15,
     aspectRatio: 1 / 1,
-    top: -height * 0.03,
+    top: -height * 0.045,
   },
 });

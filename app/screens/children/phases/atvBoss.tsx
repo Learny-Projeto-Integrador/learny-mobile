@@ -319,8 +319,8 @@ const styles = StyleSheet.create({
   },
   scoreContainer: {
     flexDirection: "row",
-    marginTop: height * 0.02,
-    marginLeft: width * 0.02,
+    marginTop: height * 0.05,
+    marginLeft: width * 0.05,
   },
   scoreLabel: {
     fontSize: width * 0.07,
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
   },
   nuvens: {
     position: "absolute",
-    bottom: -25,
+    bottom: -height * 0.03,
     width: width,
     aspectRatio: 390 / 227,
   },
