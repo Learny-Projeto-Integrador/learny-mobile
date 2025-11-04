@@ -57,7 +57,7 @@ const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
-    width: "18%",
+    width: "16%",
     height: height * 0.035,
     borderRadius: 30,
     paddingVertical: width * 0.02,

@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: "100%",
-    paddingVertical: height * 0.2,
+    paddingVertical: height * 0.1,
     alignItems: "center",
     gap: height * 0.04,
   },

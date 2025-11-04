@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     display: "flex",
     height: "auto",
     flexDirection: "row",
-    marginTop: height * 0.08,
+    marginTop: height * 0.04,
     gap: width * 0.05,
   },
   image: {
