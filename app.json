@@ -15,7 +15,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
+      "package": "com.joaokirimis.learnymobile"
     },
     "web": {
       "bundler": "metro",
@@ -23,7 +28,6 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
       [
         "expo-splash-screen",
         {
@@ -34,10 +38,15 @@
         }
       ],
       "expo-audio",
-      "expo-font"
+      "expo-font",
+      "expo-asset"
     ],
-    "experiments": {
-      "typedRoutes": true
-    }
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9ad47eb0-7810-43ab-b88d-8fb5e747e55b"
+      }
+    },
+    "owner": "joaokirimis"
   }
 }

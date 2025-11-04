@@ -16,7 +16,7 @@ import Header from "@/components/ui/Children/Header";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
 import PodiumCard from "@/components/ui/Children/Ranking/PodiumCard";
 import OtherRanking from "@/components/ui/Children/Ranking/OtherRanking";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";

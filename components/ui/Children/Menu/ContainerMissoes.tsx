@@ -7,7 +7,7 @@ import {
   ImageBackground,
 } from "react-native";
 import { useState, useCallback } from "react";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 import { useApi } from "@/hooks/useApi";
 import { imgsMissoes } from "@/constants/dadosFases";
 import { useLoading } from "@/contexts/LoadingContext";

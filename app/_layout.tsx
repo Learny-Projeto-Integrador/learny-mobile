@@ -37,9 +37,6 @@ import { AlertProvider } from '@/contexts/AlertContext';
 import { AudioProvider } from '@/contexts/AudioContext';
 import AtvBossScreen from './screens/children/phases/atvBoss';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
 const Stack = createStackNavigator<RootStackParamList>()
 
 export default function RootLayout() {
@@ -54,6 +51,17 @@ export default function RootLayout() {
     Montserrat_800ExtraBold,
     Montserrat_900Black,
   });
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+      } catch (e) {
+        console.warn('Erro splash:', e);
+      }
+    }
+    prepare();
+  }, []);
 
   useEffect(() => {
     if (loaded) {

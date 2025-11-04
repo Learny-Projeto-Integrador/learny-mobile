@@ -6,7 +6,7 @@ import {
 } from "react-native";
 import Medalha from "./Medalha";
 import { useCallback, useState } from "react";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 import { useApi } from "@/hooks/useApi";
 import { Medalhas } from "@/types";
 
