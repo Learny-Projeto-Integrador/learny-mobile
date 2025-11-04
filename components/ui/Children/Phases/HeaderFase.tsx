@@ -10,6 +10,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
+import GradientText from "../../GradientText";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -19,6 +20,7 @@ type Props = {
   description: string;
   color: string;
   onPressInfo?: () => void;
+  secret?: boolean;
 };
 
 export default function HeaderFase({
@@ -27,6 +29,7 @@ export default function HeaderFase({
   description,
   color,
   onPressInfo,
+  secret,
 }: Props) {
   const navigation = useNavigation<NavigationProp>();
   return (
@@ -35,7 +38,17 @@ export default function HeaderFase({
         <Image style={styles.image} source={image} />
         <View style={{ justifyContent: "center", gap: 10 }}>
           <View style={styles.containerNamePhase}>
-            <Text style={[styles.txt, { color: color }]}>{title}</Text>
+            {secret ? (
+              <GradientText
+                color1="#EF5B6A"
+                color2="#6CD2FF"
+                style={styles.txt}
+              >
+                {title}
+              </GradientText>
+            ) : (
+              <Text style={[styles.txt, { color: color }]}>{title}</Text>
+            )}
           </View>
         </View>
         <View style={styles.viewVoltar}>
