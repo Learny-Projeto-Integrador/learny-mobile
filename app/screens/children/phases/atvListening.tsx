@@ -20,6 +20,7 @@ import { SoundItem } from "@/types";
 import { useAudio } from "@/contexts/AudioContext";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useCheckHint } from "@/hooks/useCheckHint";
+import { useLoading } from "@/contexts/LoadingContext";
 
 const { width, height } = Dimensions.get("window");
 
@@ -54,6 +55,7 @@ export default function AtvListeningScreen() {
   const [assignments, setAssignments] = useState<{ [soundId: string]: string }>({});
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
 
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const { getDuration } = useScreenDuration();
   const { submitMission } = useSubmitMission();
   const { audioEnabled, checkAudio } = useAudio();
@@ -64,7 +66,10 @@ export default function AtvListeningScreen() {
   };
 
   const handleHint = async () => {
+    showLoadingModal();
     const canUse = await checkHint();
+    hideLoadingModal();
+
     if (!canUse) return;
 
     for (const sound of sounds) {
@@ -82,6 +87,7 @@ export default function AtvListeningScreen() {
   };
 
   const handleConfirm = async () => {
+    showLoadingModal();
     const { durationFormatted } = getDuration();
 
     let correct = 0;
@@ -104,6 +110,7 @@ export default function AtvListeningScreen() {
       const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
       navigation.navigate("score", { score });
     }
+    hideLoadingModal();
   };
 
   useEffect(() => {

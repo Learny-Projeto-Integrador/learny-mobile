@@ -175,7 +175,7 @@ export default function WorldScreen() {
                 style={styles.fundoMundo}
               >
                 <Text style={styles.txtNumMundo}>Mundo-1</Text>
-                <Text style={styles.txtNomeMundo}>Dino's World</Text>
+                <Text style={styles.txtNomeMundo}>Dino's Forest</Text>
               </ImageBackground>
             </TouchableOpacity>
           </View>

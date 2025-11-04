@@ -18,6 +18,7 @@ import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import BaloonLetter from "@/components/ui/Children/Phases/BaloonLetter";
 import { MotiView } from "moti";
+import { useLoading } from "@/contexts/LoadingContext";
 
 const { width, height } = Dimensions.get("window");
 
@@ -45,6 +46,7 @@ export default function AtvBossScreen() {
   const [qtdAcertos, setQtdAcertos] = useState(0);
   const lastLetterRef = useRef<string | null>(null);
 
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const { start, reset, getDuration } = useScreenDuration();
   const { audioEnabled, checkAudio } = useAudio();
   const { submitMission } = useSubmitMission();
@@ -143,6 +145,7 @@ export default function AtvBossScreen() {
   }, [currentLettersSet, iniciou]);
 
   const gerarPontuacao = async() => {
+    showLoadingModal();
     const { durationFormatted } = getDuration();
     let porcentagem = (qtdAcertos / totalClicados) * 100;
     const response = await submitMission({
@@ -154,6 +157,7 @@ export default function AtvBossScreen() {
       const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
       navigation.navigate("score", { score });
     }
+    hideLoadingModal();
   }
 
   // Modifique o handlePress para avançar na palavra apenas quando clicar na letra correta

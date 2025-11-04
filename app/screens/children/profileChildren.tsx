@@ -57,6 +57,7 @@ export default function ProfileChildrenScreen() {
   );
 
   const atualizarAudio = async (novoValor: boolean) => {
+    showLoadingModal();
     const result = await request({
       endpoint: "/criancas",
       method: "PUT",
@@ -74,6 +75,7 @@ export default function ProfileChildrenScreen() {
         message: result.message,
       });
     }
+    hideLoadingModal();
   };
 
   const handleSair = () => {

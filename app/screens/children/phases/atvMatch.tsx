@@ -18,6 +18,7 @@ import { useSubmitMission } from "@/hooks/useSubmitMission";
 import { useAudio } from "@/contexts/AudioContext";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useCheckHint } from "@/hooks/useCheckHint";
+import { useLoading } from "@/contexts/LoadingContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -55,6 +56,7 @@ export default function AtvMatchScreen() {
   const [shuffledOptions, setShuffledOptions] = useState<Option[]>([]);
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
 
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const { getDuration } = useScreenDuration();
   const { audioEnabled, checkAudio } = useAudio();
   const { submitMission } = useSubmitMission();
@@ -69,7 +71,10 @@ export default function AtvMatchScreen() {
   }
 
   const handleHint = async () => {
+    showLoadingModal();
     const canUse = await checkHint();
+    hideLoadingModal();
+
     if (!canUse) return;
 
     if (!selectedDino || shuffledOptions.length <= 2) return;
@@ -89,6 +94,7 @@ export default function AtvMatchScreen() {
   };
 
   const handleConfirm = async (pontosFase: number, porcentagemFase: number) => {
+    showLoadingModal();
     const { durationFormatted } = getDuration();
     let pontos = pontosFase;
     let porcentagem = porcentagemFase;
@@ -103,6 +109,7 @@ export default function AtvMatchScreen() {
       const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
       navigation.navigate("score", { score });
     }
+    hideLoadingModal();
   };
 
   const handleError = (dino: Option) => {

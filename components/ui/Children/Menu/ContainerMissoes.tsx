@@ -10,6 +10,7 @@ import { useState, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 import { useApi } from "@/hooks/useApi";
 import { imgsMissoes } from "@/constants/dadosFases";
+import { useLoading } from "@/contexts/LoadingContext";
 
 type MissaoDiaria = {
   nome: string;
@@ -19,12 +20,15 @@ type MissaoDiaria = {
 export default function ContainerMissoes() {
   const [missoesDiarias, setMissoesDiarias] = useState<MissaoDiaria[] | null>(null);
   const { request } = useApi();
+  const { showLoadingModal, hideLoadingModal } = useLoading();
 
   const fetchData = async () => {
+    showLoadingModal();
     const result = await request({
       endpoint: "/criancas",
     });
-    setMissoesDiarias(result.medalhas ?? null);
+    setMissoesDiarias(result.missoesDiarias ?? null);
+    hideLoadingModal();
   };
   
   useFocusEffect(
