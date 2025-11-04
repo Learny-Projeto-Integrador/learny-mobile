@@ -48,7 +48,6 @@ export default function AtvBossScreen() {
   const { start, reset, getDuration } = useScreenDuration();
   const { audioEnabled, checkAudio } = useAudio();
   const { submitMission } = useSubmitMission();
-  const { setHintUsed, checkHint } = useCheckHint();
 
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
   const colors = ["#EF5B6A", "#6CD2FF", "#FFB300", "#80D25B"];
@@ -193,6 +192,10 @@ export default function AtvBossScreen() {
     setItems((prev) => prev.filter((i) => i.id !== item.id));
   };
 
+  useEffect(() => {
+    checkAudio();
+  }, []);
+
   return (
     <View style={styles.container}>
       {!iniciou ? (
@@ -252,9 +255,7 @@ export default function AtvBossScreen() {
           transition={{ type: "timing", duration: 5000 }}
           style={[styles.balao, { left: item.left }]}
         >
-          <TouchableOpacity activeOpacity={0.8} onPress={() => handlePress(item)}>
-            <BaloonLetter letter={item.letter} color={item.color} />
-          </TouchableOpacity>
+          <BaloonLetter letter={item.letter} color={item.color} isAudioEnabled={audioEnabled} onPress={() => handlePress(item)} />
         </MotiView>
       ))}
 
