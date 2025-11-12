@@ -179,6 +179,7 @@ export default function WorldScreen() {
               </ImageBackground>
             </TouchableOpacity>
           </View>
+
           <View
             style={{
               flexDirection: "row",
@@ -190,6 +191,20 @@ export default function WorldScreen() {
               source={require("@/assets/images/trilha.png")}
               style={styles.trilha}
             />
+            <TouchableOpacity 
+            onPress={() => navigation.navigate("atvSecret")}
+              style={{
+                position: "absolute",
+                bottom: height * 0.365,
+              }}>
+              <Image
+                source={require("@/assets/images/arvores.png")}
+                style={{
+                  width: width * 0.25,
+                  aspectRatio: 1/1,
+                }}
+              />
+            </TouchableOpacity>
           </View>
           {renderFases()}
         </View>
@@ -273,17 +288,17 @@ const styles = StyleSheet.create({
   fase1: {
     position: "absolute",
     top: height * 0.745,
-    paddingLeft: width * 0.2,
+    left: width * 0.57,
   },
   fase2: {
     position: "absolute",
     top: height * 0.57,
-    paddingLeft: width * 0.48,
+    left: width * 0.703,
   },
   fase3: {
     position: "absolute",
     top: height * 0.405,
-    paddingLeft: width * 0.21,
+    left: width * 0.57,
   },
   viewIconBoss: {
     position: "absolute",

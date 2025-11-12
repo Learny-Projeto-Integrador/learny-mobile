@@ -18,6 +18,7 @@ export type RootStackParamList = {
   atvMemory: undefined;
   atvConnect: undefined;
   atvBoss: undefined;
+  atvSecret: undefined;
   score: { score: any };
   scoreFail: { score: any };
 };
