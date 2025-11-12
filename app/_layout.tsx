@@ -15,7 +15,7 @@ import {
 } from '@expo-google-fonts/montserrat';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { RootStackParamList } from '@/types';
-import LoginScreen from './screens';
+import LoginScreen from './index';
 import TransitionScreen from './screens/transition';
 import HomeScreen from './screens/children/home';
 import ProfileChildrenScreen from './screens/children/profileChildren';
@@ -36,6 +36,7 @@ import { LoadingProvider } from '@/contexts/LoadingContext';
 import { AlertProvider } from '@/contexts/AlertContext';
 import { AudioProvider } from '@/contexts/AudioContext';
 import AtvBossScreen from './screens/children/phases/atvBoss';
+import AtvSecretScreen from './screens/children/phases/atvSecret';
 
 const Stack = createStackNavigator<RootStackParamList>()
 
@@ -156,6 +157,11 @@ export default function RootLayout() {
             <Stack.Screen
               name="atvBoss"
               component={AtvBossScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="atvSecret"
+              component={AtvSecretScreen}
               options={{headerShown: false}}
             />
             <Stack.Screen
