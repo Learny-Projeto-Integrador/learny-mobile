@@ -14,7 +14,6 @@ import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import MemoryCard from "@/components/ui/Children/Phases/MemoryCard";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
-import { useAudio } from "@/contexts/AudioContext";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useCheckHint } from "@/hooks/useCheckHint";
 import { useLoading } from "@/contexts/LoadingContext";

@@ -5,14 +5,12 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import React, { useCallback, useState } from "react";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React from "react";
+import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import GradientText from "@/components/ui/GradientText";
-import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
-import Error from "@/components/ui/Error";
 import { useCustomAlert } from "@/contexts/AlertContext";
 import CharacterSprite from "@/components/ui/Children/CharacterSprite";
 import { useUser } from "@/contexts/UserContext";

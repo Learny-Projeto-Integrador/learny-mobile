@@ -7,10 +7,10 @@ import {
   Dimensions,
   StyleSheet,
 } from "react-native";
-import React, { useCallback, useState } from "react";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React from "react";
+import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList, User } from "@/types";
+import type { RootStackParamList } from "@/types";
 import GradientText from "@/components/ui/GradientText";
 import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
 import ContainerAcessibilidade from "@/components/ui/Children/Profile/ContainerAcessibilidade";

@@ -159,7 +159,6 @@ export default function AtvBossScreen() {
     hideLoadingModal();
   }
 
-  // Modifique o handlePress para avançar na palavra apenas quando clicar na letra correta
   const handlePress = (item: FloatingItem) => {
     const letter = item.letter;
     const wordArray = selectedWord.split("");

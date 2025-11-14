@@ -9,16 +9,13 @@ import {
   ScrollView,
   ViewStyle,
 } from "react-native";
-import { useCallback, useState } from "react";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList, RoutesWithoutParams } from "@/types";
 import Header from "@/components/ui/Children/Header";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
 import ContainerSelectMedalha from "@/components/ui/Children/Menu/ContainerSelectMedalha";
-import { useLoading } from "@/contexts/LoadingContext";
-import { useApi } from "@/hooks/useApi";
-import Error from "@/components/ui/Error";
 import { useUser } from "@/contexts/UserContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "world">;

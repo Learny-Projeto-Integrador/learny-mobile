@@ -27,7 +27,6 @@ import { useSubmitMission } from "@/hooks/useSubmitMission";
 
 const { width, height } = Dimensions.get("window");
 
-/** Frase e imagens correspondentes */
 const PHRASE = ["I", "SEE", "A TRAIN"];
 const IMAGE_PATHS = [
   require("@/assets/images/fases/secret/train/i.png"),
