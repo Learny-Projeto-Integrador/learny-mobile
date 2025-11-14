@@ -3,6 +3,7 @@ import {
   Dimensions,
   StyleSheet,
   TouchableOpacity,
+  ImageBackground,
   Text,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
@@ -11,7 +12,6 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
-import { ImageBackground } from "expo-image";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import BaloonLetter from "@/components/ui/Children/Phases/BaloonLetter";
