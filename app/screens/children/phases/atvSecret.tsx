@@ -8,7 +8,7 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
@@ -24,6 +24,9 @@ import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
+import { Audio } from "expo-av";
+import { useUser } from "@/contexts/UserContext";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
 const { width, height } = Dimensions.get("window");
 
@@ -54,6 +57,8 @@ export default function AtvSecretScreen() {
   const [infoVisible, setInfoVisible] = useState(false);
   const navigation = useNavigation<NavigationProp>();
 
+  const { user } = useUser();
+  const { showAlert } = useCustomAlert();
   const { showLoadingModal, hideLoadingModal } = useLoading();
   const { reset, getDuration } = useScreenDuration();
   const { submitMission } = useSubmitMission();
@@ -97,10 +102,6 @@ export default function AtvSecretScreen() {
     });
     setHits((prev) => {
       const newHits = prev + 1;
-      // Se já preencheu todos, verificar resultado
-      if (newHits === PHRASE.length) {
-        runOnJS(onAllPlaced)();
-      }
       return newHits;
     });
   };
@@ -122,38 +123,26 @@ export default function AtvSecretScreen() {
   }
 
   // quando todos colocados — verifica se todos corretos (target i foi preenchido pelo drag i)
-  const onAllPlaced = () => {
-    const allCorrect = placedBy.every((by, idx) => by === idx);
-    if (allCorrect) {
-      Alert.alert("✅ Concluído!", "Todos corretos!");
-      gerarPontuacao();
-      return;
-    }
+  useEffect(() => {
+    const allPlaced = placedBy.every((v) => v !== undefined);
+    if (allPlaced) {
+      const allCorrect = placedBy.every((by, idx) => by === idx);
+      if (allCorrect) {
+        gerarPontuacao();
+      } else {
+        showAlert({
+          icon: require("@/assets/icons/icon-alerta.png"),
+          title: "Ops...",
+          message: "Algumas combinações estão incorretas. Deseja ver a resposta correta?",
+          dualAction: true,
+          closeLabel: "Não",
+          redirectLabel: "Ver resposta",
+          onRedirect: () => Alert.alert("Resposta correta:", PHRASE.join(" "))
+        });
 
-    // se houver pelo menos um errado, alerta com opção de ver resposta/correção
-    Alert.alert(
-      "Ops...",
-      "Algumas combinações estão incorretas. Deseja ver a resposta correta?",
-      [
-        {
-          text: "Não",
-          style: "cancel",
-          onPress: () => {
-            // opcional: resetar para permitir tentar de novo
-          },
-        },
-        {
-          text: "Ver resposta",
-          onPress: () => {
-            // exemplo: navegar para tela de correção (ajuste o nome da rota)
-            // navigation.navigate("SecretAnswerScreen", { correct: PHRASE });
-            // por hora apenas alert:
-            Alert.alert("Resposta correta:", PHRASE.join(" "));
-          },
-        },
-      ]
-    );
-  };
+      }
+    }
+  }, [placedBy]);
 
   const createGesture = (dragIndex: number) =>
     Gesture.Pan()
@@ -213,6 +202,25 @@ export default function AtvSecretScreen() {
     }))
   );
 
+  const playAudio = async (word: string) => {
+    const audioMap: Record<string, any> = {
+      "I": require("@/assets/images/fases/secret/train/i.m4a"),
+      "SEE": require("@/assets/images/fases/secret/train/see.m4a"),
+      "A TRAIN": require("@/assets/images/fases/secret/train/a-train.m4a"),
+    };
+
+    const { sound } = await Audio.Sound.createAsync(audioMap[word]);
+      await sound.playAsync();
+  
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (!status.isLoaded) return;
+  
+        if (status.didJustFinish) {
+          sound.unloadAsync();
+        }
+      });
+  };
+
   return (
     <ScrollView style={styles.container}>
       <ContainerInfo
@@ -260,7 +268,7 @@ export default function AtvSecretScreen() {
 
       {/* ITENS ARRASTÁVEIS */}
       <View style={styles.dragZone}>
-        {PHRASE.map((_, i) => (
+        {PHRASE.map((word, i) => (
           <GestureDetector key={i} gesture={createGesture(i)}>
             <Animated.View
               style={[
@@ -273,11 +281,17 @@ export default function AtvSecretScreen() {
                 animatedStyles[i],
               ]}
             >
-              <ImageBackground
-                source={IMAGE_PATHS[i]}
-                style={styles.dragImage}
-                resizeMode="contain"
-              />
+              <TouchableOpacity 
+                activeOpacity={1} 
+                onPress={() => user?.audioAtivado ? playAudio(word) : null}
+                style={{width: "100%", height: "100%"}}
+                >
+                <ImageBackground
+                  source={IMAGE_PATHS[i]}
+                  style={styles.dragImage}
+                  resizeMode="contain"
+                />
+                </TouchableOpacity>
             </Animated.View>
           </GestureDetector>
         ))}
