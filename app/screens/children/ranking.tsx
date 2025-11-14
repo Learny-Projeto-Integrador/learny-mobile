@@ -20,51 +20,33 @@ import { useFocusEffect } from "@react-navigation/native";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
-import Error from "@/components/ui/Error";
+import { useUser } from "@/contexts/UserContext";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "ranking">;
 
 export default function RankingScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { showLoadingModal, hideLoadingModal } = useLoading();
+  const { user } = useUser();
   const { request } = useApi();
-  const [pontos, setPontos] = useState(0);
-  const [numMedalhas, setNumMedalhas] = useState(0);
-  const [rankingAtual, setRankingAtual] = useState(0);
+  const { showAlert } = useCustomAlert();
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const [ranking, setRanking] = useState([{}]);
   const [infoVisible, setInfoVisible] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchData = async () => {
-    showLoadingModal();
-    setError(null);
-
-    const result = await request({
-      endpoint: "/criancas",
-    });
-
-    if (result.error) {
-      setError(result.message);
-      hideLoadingModal();
-      return null;
-    }
-
-    setPontos(result.pontos);
-    setNumMedalhas(result.medalhas.length);
-    setRankingAtual(result.rankingAtual);
-    hideLoadingModal();
-  };
 
   const loadRanking = async () => {
     showLoadingModal();
-    setError(null);
 
     const result = await request({
       endpoint: "/criancas/ranking",
     });
 
     if (result.error) {
-      setError(result.message);
+      showAlert({
+        icon: require("@/assets/icons/icon-alerta.png"),
+        title: "Erro ao buscar ranking!",
+        message: result.message,
+      });
       hideLoadingModal();
       return null;
     }
@@ -75,7 +57,6 @@ export default function RankingScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchData();
       loadRanking();
     }, [])
   );
@@ -85,7 +66,6 @@ export default function RankingScreen() {
     podiumItems.push({});
   }
 
-  // Garante que sempre haja 4 elementos no other ranking
   const otherItems= [...ranking.slice(3, 7)];
   while (otherItems.length < 4) {
     otherItems.push({});
@@ -93,7 +73,6 @@ export default function RankingScreen() {
 
   return (
     <View style={styles.container}>
-      {error && <Error error={error} onReload={fetchData} />}
       <ContainerInfo
         message={
           "Esse é o ranking. Aqui você entrontra as crianças com a melhor pontuação do 1° ao 7° colocados. Os integrantes do pódios tem um cardespecias, mostrando a foto. Se você ainda não está aqui não fique triste, uma hora você consegue!"
@@ -110,9 +89,9 @@ export default function RankingScreen() {
         </View>
         <View style={styles.containerDados}>
           <Header
-            pontos={pontos}
-            medalhas={numMedalhas}
-            ranking={rankingAtual}
+            pontos={user?.pontos || 0}
+            medalhas={user?.medalhas.length || 0}
+            ranking={user?.rankingAtual || ""}
           />
           <View style={styles.containerTitle}>
             <TouchableOpacity

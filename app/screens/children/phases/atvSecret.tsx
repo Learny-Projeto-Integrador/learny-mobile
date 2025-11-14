@@ -23,7 +23,6 @@ import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
-import { useAudio } from "@/contexts/AudioContext";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
 
 const { width, height } = Dimensions.get("window");
@@ -57,8 +56,7 @@ export default function AtvSecretScreen() {
   const navigation = useNavigation<NavigationProp>();
 
   const { showLoadingModal, hideLoadingModal } = useLoading();
-  const { start, reset, getDuration } = useScreenDuration();
-  const { audioEnabled, checkAudio } = useAudio();
+  const { reset, getDuration } = useScreenDuration();
   const { submitMission } = useSubmitMission();
 
   // controla quais alvos já foram preenchidos
@@ -287,8 +285,11 @@ export default function AtvSecretScreen() {
       </View>
 
       <TouchableOpacity 
-        //@ts-ignore
-        onPress={() => {navigation.replace(navigation.getState().routes.at(-1)?.name as string)}} 
+        onPress={() => {
+          //@ts-ignore
+          navigation.replace(navigation.getState().routes.at(-1)?.name as string)
+          reset();
+        }} 
         style={{
             backgroundColor: "#4c4c4c",
             borderRadius: 20,

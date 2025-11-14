@@ -6,65 +6,31 @@ import {
   Dimensions,
   ScrollView,
 } from "react-native";
-import { useCallback, useState } from "react";
-import { useFocusEffect } from "@react-navigation/native";
 import Header from "@/components/ui/Children/Header";
 import ContainerMundo from "@/components/ui/Children/ContainerMundo";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
-import { useLoading } from "@/contexts/LoadingContext";
-import { useApi } from "@/hooks/useApi";
 import { LinearGradient } from "expo-linear-gradient";
-import Error from "@/components/ui/Error";
+import { useUser } from "@/contexts/UserContext";
 
 const { width, height } = Dimensions.get("window");
 
 export default function HomeScreen() {
-  const { showLoadingModal, hideLoadingModal } = useLoading();
-  const { request } = useApi();
-  const [data, setData] = useState<any>(null);
-  const [progressoMundo, setProgressoMundo] = useState(0);
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchData = async () => {
-    showLoadingModal();
-    setError(null)
-
-    const result = await request({
-      endpoint: "/criancas",
-    });
-
-    if (result.error) {
-      setError(result.message);
-      hideLoadingModal();
-      return null;
-    }
-
-    const progresso = (result?.mundos[0].faseAtual/4) * 100
-    setData(result ?? null);
-    setProgressoMundo(progresso)
-    hideLoadingModal();
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
+  const { user } = useUser();
+  const progressoMundo = user ? (user?.mundos[0].faseAtual/4) * 100 : 0;
 
   return (
     <View style={{ flex: 1 }}>
-      {error && <Error error={error} onReload={fetchData} />}
       <ScrollView style={styles.container}>
         <LinearGradient
             colors={['#973e4a', '#4b85a1']}
             style={styles.gradiente}
           >
           <View style={{ alignItems: "center" }}>
-            {data && (
+            {user && (
               <Header
-                pontos={data.pontos}
-                medalhas={data.medalhas?.length || 0}
-                ranking={data.rankingAtual}
+                pontos={user.pontos}
+                medalhas={user.medalhas?.length || 0}
+                ranking={user.rankingAtual}
               />
             )}
           </View>

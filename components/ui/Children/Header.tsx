@@ -10,7 +10,7 @@ import {
 type Props = {
   pontos: number;
   medalhas: number;
-  ranking: number;
+  ranking: number | string;
 }
 
 export default function Header({ pontos, medalhas, ranking }: Props) {

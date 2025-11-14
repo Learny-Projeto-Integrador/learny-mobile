@@ -10,15 +10,15 @@ import {
 import React, { useCallback, useState } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
+import type { RootStackParamList, User } from "@/types";
 import GradientText from "@/components/ui/GradientText";
 import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
 import ContainerAcessibilidade from "@/components/ui/Children/Profile/ContainerAcessibilidade";
 import ContainerActionChildren from "@/components/ui/Children/Profile/ContainerActionChildren";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
-import Error from "@/components/ui/Error";
 import { useCustomAlert } from "@/contexts/AlertContext";
+import { useUser } from "@/contexts/UserContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profileChildren">;
 
@@ -26,35 +26,10 @@ const { width, height } = Dimensions.get("window");
 
 export default function ProfileChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { user, setUser } = useUser();
   const { showLoadingModal, hideLoadingModal } = useLoading();
   const { request } = useApi();
   const { showAlert } = useCustomAlert();
-  const [data, setData] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchData = async () => {
-    showLoadingModal();
-    setError(null);
-
-    const result = await request({
-      endpoint: "/criancas",
-    });
-
-    if (result.error) {
-      setError(result.message);
-      hideLoadingModal();
-      return null;
-    }
-
-    setData(result ?? null);
-    hideLoadingModal();
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
 
   const atualizarAudio = async (novoValor: boolean) => {
     showLoadingModal();
@@ -67,7 +42,10 @@ export default function ProfileChildrenScreen() {
     })
     
     if (result && !result.error) {
-      setData((prev: any) => ({ ...prev, audio: novoValor }));
+      setUser((prev) => {
+        if (!prev) return prev;
+        return { ...prev, audioAtivado: novoValor };
+      });
     } else {
       showAlert({
         icon: require("@/assets/icons/icon-alerta.png"),
@@ -90,15 +68,14 @@ export default function ProfileChildrenScreen() {
     });
   };
 
-  if (!data) return null;
+  if (!user) return null;
 
-  const { foto, nome, pontos, audio } = data;
+  const { foto, nome, pontos, audioAtivado } = user;
   const nivel = Math.floor(pontos / 100);
   const progressoNivel = pontos % 100;
 
   return (
     <ScrollView style={styles.container}>
-      {error && <Error error={error} onReload={fetchData} />}
       <View style={styles.containerDados}>
         <TouchableOpacity
           onPress={() => navigation.navigate("iconChildren")}
@@ -148,7 +125,7 @@ export default function ProfileChildrenScreen() {
         <ProgressBarLvl pontos={progressoNivel.toString()} progresso={progressoNivel} />
         <View style={{ gap: 10 }}>
           <ContainerAcessibilidade
-            audioAtivo={audio}
+            audioAtivo={audioAtivado}
             onChangeAudio={(novoValor) => atualizarAudio(novoValor)}
           />
           <ContainerActionChildren

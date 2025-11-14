@@ -15,6 +15,7 @@ import { useApi } from "@/hooks/useApi";
 import Error from "@/components/ui/Error";
 import { useCustomAlert } from "@/contexts/AlertContext";
 import CharacterSprite from "@/components/ui/Children/CharacterSprite";
+import { useUser } from "@/contexts/UserContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList,"iconChildren">;
 
@@ -26,36 +27,10 @@ type ChildData = {
 
 export default function IconChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { showLoadingModal, hideLoadingModal } = useLoading();
+  const { user } = useUser();
   const { request } = useApi();
   const { showAlert } = useCustomAlert();
-  const [data, setData] = useState<ChildData | undefined>(undefined);
-  const [error, setError] = useState<string | null>(null)
   const chacaterSprites = ["boy", "girl"];
-
-  const fetchData = async () => {
-    showLoadingModal();
-    setError(null)
-
-    const result = await request({
-      endpoint: "/criancas",
-    });
-
-    if (result.error) {
-      setError(result.message);
-      hideLoadingModal();
-      return null;
-    }
-
-    setData(result ?? null);
-    hideLoadingModal();
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
 
   const getAvatarImage = (name: string) => {
     switch (name) {
@@ -94,7 +69,6 @@ export default function IconChildrenScreen() {
 
   return (
     <View style={styles.container}>
-      {error && <Error error={error} onReload={fetchData} />}
       <View style={styles.scrollContainer}>
         <View style={styles.fundoBranco}></View>
         <View style={styles.containerDados}>
@@ -104,8 +78,8 @@ export default function IconChildrenScreen() {
                 <Image
                   style={styles.foto}
                   source={
-                    data && data.foto
-                      ? { uri: data.foto }
+                    user && user.foto
+                      ? { uri: user.foto }
                       : require("@/assets/images/logo.png")
                   }
                 />
@@ -115,7 +89,7 @@ export default function IconChildrenScreen() {
                 color2="#5c94b3"
                 style={styles.nameText}
               >
-                {data ? data.nome : ""}
+                {user ? user.nome : ""}
               </GradientText>
             </View>
             <TouchableOpacity

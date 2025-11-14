@@ -11,14 +11,13 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
-import { useCheckHint } from "@/hooks/useCheckHint";
-import { useAudio } from "@/contexts/AudioContext";
 import { ImageBackground } from "expo-image";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import BaloonLetter from "@/components/ui/Children/Phases/BaloonLetter";
 import { MotiView } from "moti";
 import { useLoading } from "@/contexts/LoadingContext";
+import { useUser } from "@/contexts/UserContext";
 
 const { width, height } = Dimensions.get("window");
 
@@ -34,6 +33,7 @@ interface FloatingItem {
 
 export default function AtvBossScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { user } = useUser();
   const [items, setItems] = useState<FloatingItem[]>([]);
   const [selectedWord, setSelectedWord] = useState<string>("");
   const [revealedLetters, setRevealedLetters] = useState<string[]>([]);
@@ -48,7 +48,6 @@ export default function AtvBossScreen() {
 
   const { showLoadingModal, hideLoadingModal } = useLoading();
   const { start, reset, getDuration } = useScreenDuration();
-  const { audioEnabled, checkAudio } = useAudio();
   const { submitMission } = useSubmitMission();
 
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -196,10 +195,6 @@ export default function AtvBossScreen() {
     setItems((prev) => prev.filter((i) => i.id !== item.id));
   };
 
-  useEffect(() => {
-    checkAudio();
-  }, []);
-
   return (
     <View style={styles.container}>
       {!iniciou ? (
@@ -259,7 +254,7 @@ export default function AtvBossScreen() {
           transition={{ type: "timing", duration: 5000 }}
           style={[styles.balao, { left: item.left }]}
         >
-          <BaloonLetter letter={item.letter} color={item.color} isAudioEnabled={audioEnabled} onPress={() => handlePress(item)} />
+          <BaloonLetter letter={item.letter} color={item.color} isAudioEnabled={user?.audioAtivado} onPress={() => handlePress(item)} />
         </MotiView>
       ))}
 

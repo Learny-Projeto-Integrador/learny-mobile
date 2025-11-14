@@ -10,21 +10,21 @@ import React from "react";
 import { imgMedalhas } from "@/constants/dadosMedalhas";
 import { useApi } from "@/hooks/useApi";
 import { LinearGradient } from "expo-linear-gradient";
+import { useUser } from "@/contexts/UserContext";
 
 type Props = {
   title: string;
   medalhas: any;
   visible: boolean;
   onClose: () => void;
-  onSelectMedalha: (medalha?: any) => void;
 };
 
 export default function ContainerSelectMedalha({
   medalhas,
   visible,
   onClose,
-  onSelectMedalha,
 }: Props) {
+  const { user, setUser } = useUser();
   const { request } = useApi();
 
   const changeMedalha = async (medalha: any) => {
@@ -37,9 +37,11 @@ export default function ContainerSelectMedalha({
     })
 
     if (result) {
+      setUser((prev) => {
+        if (!prev) return prev;
+        return { ...prev, medalhaSelecionada: medalha };
+      });
       onClose();
-      // recarrega a tela após o modal ser fechado
-      onSelectMedalha();
     }
   };
 

@@ -19,6 +19,7 @@ import ContainerSelectMedalha from "@/components/ui/Children/Menu/ContainerSelec
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
 import Error from "@/components/ui/Error";
+import { useUser } from "@/contexts/UserContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "world">;
 
@@ -30,40 +31,13 @@ const imgMedalhas: any = {
 
 export default function WorldScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { showLoadingModal, hideLoadingModal } = useLoading();
-  const { request } = useApi();
-  const [data, setData] = useState<any>(null);
+  const { user } = useUser();
   const [visible, setVisible] = useState(false);
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchData = async () => {
-    showLoadingModal();
-    setError(null);
-
-    const result = await request({
-      endpoint: "/criancas",
-    });
-
-    if (result.error) {
-      setError(result.message);
-      hideLoadingModal();
-      return null;
-    }
-
-    setData(result ?? null);
-    hideLoadingModal();
-  };
-  
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
 
   const renderFases = () => {
-    if (!data?.mundos || data.mundos.length === 0) return null;
+    if (!user?.mundos || user.mundos.length === 0) return null;
 
-    const fases = data.mundos[0].fases;
+    const fases = user.mundos[0].fases;
     let liberarProxima = true;
     let ultimaFaseLiberadaIndex = -1;
 
@@ -109,7 +83,6 @@ export default function WorldScreen() {
           disabled={!faseLiberada}
           style={[faseStyles[fase], { flexDirection: "row" }]}
         >
-          {error && <Error error={error} onReload={fetchData} />}
           {faseLiberada ? (
             <Text style={styles.fase}>{String(fase).padStart(2, "0")}</Text>
           ) : (
@@ -128,15 +101,12 @@ export default function WorldScreen() {
 
   return (
     <View style={styles.container}>
-      {data && (
+      {user && (
         <ContainerSelectMedalha
           title="Medalhas"
-          medalhas={data?.medalhas}
+          medalhas={user?.medalhas}
           visible={visible}
           onClose={() => setVisible(false)}
-          onSelectMedalha={() => {
-            fetchData();
-          }}
         />
       )}
       <ScrollView>
@@ -147,11 +117,11 @@ export default function WorldScreen() {
           />
         </View>
         <View style={styles.containerDados}>
-          {data && (
+          {user && (
             <Header
-              pontos={data.pontos}
-              medalhas={data.medalhas?.length || 0}
-              ranking={data.rankingAtual}
+              pontos={user.pontos}
+              medalhas={user.medalhas?.length || 0}
+              ranking={user.rankingAtual}
             />
           )}
           <View style={{ flexDirection: "row", alignItems: "center", gap: 50 }}>
@@ -160,9 +130,9 @@ export default function WorldScreen() {
                 source={require("@/assets/images/circulo-sombra.png")}
                 style={styles.fundoMedalha}
               >
-                {data && (
+                {user && (
                   <Image
-                    source={imgMedalhas[data.medalhaSelecionada.nome]}
+                    source={imgMedalhas[user.medalhaSelecionada ? user.medalhaSelecionada.nome : "Iniciando!"]}
                     style={styles.medalha}
                     resizeMode="contain"
                   />

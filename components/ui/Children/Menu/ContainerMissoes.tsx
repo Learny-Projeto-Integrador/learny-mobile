@@ -11,31 +11,12 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useApi } from "@/hooks/useApi";
 import { imgsMissoes } from "@/constants/dadosFases";
 import { useLoading } from "@/contexts/LoadingContext";
-
-type MissaoDiaria = {
-  nome: string;
-  descricao: string;
-};
+import { useUser } from "@/contexts/UserContext";
 
 export default function ContainerMissoes() {
-  const [missoesDiarias, setMissoesDiarias] = useState<MissaoDiaria[] | null>(null);
+  const { user } = useUser();
   const { request } = useApi();
   const { showLoadingModal, hideLoadingModal } = useLoading();
-
-  const fetchData = async () => {
-    showLoadingModal();
-    const result = await request({
-      endpoint: "/criancas",
-    });
-    setMissoesDiarias(result.missoesDiarias ?? null);
-    hideLoadingModal();
-  };
-  
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
 
   return (
     <ImageBackground
@@ -43,8 +24,8 @@ export default function ContainerMissoes() {
       style={styles.container}
     >
       <Text style={styles.title}>Missões Diárias</Text>
-      {missoesDiarias
-        ? missoesDiarias.map((missao, index) => (
+      {user?.missoesDiarias
+        ? user?.missoesDiarias.map((missao, index) => (
             <View key={index} style={{ flexDirection: "row", gap: 10 }}>
               <Image source={imgsMissoes[missao.nome]} style={styles.missao} />
             </View>

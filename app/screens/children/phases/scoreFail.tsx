@@ -24,7 +24,6 @@ type ScoreFail = {
 };
 
 export default function ScoreFailScreen({ route }: RouteProp) {
-  //@ts-ignore
   const { score }: { score: ScoreFail } = route.params;
   const navigation = useNavigation<NavigationProp>();
 

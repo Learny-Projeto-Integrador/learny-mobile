@@ -34,9 +34,9 @@ import ScoreScreen from './screens/children/phases/score';
 import ScoreFailScreen from './screens/children/phases/scoreFail';
 import { LoadingProvider } from '@/contexts/LoadingContext';
 import { AlertProvider } from '@/contexts/AlertContext';
-import { AudioProvider } from '@/contexts/AudioContext';
 import AtvBossScreen from './screens/children/phases/atvBoss';
 import AtvSecretScreen from './screens/children/phases/atvSecret';
+import { UserProvider } from '@/contexts/UserContext';
 
 const Stack = createStackNavigator<RootStackParamList>()
 
@@ -75,8 +75,8 @@ export default function RootLayout() {
   }
 
   return (
-    <AlertProvider>
-      <AudioProvider>
+    <UserProvider>
+      <AlertProvider>
         <LoadingProvider>
           <Stack.Navigator>
             <Stack.Screen
@@ -176,7 +176,7 @@ export default function RootLayout() {
             />
           </Stack.Navigator>
         </LoadingProvider>
-        </AudioProvider>
       </AlertProvider>
+    </UserProvider>
   );
 }

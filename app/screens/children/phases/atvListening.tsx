@@ -17,10 +17,10 @@ import SoundCard from "@/components/ui/Children/Phases/SoundCard";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
 import { SoundItem } from "@/types";
-import { useAudio } from "@/contexts/AudioContext";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useCheckHint } from "@/hooks/useCheckHint";
 import { useLoading } from "@/contexts/LoadingContext";
+import { useUser } from "@/contexts/UserContext";
 
 const { width, height } = Dimensions.get("window");
 
@@ -58,7 +58,7 @@ export default function AtvListeningScreen() {
   const { showLoadingModal, hideLoadingModal } = useLoading();
   const { getDuration } = useScreenDuration();
   const { submitMission } = useSubmitMission();
-  const { audioEnabled, checkAudio } = useAudio();
+  const { user } = useUser();
   const { setHintUsed, checkHint } = useCheckHint();
 
   const handleAssign = (soundId: string, label: string) => {
@@ -113,10 +113,6 @@ export default function AtvListeningScreen() {
     hideLoadingModal();
   };
 
-  useEffect(() => {
-    checkAudio();
-  }, []);
-
   return (
     <ScrollView style={styles.container}>
       <ContainerInfo
@@ -136,7 +132,7 @@ export default function AtvListeningScreen() {
 
       <View style={styles.containerSounds}>
         {sounds.map((sound) =>
-          audioEnabled ? (
+          user?.audioAtivado ? (
             <SoundCard
               key={sound.id}
               id={sound.id}

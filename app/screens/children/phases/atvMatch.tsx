@@ -15,10 +15,10 @@ import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import SoundCard from "@/components/ui/Children/Phases/SoundCard";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
-import { useAudio } from "@/contexts/AudioContext";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useCheckHint } from "@/hooks/useCheckHint";
 import { useLoading } from "@/contexts/LoadingContext";
+import { useUser } from "@/contexts/UserContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -58,7 +58,7 @@ export default function AtvMatchScreen() {
 
   const { showLoadingModal, hideLoadingModal } = useLoading();
   const { getDuration } = useScreenDuration();
-  const { audioEnabled, checkAudio } = useAudio();
+  const { user } = useUser();
   const { submitMission } = useSubmitMission();
   const { setHintUsed, checkHint } = useCheckHint();
 
@@ -127,10 +127,6 @@ export default function AtvMatchScreen() {
   };
 
   useEffect(() => {
-    checkAudio();
-  }, []);
-
-  useEffect(() => {
     // Escolhe um dino aleatoriamente
     const randomDino =
       options[Math.floor(Math.random() * options.length)];
@@ -183,7 +179,7 @@ export default function AtvMatchScreen() {
               text={
                 option.emotion.charAt(0).toUpperCase() + option.emotion.slice(1)
               }
-              audio={audioEnabled ? option.audio : null}
+              audio={user?.audioAtivado ? option.audio : null}
               type="grande"
               onPress={() => {
                 if (option.emotion === selectedDino?.emotion) {

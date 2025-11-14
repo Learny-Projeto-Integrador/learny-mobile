@@ -25,7 +25,6 @@ type Score = {
 };
 
 export default function ScoreScreen({ route }: RouteProp) {
-  //@ts-ignore
   const { score }: { score: Score } = route.params;
   const navigation = useNavigation<NavigationProp>();
 

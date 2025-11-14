@@ -5,33 +5,16 @@ import {
   Dimensions, 
 } from "react-native";
 import Medalha from "./Medalha";
-import { useCallback, useState } from "react";
-import { useFocusEffect } from "@react-navigation/native";
-import { useApi } from "@/hooks/useApi";
-import { Medalhas } from "@/types";
+import { useUser } from "@/contexts/UserContext";
 
 export default function ContainerMedalhas() {
-  const [medalhas, setMedalhas] = useState<Medalhas[] | null>(null);
-  const { request } = useApi();
-
-  const fetchData = async () => {
-    const result = await request({
-      endpoint: "/criancas",
-    });
-    setMedalhas(result.medalhas ?? null);
-  };
-  
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
+  const { user } = useUser();
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Medalhas</Text>
       <View style={{gap: 20, marginTop: 20}}>
-        {medalhas?.map((medalha, index) => (
+        {user?.medalhas?.map((medalha, index) => (
           <Medalha 
             key={index} 
             fundo={""}

@@ -21,13 +21,15 @@ import { useApi } from "@/hooks/useApi";
 import LoginInput from "@/components/ui/LoginInput";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCustomAlert } from "@/contexts/AlertContext";
+import { useUser } from "@/contexts/UserContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
 export default function LoginScreen() {
+  const navigation = useNavigation<NavigationProp>();
+  const { setUser } = useUser();
   const { loading, request } = useApi();
   const { showAlert } = useCustomAlert();
-  const navigation = useNavigation<NavigationProp>();
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
 
@@ -40,9 +42,9 @@ export default function LoginScreen() {
 
     if (result && !result.error) {
       await AsyncStorage.setItem("token", result.access_token);
+      setUser(result.user);
       navigation.navigate("transition", {
-        name: result.nome,
-        type: result.tipo,
+        name: result.user.nome,
       });
     } else {
       showAlert({

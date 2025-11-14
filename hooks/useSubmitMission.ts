@@ -1,6 +1,6 @@
 import { useCustomAlert } from "@/contexts/AlertContext";
 import { useApi } from "./useApi";
-import { useCheckMedalha } from "./useCheckMedalha";
+import { useUser } from "@/contexts/UserContext";
 
 const imgsMedalhas: any = {
   "Iniciando!": require("@/assets/icons/icon-medalha-verde.png"),
@@ -22,7 +22,7 @@ type SubmitMissionResponse = {
 
 export const useSubmitMission = () => {
   const { showAlert } = useCustomAlert();
-  const { checkMedalha } = useCheckMedalha();
+  const { user } = useUser();
   const { request } = useApi();
 
   const submitMission = async ({
@@ -31,7 +31,7 @@ export const useSubmitMission = () => {
   }: Params): Promise<SubmitMissionResponse> => {
     try {
 
-      const medalha = await checkMedalha();
+      const medalha = user?.medalhaSelecionada ? user?.medalhaSelecionada.nome : null;
 
       if (medalha == "Iniciando!") {
         pontos != 0 ? pontos += 50 : null

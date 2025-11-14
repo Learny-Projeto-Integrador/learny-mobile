@@ -20,6 +20,7 @@ import { useCheckHint } from "@/hooks/useCheckHint";
 import { animalColors } from "@/constants/dadosFases";
 import { useAudio } from "@/contexts/AudioContext";
 import { useLoading } from "@/contexts/LoadingContext";
+import { useUser } from "@/contexts/UserContext";
 
 const cards = [
   { id: "1", title: "monkey", img: require("@/assets/images/cards/connect/card-macaco.png"), audio: require("@/assets/audios/monkey.wav") },
@@ -45,7 +46,7 @@ export default function AtvConnectScreen() {
   
   const { showLoadingModal, hideLoadingModal } = useLoading();
   const { getDuration } = useScreenDuration();
-  const { audioEnabled, checkAudio } = useAudio();
+  const { user } = useUser();
   const { submitMission } = useSubmitMission();
   const { setHintUsed, checkHint } = useCheckHint();
 
@@ -156,10 +157,6 @@ export default function AtvConnectScreen() {
     setHintUsed(true); // marca que a dica foi usada
   };
 
-  useEffect(() => {
-    checkAudio();
-  }, []);
-
   return (
     <ScrollView style={styles.container}>
       <ContainerInfo
@@ -201,7 +198,7 @@ export default function AtvConnectScreen() {
                 id={card.id}
                 title={card.title}
                 image={card.img}
-                audio={audioEnabled ? card.audio : null}
+                audio={user?.audioAtivado ? card.audio : null}
                 column="left"
                 onSelect={handleSelect}
               />
@@ -217,7 +214,7 @@ export default function AtvConnectScreen() {
                 id={card.id}
                 title={card.title}
                 image={card.img}
-                audio={audioEnabled ? card.audio : null}
+                audio={user?.audioAtivado ? card.audio : null}
                 column="right"
                 onSelect={handleSelect}
               />

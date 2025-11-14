@@ -1,7 +1,7 @@
 export type RootStackParamList = {
   index: undefined;
   register: { idParent?: string };
-  transition: { name: string, type: string };
+  transition: { name: string };
   profileParent: undefined;
   edit: { userFilho?: string }
   home: undefined;
@@ -30,19 +30,43 @@ export type RoutesWithoutParams = {
     : never;
 }[keyof RootStackParamList];
 
-export type ParentData = {
-  idParent: string;
+export type User = {
+  id: number;
   foto: string;
   nome: string;
-  filhos: [{}];
-  filhoSelecionado: {fasesConcluidas: any};
+  pontos: number;
+  fasesConcluidas: number;
+  medalhas: Array<Medalha>;
+  medalhaSelecionada: Medalha | null;
+  rankingAtual: number;
+  missoesDiarias: Array<MissaoDiaria>;
+  audioAtivado: boolean;
+  rankingAtivado: boolean;
+  mundos: Array<Mundo>;
 };
 
-export type Medalhas = {
+export type Medalha = {
   nome: string;
   descricao: string;
+  mundo: number;
   dataConquista: string;
 };
+
+export type MissaoDiaria = {
+  nome: string;
+  descricao: string;
+};
+
+export type Fase = {
+  fase: number;
+  concluida: boolean;
+}
+
+export type Mundo = {
+  mundo: number;
+  faseAtual: number;
+  fases: Array<Fase>;
+}
 
 export type AlertProps = {
   icon: any;
