@@ -22,6 +22,7 @@ import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
 import { useUser } from "@/contexts/UserContext";
 import { useCustomAlert } from "@/contexts/AlertContext";
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "ranking">;
 
@@ -84,7 +85,7 @@ export default function RankingScreen() {
         <View style={{ flexDirection: "row" }}>
           <Image
             source={require("@/assets/images/teste3.png")}
-            style={styles.fundoVerde}
+            style={styles.fundoAzul}
           />
         </View>
         <View style={styles.containerDados}>
@@ -110,11 +111,11 @@ export default function RankingScreen() {
             >
               <Image
                 source={require("@/assets/icons/icon-voltar2.png")}
-                style={[styles.icon, { width: width * 0.07 }]}
+                style={[styles.icon, { width: scale(24) }]}
               />
             </TouchableOpacity>
           </View>
-          <View style={{ gap: 40 }}>
+          <View style={{ gap: verticalScale(26) }}>
             {podiumItems.map((item: any, index: any) => (
               <PodiumCard
                 key={item?.id || `empty-${index}`}
@@ -140,10 +141,10 @@ export default function RankingScreen() {
                 backgroundColor: "rgba(0,0,0,0.35)",
                 width: width * 0.74,
                 marginTop: height * 0.02,
-                borderRadius: 40,
+                borderRadius: scale(20),
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 20,
+                gap: scale(10),
                 paddingVertical: height * 0.04,
               }}
             >
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff", // fundo cinza
   },
-  fundoVerde: {
+  fundoAzul: {
     width: "100%",
     aspectRatio: 390 / 124,
   },

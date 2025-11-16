@@ -18,6 +18,7 @@ import BaloonLetter from "@/components/ui/Children/Phases/BaloonLetter";
 import { MotiView } from "moti";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useUser } from "@/contexts/UserContext";
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 const { width, height } = Dimensions.get("window");
 
@@ -221,6 +222,11 @@ export default function AtvBossScreen() {
         </View>
       ) : (
         <View>
+          {/* Fundo de nuvens */}
+          <ImageBackground
+            source={require("@/assets/images/nuvens-cima.png")}
+            style={styles.nuvensCima}
+          />
           {/* SCORE */}
           <View style={styles.scoreContainer}>
             <Text style={styles.scoreLabel}>Score: </Text>
@@ -289,7 +295,7 @@ export default function AtvBossScreen() {
           setIniciou(!iniciou)
         }} style={{
           backgroundColor: "#4c4c4c",
-          borderRadius: 20,
+          borderRadius: scale(10),
           width: width * 0.3,
           alignItems: "center",
           justifyContent: "center",
@@ -299,32 +305,40 @@ export default function AtvBossScreen() {
             fontFamily: "Montserrat_700Bold",
             padding: width * 0.02,
             color: "#fff"
-          }}>{!iniciou ? "Iniciar" : "Parar"}</Text>
+          }}>{!iniciou ? "Start" : "Stop"}</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     backgroundColor: "#fff",
     flex: 1,
   },
   scoreContainer: {
     flexDirection: "row",
-    marginTop: height * 0.05,
-    marginLeft: width * 0.05,
+    backgroundColor: "#4c4c4c",
+    borderTopEndRadius: scale(20),
+    borderBottomEndRadius: scale(20),
+    maxWidth: scale(150),
+    alignItems: "center",
+    marginTop: scale(50),
+    paddingLeft: scale(15),
+    paddingRight: scale(25),
+    paddingVertical: verticalScale(5),
+    gap: scale(5),
   },
   scoreLabel: {
-    fontSize: width * 0.07,
-    fontFamily: "Montserrat_900Black",
-    color: "#4C4C4C",
+    fontSize: scale(20),
+    fontFamily: "Montserrat_600SemiBold",
+    color: "#fff",
   },
   scoreValue: {
-    fontSize: width * 0.07,
-    fontFamily: "Montserrat_900Black",
-    color: "#FFB300",
+    color: "#fff",
+    fontSize: scale(20),
+    fontFamily: "Montserrat_400Regular",
   },
   balao: {
     position: "absolute",
@@ -356,8 +370,14 @@ const styles = StyleSheet.create({
   },
   nuvens: {
     position: "absolute",
-    bottom: -height * 0.03,
+    bottom: -height * 0.01,
     width: width,
     aspectRatio: 390 / 227,
+  },
+  nuvensCima: {
+    position: "absolute",
+    top: -height * 0.03,
+    width: width,
+    aspectRatio: 562 / 262,
   },
 });

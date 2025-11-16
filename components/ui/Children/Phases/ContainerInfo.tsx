@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import React from "react";
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 type Props = {
   message: string;
@@ -56,7 +57,7 @@ export default function ContainerInfo({
 
 const { width, height } = Dimensions.get("window");
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#4c4c4c",
     marginTop: height * 0.09,
     paddingVertical: height * 0.02,
-    borderRadius: 40,
+    borderRadius: scale(30),
     width: "87%",
     height: height * 0.4,
     gap: width * 0.035,

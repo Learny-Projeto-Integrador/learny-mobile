@@ -11,6 +11,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import CustomAlert from "../../CustomAlert";
 import { LinearGradient } from "expo-linear-gradient";
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -71,17 +72,17 @@ export default function Menu() {
 
 const { width, height } = Dimensions.get("window");
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     width: "100%",
-    height: height * 0.15,
+    height: verticalScale(100),
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 60,
+    borderRadius: scale(30),
     overflow: "hidden",
   },
   icon: {
-    width: width * 0.15,
+    width: scale(50),
     aspectRatio: 62 / 62,
   },
   containerFilho: {

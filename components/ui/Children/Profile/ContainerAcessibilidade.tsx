@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { CustomSwitch } from "../../CutsomSwitch";
 import GradientText from "../../GradientText";
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 type Props = {
   audioAtivo: boolean;
@@ -46,15 +47,15 @@ export default function ContainerAcessibilidade({
 
 const { width, height } = Dimensions.get("window");
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     width: width * 0.85,
     aspectRatio: 354 / 201, // largura / altura da imagem original
     paddingHorizontal: width * 0.08,
-    paddingVertical: height * 0.035,
+    paddingVertical: verticalScale(18),
   },
   containerElementos: {
-    gap: height * 0.03,
+    gap: verticalScale(20),
   },
   viewTitle: {
     flexDirection: "row",

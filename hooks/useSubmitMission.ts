@@ -22,7 +22,7 @@ type SubmitMissionResponse = {
 
 export const useSubmitMission = () => {
   const { showAlert } = useCustomAlert();
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const { request } = useApi();
 
   const submitMission = async ({
@@ -49,6 +49,13 @@ export const useSubmitMission = () => {
       });
 
       if (result && !result.error) {
+
+        if (result.usuarioAtualizado) {
+          setUser((prev) => {
+            if (!prev) return prev;
+            return { ...prev, ...result.usuarioAtualizado };
+          });
+        }
 
         if (result.missaoConcluida) {
           showAlert({

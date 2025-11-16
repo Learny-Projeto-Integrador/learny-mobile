@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import GradientText from "../../GradientText";
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -80,7 +81,7 @@ export default function HeaderFase({
 
 const { width, height } = Dimensions.get("window");
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     backgroundColor: "#fff",
     flex: 1,
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     display: "flex",
     height: "auto",
     flexDirection: "row",
-    marginTop: height * 0.04,
+    marginTop: verticalScale(50),
     gap: width * 0.05,
   },
   image: {

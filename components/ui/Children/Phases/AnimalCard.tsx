@@ -6,6 +6,7 @@ import {
   useWindowDimensions,
   ImageSourcePropType,
 } from "react-native";
+import { scale} from "react-native-size-matters";
 
 type Props = {
   image: ImageSourcePropType;
@@ -66,7 +67,7 @@ export default function AnimalCard({
       <Image
         source={image}
         style={{
-          width: width * 0.2,
+          width: scale(80),
           aspectRatio: 1,
         }}
       />

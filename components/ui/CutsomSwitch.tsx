@@ -1,11 +1,10 @@
 import {
   TouchableWithoutFeedback,
   Animated,
-  StyleSheet,
-  Dimensions,
 } from 'react-native';
 import React, { useRef, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ScaledSheet, scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 type Props = {
   value: boolean;
@@ -26,12 +25,13 @@ export const CustomSwitch: React.FC<Props> = ({
     }).start();
   }, [value]);
 
+  // traduz a posição do botão
   const translateX = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [2, 28], // posição do botão
+    outputRange: [scale(2), scale(26)], // ajustado para size-matters
   });
 
-  const gradientColors: any = value
+  const gradientColors = value
     ? ['#da6171', '#69bbe3']
     : ['#417e99', '#7b4a57'];
 
@@ -42,6 +42,7 @@ export const CustomSwitch: React.FC<Props> = ({
   return (
     <TouchableWithoutFeedback onPress={toggleSwitch}>
       <LinearGradient
+      //@ts-ignore
         colors={gradientColors}
         style={styles.container}
         start={{ x: 0, y: 0 }}
@@ -53,21 +54,20 @@ export const CustomSwitch: React.FC<Props> = ({
   );
 };
 
-const { width, height } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
-    width: "16%",
-    height: height * 0.035,
-    borderRadius: 30,
-    paddingVertical: width * 0.02,
-    paddingLeft: width * 0.01,
+    width: scale(50),         // antes era 16% (melhor padronizar)
+    height: verticalScale(25),
+    borderRadius: moderateScale(30),
+    paddingVertical: verticalScale(2),
+    paddingLeft: scale(3),
     justifyContent: 'center',
   },
+
   circle: {
-    width: width * 0.04,
-    height: width * 0.04,
-    borderRadius: 13,
+    width: scale(15),
+    height: scale(15),
+    borderRadius: moderateScale(20),
     backgroundColor: '#fff',
   },
 });

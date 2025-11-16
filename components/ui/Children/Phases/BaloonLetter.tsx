@@ -2,6 +2,7 @@ import { View, Dimensions, ImageBackground, TouchableOpacity } from "react-nativ
 import React from "react";
 import Svg, { Text as SvgText } from "react-native-svg";
 import { Audio } from "expo-av";
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 const { width, height } = Dimensions.get("window");
 
@@ -72,7 +73,7 @@ export default function BaloonLetter({ letter, color, isAudioEnabled, onPress }:
       <ImageBackground
         source={baloes[color]}
         style={{
-          width: width * 0.13,
+          width: scale(45),
           aspectRatio: 65 / 94,
           position: "relative",
           alignItems: "center",
@@ -83,14 +84,13 @@ export default function BaloonLetter({ letter, color, isAudioEnabled, onPress }:
             position: "absolute",
           }}
         >
-          <Svg height={height * 0.11} width={width * 0.1}>
+          <Svg height={verticalScale(65)} width={scale(32)}>
             <SvgText
               fill="#fff"
               stroke={color}
-              strokeWidth="2"
-              fontSize={width * 0.09}
+              strokeWidth={scale(1.5)}
+              fontSize={scale(30)}
               fontFamily="Montserrat_900Black"
-              fontWeight="bold"
               x="50%"
               y="33%"
               textAnchor="middle"

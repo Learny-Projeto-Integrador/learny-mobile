@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 type Props = {
   rank: number;
@@ -16,7 +17,7 @@ export default function PodiumCard({ rank, name, points, image }: Props){
     <View style={styles.container}>
       <Image source={image ? {uri: image} : require("@/assets/images/avatar.png")} style={[styles.avatar, {borderColor}]} />
       <View style={[styles.card, {borderColor}]}>
-        <View style={{flexDirection: "row", alignItems: "center", gap: width * 0.02}}>
+        <View style={{flexDirection: "row", alignItems: "center", gap: scale(6)}}>
           <Text style={[styles.rank, {color}]}>{rank}º</Text>
           <Text style={styles.txt}>{name}</Text>
         </View>
@@ -30,41 +31,41 @@ export default function PodiumCard({ rank, name, points, image }: Props){
 
 const { width, height } = Dimensions.get("window");
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: width * 0.04,
+    gap: scale(18),
   },
   avatar: {
-    width: width * 0.13,
-    height: width * 0.13,
-    borderRadius: width * 0.13,
-    borderWidth: 5,
-    marginRight: 10,
+    width: scale(50),
+    height: scale(50),
+    borderRadius: scale(46),
+    borderWidth: scale(3),
   },
   card: {
-    width: width * 0.5,
+    width: scale(180),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: "space-between",
-    borderWidth: 5,
-    borderRadius: 15,
-    paddingVertical: height * 0.01,
-    paddingHorizontal: width * 0.04,
+    borderWidth: scale(3),
+    borderRadius: scale(10),
+    paddingVertical: verticalScale(10),
+    paddingHorizontal: scale(12),
   },
   rank: {
     fontFamily: 'Montserrat_700Bold',
-    fontSize: width * 0.05,
+    fontSize: scale(16),
     color: '#C55A1D',
   },
   txt: {
     color: '#333',
     fontFamily: 'Montserrat_700Bold',
-    fontSize: width * 0.035,
+    fontSize: scale(12),
   },
   points: {
     marginLeft: 'auto',
+    fontSize: scale(10),
     color: '#555',
   },
 });

@@ -2,12 +2,10 @@ import {
   ImageBackground,
   Image,
   Text,
-  StyleSheet,
   TouchableOpacity,
   View,
   Dimensions,
   ScrollView,
-  ViewStyle,
 } from "react-native";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -17,14 +15,41 @@ import Header from "@/components/ui/Children/Header";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
 import ContainerSelectMedalha from "@/components/ui/Children/Menu/ContainerSelectMedalha";
 import { useUser } from "@/contexts/UserContext";
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "world">;
 
 const imgMedalhas: any = {
   "Iniciando!": require("@/assets/icons/medalha-verde.png"),
   "A todo o vapor!": require("@/assets/icons/medalha-vermelha.png"),
-  "Desvendando": require("@/assets/icons/medalha-azul.png"),
+  Desvendando: require("@/assets/icons/medalha-azul.png"),
 };
+
+const fasesConfig = [
+  {
+    boss: false,
+    position: { top: verticalScale(260), left: scale(150) },
+    imageUnlocked: require("@/assets/images/trilha/fase1.png"),
+    imageLocked: require("@/assets/images/trilha/cadeado.png"),
+  },
+  {
+    boss: false,
+    position: { top: verticalScale(155), left: scale(200) },
+    imageUnlocked: require("@/assets/images/trilha/fase2.png"),
+    imageLocked: require("@/assets/images/trilha/cadeado.png"),
+  },
+  {
+    boss: false,
+    position: { top: verticalScale(55), left: scale(145) },
+    imageUnlocked: require("@/assets/images/trilha/fase3.png"),
+    imageLocked: require("@/assets/images/trilha/cadeado.png"),
+  },
+  {
+    boss: true,
+    position: { top: verticalScale(0), left: scale(50) },
+    imageBoss: require("@/assets/images/trilha/boss.png"),
+  },
+];
 
 export default function WorldScreen() {
   const navigation = useNavigation<NavigationProp>();
@@ -38,11 +63,13 @@ export default function WorldScreen() {
     let liberarProxima = true;
     let ultimaFaseLiberadaIndex = -1;
 
-    const renderedFases = fases.map((faseObj: any, index: any) => {
+    const renderedFases = fases.map((faseObj: any, index: number) => {
       const { fase, concluida, boss } = faseObj;
       const faseLiberada = liberarProxima;
       if (faseLiberada) ultimaFaseLiberadaIndex = index;
       if (!concluida) liberarProxima = false;
+
+      const config = fasesConfig[index];
 
       const faseScreens: RoutesWithoutParams[] = [
         "atvConnect",
@@ -51,7 +78,8 @@ export default function WorldScreen() {
         "atvBoss",
       ];
 
-      const screenName: RoutesWithoutParams = faseScreens[index] ?? "atvConnect";
+      const screenName: RoutesWithoutParams =
+        faseScreens[index] ?? "atvConnect";
 
       if (boss) {
         return (
@@ -61,11 +89,17 @@ export default function WorldScreen() {
               faseLiberada ? () => navigation.navigate(screenName) : undefined
             }
             disabled={!faseLiberada}
-            style={styles.viewIconBoss}
+            style={[
+              {
+                position: "absolute",
+                zIndex: 2,
+                ...config.position,
+              },
+            ]}
           >
             <Image
-              source={require("@/assets/icons/icon-boss.png")}
-              style={styles.boss}
+              source={config.imageBoss}
+              style={{ width: scale(70), height: scale(70) }}
             />
           </TouchableOpacity>
         );
@@ -78,14 +112,24 @@ export default function WorldScreen() {
             faseLiberada ? () => navigation.navigate(screenName) : undefined
           }
           disabled={!faseLiberada}
-          style={[faseStyles[fase], { flexDirection: "row" }]}
+          style={[
+            {
+              position: "absolute",
+              ...config.position,
+              flexDirection: "row",
+              zIndex: 2,
+            },
+          ]}
         >
           {faseLiberada ? (
-            <Text style={styles.fase}>{String(fase).padStart(2, "0")}</Text>
+            <Image
+              source={config.imageUnlocked}
+              style={{ width: scale(65), height: scale(65) }}
+            />
           ) : (
             <Image
-              source={require("@/assets/icons/icon-cadeado.png")}
-              style={{ width: width * 0.06, aspectRatio: 31 / 35 }}
+              source={config.imageLocked}
+              style={{ width: scale(65), height: scale(65) }}
             />
           )}
         </TouchableOpacity>
@@ -94,7 +138,6 @@ export default function WorldScreen() {
 
     return renderedFases;
   };
-
 
   return (
     <View style={styles.container}>
@@ -106,7 +149,7 @@ export default function WorldScreen() {
           onClose={() => setVisible(false)}
         />
       )}
-      <ScrollView>
+
         <View style={{ flexDirection: "row" }}>
           <Image
             source={require("@/assets/images/teste.png")}
@@ -121,7 +164,13 @@ export default function WorldScreen() {
               ranking={user.rankingAtual}
             />
           )}
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 50 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: verticalScale(30),
+            }}
+          >
             <TouchableOpacity onPress={() => setVisible(true)}>
               <ImageBackground
                 source={require("@/assets/images/circulo-sombra.png")}
@@ -129,7 +178,13 @@ export default function WorldScreen() {
               >
                 {user && (
                   <Image
-                    source={imgMedalhas[user.medalhaSelecionada ? user.medalhaSelecionada.nome : "Iniciando!"]}
+                    source={
+                      imgMedalhas[
+                        user.medalhaSelecionada
+                          ? user.medalhaSelecionada.nome
+                          : "Iniciando!"
+                      ]
+                    }
                     style={styles.medalha}
                     resizeMode="contain"
                   />
@@ -149,33 +204,72 @@ export default function WorldScreen() {
 
           <View
             style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingLeft: 30,
+              position: "relative",
+              width: "100%",
+              marginLeft: scale(60)
             }}
           >
+            {renderFases()}
             <Image
-              source={require("@/assets/images/trilha.png")}
-              style={styles.trilha}
+              source={require("@/assets/images/trilha/inicio.png")}
+              style={{
+                width: scale(70),
+                height: scale(70),
+                position: "absolute",
+                top: verticalScale(330),
+                left: scale(50),
+              }}
             />
+
             <TouchableOpacity 
-            onPress={() => navigation.navigate("atvSecret")}
+              onPress={
+                () => user &&
+                      user.mundos[0].faseAtual > 2 ? 
+                      navigation.navigate("atvSecret") : null
+              }
+              activeOpacity={1}
               style={{
                 position: "absolute",
-                bottom: height * 0.365,
-              }}>
+                top: verticalScale(145),
+                left: scale(60),
+              }}
+              >
               <Image
-                source={require("@/assets/images/arvores.png")}
+                source={require("@/assets/images/trilha/arvores.png")}
                 style={{
-                  width: width * 0.25,
-                  aspectRatio: 1/1,
+                  width: scale(80),
+                  height: scale(80),
                 }}
               />
             </TouchableOpacity>
+
+
+            { user && user.mundos[0].faseAtual > 2 && (
+                <Image
+                source={require("@/assets/images/trilha/tracejado.png")}
+                style={{
+                  width: scale(80),
+                  height: scale(3),
+                  position: "absolute",
+                  top: verticalScale(190),
+                  left: scale(120),
+                }}
+              />
+              )}
+
+            <Image
+              source={require("@/assets/images/trilha/arco.png")}
+              style={{
+                width: scale(110),
+                height: verticalScale(300),
+                aspectRatio: 197 / 494,
+                position: "absolute",
+                top: verticalScale(40),
+                left: scale(125),
+              }}
+            />
           </View>
-          {renderFases()}
         </View>
-      </ScrollView>
       <View style={styles.navigationBarWrapper}>
         <NavigationBar />
       </View>
@@ -185,7 +279,7 @@ export default function WorldScreen() {
 
 const { width, height } = Dimensions.get("window");
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff", // fundo cinza
@@ -278,9 +372,3 @@ const styles = StyleSheet.create({
     aspectRatio: 73 / 70,
   },
 });
-
-const faseStyles: Record<number, ViewStyle> = {
-  1: styles.fase1,
-  2: styles.fase2,
-  3: styles.fase3,
-};

@@ -27,6 +27,7 @@ import { useSubmitMission } from "@/hooks/useSubmitMission";
 import { Audio } from "expo-av";
 import { useUser } from "@/contexts/UserContext";
 import { useCustomAlert } from "@/contexts/AlertContext";
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 const { width, height } = Dimensions.get("window");
 
@@ -305,7 +306,7 @@ export default function AtvSecretScreen() {
         }} 
         style={{
             backgroundColor: "#4c4c4c",
-            borderRadius: 20,
+            borderRadius: scale(10),
             width: width * 0.3,
             position: "absolute",
             bottom: -height * 0.29,
@@ -326,7 +327,7 @@ export default function AtvSecretScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     backgroundColor: "#fff",
     flex: 1,
@@ -349,18 +350,19 @@ const styles = StyleSheet.create({
     gap: width * 0.02,
     aspectRatio: 342 / 70,
     marginTop: height * 0.03,
+    marginBottom: height * 0.05,
     alignItems: "center",
     justifyContent: "center",
   },
   text: {
-    fontSize: 28,
+    fontSize: scale(18),
     fontFamily: "Montserrat_700Bold",
   },
   dragZone: {
     position: "absolute",
     width: width,
     height: height * 0.5,
-    bottom: 20,
+    bottom: scale(20),
   },
   drag: {
     position: "absolute",
