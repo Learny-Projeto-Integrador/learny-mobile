@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   View,
   Dimensions,
-  ScrollView,
 } from "react-native";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -22,7 +21,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, "world">;
 const imgMedalhas: any = {
   "Iniciando!": require("@/assets/icons/medalha-verde.png"),
   "A todo o vapor!": require("@/assets/icons/medalha-vermelha.png"),
-  Desvendando: require("@/assets/icons/medalha-azul.png"),
+  "Desvendando": require("@/assets/icons/medalha-azul.png"),
 };
 
 const fasesConfig = [
@@ -179,11 +178,9 @@ export default function WorldScreen() {
                 {user && (
                   <Image
                     source={
-                      imgMedalhas[
-                        user.medalhaSelecionada
-                          ? user.medalhaSelecionada.nome
-                          : "Iniciando!"
-                      ]
+                      user.medalhaSelecionada
+                          ? imgMedalhas[user.medalhaSelecionada.nome]
+                          : ""
                     }
                     style={styles.medalha}
                     resizeMode="contain"
@@ -244,7 +241,7 @@ export default function WorldScreen() {
             </TouchableOpacity>
 
 
-            { user && user.mundos[0].faseAtual > 2 && (
+            { user && user.fasesConcluidas >= 2 && (
                 <Image
                 source={require("@/assets/images/trilha/tracejado.png")}
                 style={{

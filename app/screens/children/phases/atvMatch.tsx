@@ -150,7 +150,7 @@ export default function AtvMatchScreen() {
         image={require("@/assets/images/eye.png")}
         title="Look & Match"
         description="Veja a imagem e ligue a emoção correta"
-        color="#6CD2FF"
+        color="#94ECA5"
         onPressInfo={() => setInfoVisible(true)}
       />
 
