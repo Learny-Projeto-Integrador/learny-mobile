@@ -1,23 +1,37 @@
 import {
   View,
   Image,
-  StyleSheet,
   Dimensions,
   TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
 import CustomAlert from "../../CustomAlert";
 import { LinearGradient } from "expo-linear-gradient";
 import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
+import { useUser } from "@/contexts/UserContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type Props = {
+  navigation: any;
+}
 
-export default function Menu() {
-  const navigation = useNavigation<NavigationProp>();
+export default function Menu({navigation}: Props) {
   const [alertVisible, setAlertVisible] = useState(false);
+  const { setUser } = useUser();
+    
+  const handleLogout = async () => {
+    try {
+      setUser(null);
+      await AsyncStorage.multiRemove(["user", "token"]);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "index" }],
+      })
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    }
+  }
+
   return (
     <LinearGradient
       colors={['#b25563', '#669bbb']}
@@ -32,7 +46,7 @@ export default function Menu() {
         onClose={() => setAlertVisible(false)}
         onRedirect={() => {
           setAlertVisible(false);
-          navigation.navigate("index");
+          handleLogout();
         }}
         closeLabel="Cancelar"
         redirectLabel="Sair"

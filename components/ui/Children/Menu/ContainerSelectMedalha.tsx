@@ -11,20 +11,23 @@ import { imgMedalhas } from "@/constants/dadosMedalhas";
 import { useApi } from "@/hooks/useApi";
 import { LinearGradient } from "expo-linear-gradient";
 import { useUser } from "@/contexts/UserContext";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
 type Props = {
-  title: string;
+  navigation: any;
   medalhas: any;
   visible: boolean;
   onClose: () => void;
 };
 
 export default function ContainerSelectMedalha({
+  navigation,
   medalhas,
   visible,
   onClose,
 }: Props) {
-  const { user, setUser } = useUser();
+  const { setUser } = useUser();
+  const { showAlert } = useCustomAlert();
   const { request } = useApi();
 
   const changeMedalha = async (medalha: any) => {
@@ -34,14 +37,23 @@ export default function ContainerSelectMedalha({
       body: { 
         medalhaSelecionada: medalha
       },
+      navigation,
     })
 
-    if (result) {
+    if (result && !result.error) {
       setUser((prev) => {
         if (!prev) return prev;
         return { ...prev, medalhaSelecionada: medalha };
       });
       onClose();
+    } else {
+      if (result.status != 401) {
+        showAlert({
+          icon: require("@/assets/icons/icon-alerta.png"),
+          title: "Erro ao trocar a medalha!",
+          message: result.message,
+        });
+      }
     }
   };
 

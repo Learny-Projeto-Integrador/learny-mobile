@@ -26,44 +26,7 @@ type ChildData = {
 export default function IconChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { user } = useUser();
-  const { request } = useApi();
-  const { showAlert } = useCustomAlert();
   const chacaterSprites = ["boy", "girl"];
-
-  const getAvatarImage = (name: string) => {
-    switch (name) {
-      case "avatar1":
-        return require("@/assets/icons/avatars/avatar1.png");
-      case "avatar2":
-        return require("@/assets/icons/avatars/avatar2.png");
-      default:
-        return undefined;
-    }
-  };
-  
-  const changeAvatar = async (avatarName: string) => {
-    const result = await request({
-      endpoint: "/criancas",
-      method: "PUT",
-      body: { 
-        avatar: avatarName,
-      },
-    })
-
-    if (result && !result.error) {
-      showAlert({
-        icon: require("@/assets/icons/icon-check-gradiente.png"),
-        title: "Sucesso!",
-        message: "Avatar alterado com sucesso!",
-      });
-    } else {
-      showAlert({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro ao alterar o avatar!",
-        message: result.message,
-      });
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -108,9 +71,6 @@ export default function IconChildrenScreen() {
               return (
                 <TouchableOpacity
                   key={index}
-                  onPress={
-                    avatar ? () => changeAvatar(avatar) : undefined
-                  }
                   disabled={!avatar}
                   style={styles.selectIcon}
                 >

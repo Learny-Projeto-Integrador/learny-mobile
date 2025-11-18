@@ -19,6 +19,7 @@ import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
 import { useCustomAlert } from "@/contexts/AlertContext";
 import { useUser } from "@/contexts/UserContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profileChildren">;
 
@@ -31,6 +32,19 @@ export default function ProfileChildrenScreen() {
   const { request } = useApi();
   const { showAlert } = useCustomAlert();
 
+  const handleLogout = async () => {
+    try {
+      setUser(null);
+      await AsyncStorage.multiRemove(["user", "token"]);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "index" }],
+      })
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    }
+  }
+
   const atualizarAudio = async (novoValor: boolean) => {
     showLoadingModal();
     const result = await request({
@@ -39,6 +53,7 @@ export default function ProfileChildrenScreen() {
       body: { 
         audio: novoValor,
       },
+      navigation,
     })
     
     if (result && !result.error) {
@@ -47,11 +62,13 @@ export default function ProfileChildrenScreen() {
         return { ...prev, audioAtivado: novoValor };
       });
     } else {
-      showAlert({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro ao atualizar o áudio!",
-        message: result.message,
-      });
+      if (result.status != 401) {
+        showAlert({
+          icon: require("@/assets/icons/icon-alerta.png"),
+          title: "Erro ao atualizar o áudio!",
+          message: result.message,
+        });
+      }
     }
     hideLoadingModal();
   };
@@ -64,7 +81,7 @@ export default function ProfileChildrenScreen() {
       dualAction: true,
       closeLabel: "Cancelar",
       redirectLabel: "Sair",
-      onRedirect: () => navigation.replace("index")
+      onRedirect: () => handleLogout()
     });
   };
 

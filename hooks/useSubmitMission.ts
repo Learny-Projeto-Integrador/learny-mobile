@@ -1,12 +1,17 @@
 import { useCustomAlert } from "@/contexts/AlertContext";
 import { useApi } from "./useApi";
 import { useUser } from "@/contexts/UserContext";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "@/types";
+import { useNavigation } from "@react-navigation/native";
 
 const imgsMedalhas: any = {
   "Iniciando!": require("@/assets/icons/icon-medalha-verde.png"),
   "A todo o vapor!": require("@/assets/icons/icon-medalha-vermelha.png"),
   "Desvendando": require("@/assets/icons/icon-medalha-azul.png"),
 };
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 type Params = {
   pontos: number,
@@ -21,6 +26,7 @@ type SubmitMissionResponse = {
 };
 
 export const useSubmitMission = () => {
+  const navigation = useNavigation<NavigationProp>();
   const { showAlert } = useCustomAlert();
   const { user, setUser } = useUser();
   const { request } = useApi();
@@ -46,6 +52,7 @@ export const useSubmitMission = () => {
           pontos: pontos,
           tipoFase: tipoFase
         },
+        navigation,
       });
 
       if (result && !result.error) {
@@ -78,11 +85,13 @@ export const useSubmitMission = () => {
         return { success: true, pontosAtualizados: pontos };
 
       } else {
-        showAlert({
-          icon: require("@/assets/icons/icon-check-gradiente.png"),
-          title: "Erro ao adicionar pontução!",
-          message: result.message,
-        });
+        if (result.status != 401) {
+          showAlert({
+            icon: require("@/assets/icons/icon-check-gradiente.png"),
+            title: "Erro ao adicionar pontução!",
+            message: result.message,
+          });
+        }
 
         return { success: false };
       }

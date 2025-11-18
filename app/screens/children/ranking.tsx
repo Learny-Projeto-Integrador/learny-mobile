@@ -40,19 +40,27 @@ export default function RankingScreen() {
 
     const result = await request({
       endpoint: "/criancas/ranking",
+      navigation,
     });
 
-    if (result.error) {
-      showAlert({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro ao buscar ranking!",
-        message: result.message,
-      });
-      hideLoadingModal();
-      return null;
+    if (result && !result.error) {
+      setRanking(result);
+    } else {
+      if (result.status != 401) {
+        showAlert({
+          icon: require("@/assets/icons/icon-alerta.png"),
+          title: "Erro ao buscar ranking!",
+          message: result.message,
+          dualAction: true,
+          closeLabel: "OK",
+          redirectLabel: "Tentar Novamente",
+          onRedirect: () => loadRanking()
+        });
+        hideLoadingModal();
+        return null;
+      }
     }
     
-    setRanking(result);
     hideLoadingModal();
   };
 

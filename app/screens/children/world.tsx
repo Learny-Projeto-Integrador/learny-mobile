@@ -142,7 +142,7 @@ export default function WorldScreen() {
     <View style={styles.container}>
       {user && (
         <ContainerSelectMedalha
-          title="Medalhas"
+          navigation={navigation}
           medalhas={user?.medalhas}
           visible={visible}
           onClose={() => setVisible(false)}
