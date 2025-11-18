@@ -55,11 +55,11 @@ export default function AtvBossScreen() {
   const colors = ["#EF5B6A", "#6CD2FF", "#FFB300", "#80D25B"];
   const wordList = [
     "APPLE",
-    "HOUSE",
-    "LEARNY",
-    "GARDEN",
+    "MAP",
+    "CAR",
+    "SUN",
     "MOON",
-    "BRAIN",
+    "DOG",
     "COLOR",
   ];
 

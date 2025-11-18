@@ -40,7 +40,7 @@ export default function LoginScreen() {
       body: { usuario, senha },
     });
 
-    if (result && !result.error) {
+    if (result && !result.error && result.tipo == "crianca") {
       await AsyncStorage.setItem("token", result.access_token);
       setUser(result.user);
       navigation.navigate("transition", {
@@ -50,7 +50,7 @@ export default function LoginScreen() {
       showAlert({
         icon: require("@/assets/icons/icon-alerta.png"),
         title: "Erro ao logar!",
-        message: result.message,
+        message: result.message || "Usuário e/ou senha inválidos",
       });
     }
   };

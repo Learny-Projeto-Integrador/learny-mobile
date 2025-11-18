@@ -19,6 +19,7 @@ import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useCheckHint } from "@/hooks/useCheckHint";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useUser } from "@/contexts/UserContext";
+import { scale } from "react-native-size-matters";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -167,7 +168,7 @@ export default function AtvMatchScreen() {
           <Image
             //@ts-ignore
             source={selectedDino.image}
-            style={{ width: width * 0.75, aspectRatio: 350 / 257 }}
+            style={{ width: scale(300), height: scale(217) }}
           />
         )}
 

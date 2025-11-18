@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type RouteProp = NativeStackScreenProps<RootStackParamList, "scoreFail">;
@@ -94,13 +95,13 @@ export default function ScoreFailScreen({ route }: RouteProp) {
 
 const { width, height } = Dimensions.get("window");
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     backgroundColor: "#fff",
     flex: 1,
     alignItems: "center",
-    justifyContent: "flex-end",
-    paddingBottom: height * 0.1,
+    justifyContent: "center",
+    paddingTop: verticalScale(20),
   },
   title: {
     fontFamily: "Montserrat_700Bold",

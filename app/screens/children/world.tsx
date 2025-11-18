@@ -211,7 +211,7 @@ export default function WorldScreen() {
               source={require("@/assets/images/trilha/inicio.png")}
               style={{
                 width: scale(70),
-                height: scale(70),
+                height: scale(74),
                 position: "absolute",
                 top: verticalScale(330),
                 left: scale(50),

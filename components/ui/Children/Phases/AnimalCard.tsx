@@ -33,7 +33,6 @@ export default function AnimalCard({
 }: Props) {
   const sound = useAudioPlayer(audio);
   const cardRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
-  const { width } = useWindowDimensions();
 
   const playSound = async () => {
     sound.seekTo(0);

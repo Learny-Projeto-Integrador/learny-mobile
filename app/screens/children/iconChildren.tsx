@@ -10,10 +10,9 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import GradientText from "@/components/ui/GradientText";
-import { useApi } from "@/hooks/useApi";
-import { useCustomAlert } from "@/contexts/AlertContext";
 import CharacterSprite from "@/components/ui/Children/CharacterSprite";
 import { useUser } from "@/contexts/UserContext";
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList,"iconChildren">;
 
@@ -89,7 +88,7 @@ export default function IconChildrenScreen() {
 
 const { width, height } = Dimensions.get("window");
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#4C4C4C",
@@ -99,16 +98,16 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   fundoBranco: {
-    height: height * 0.83,
+    height: verticalScale(600),
     backgroundColor: "#fff",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    borderTopLeftRadius: scale(35),
+    borderTopRightRadius: scale(35),
   },
   containerDados: {
     position: "absolute",
     width: "100%",
     height: "100%",
-    paddingVertical: height * 0.1,
+    paddingVertical: verticalScale(100),
     alignItems: "center",
     gap: height * 0.04,
   },
@@ -123,7 +122,7 @@ const styles = StyleSheet.create({
   },
   foto: {
     width: width * 0.4,
-    borderRadius: 50,
+    borderRadius: scale(30),
     aspectRatio: 147 / 141,
     elevation: 15,
   },
@@ -147,9 +146,9 @@ const styles = StyleSheet.create({
     gap: width * 0.04,
   },
   selectIcon: {
-    width: width * 0.22,
-    height: width * 0.22,
-    borderRadius: 30,
+    width: scale(80),
+    height: scale(80),
+    borderRadius: scale(20),
     backgroundColor: "#c9c9c9",
     alignItems: "center",
     justifyContent: "center",

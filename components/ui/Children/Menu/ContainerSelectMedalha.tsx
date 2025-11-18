@@ -3,15 +3,16 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
   Dimensions,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
+import { Image } from "expo-image";
 import { imgMedalhas } from "@/constants/dadosMedalhas";
 import { useApi } from "@/hooks/useApi";
 import { LinearGradient } from "expo-linear-gradient";
 import { useUser } from "@/contexts/UserContext";
 import { useCustomAlert } from "@/contexts/AlertContext";
+import { ScaledSheet, scale } from "react-native-size-matters";
 
 type Props = {
   navigation: any;
@@ -26,11 +27,13 @@ export default function ContainerSelectMedalha({
   visible,
   onClose,
 }: Props) {
+  const [loading, setLoading] = useState(false);
   const { setUser } = useUser();
   const { showAlert } = useCustomAlert();
   const { request } = useApi();
 
   const changeMedalha = async (medalha: any) => {
+    setLoading(true);
     const result = await request({
       endpoint: "/criancas",
       method: "PUT",
@@ -45,6 +48,7 @@ export default function ContainerSelectMedalha({
         if (!prev) return prev;
         return { ...prev, medalhaSelecionada: medalha };
       });
+      setLoading(false);
       onClose();
     } else {
       if (result.status != 401) {
@@ -54,6 +58,7 @@ export default function ContainerSelectMedalha({
           message: result.message,
         });
       }
+      setLoading(false);
     }
   };
 
@@ -64,7 +69,13 @@ export default function ContainerSelectMedalha({
             colors={['#973e4a', '#4b85a1']}
             style={styles.medalBox}
           >
-          {medalhas.length === 0 ? (
+          {loading ? 
+            <Image
+              source={require("@/assets/gifs/loading.gif")}
+              style={{ width: width * 0.4, height: height * 0.4 }}
+              contentFit="contain"
+            /> :
+          medalhas.length === 0 ? (
             <Text style={[styles.message, { color: "#fff" }]}>
               Ainda não possui medalhas
             </Text>
@@ -101,7 +112,7 @@ export default function ContainerSelectMedalha({
 
 const { width, height } = Dimensions.get("window");
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -117,7 +128,7 @@ const styles = StyleSheet.create({
     marginTop: height * 0.19,
     paddingVertical: height * 0.02,
     gap: width * 0.05,
-    borderRadius: 40,
+    borderRadius: scale(20),
     overflow: "hidden",
   },
   message: {
