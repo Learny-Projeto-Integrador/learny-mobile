@@ -12,11 +12,19 @@ import { useNavigation } from "@react-navigation/native";
 import SoundCard from "@/components/ui/Children/Phases/SoundCard";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { DinoOption, RootStackParamList, Score } from "@/types";
+import type { RootStackParamList, Score } from "@/types";
 import GradientText from "@/components/ui/GradientText";
+import { scale } from "react-native-size-matters";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type RouteProp = NativeStackScreenProps<RootStackParamList, "atvMatchAnswer">;
+
+type DinoOption = {
+  id: string;
+  image: string;
+  emotion: string;
+  audio: string;
+};
 
 export default function AtvMatchAnswerScreen({ route }: RouteProp) {
   const { answer }: { answer: DinoOption } = route.params;
@@ -85,7 +93,7 @@ export default function AtvMatchAnswerScreen({ route }: RouteProp) {
         <Image
           //@ts-ignore
           source={answer.image}
-          style={{ width: width * 0.75, aspectRatio: 350 / 257 }}
+          style={{ width: scale(300), height: scale(217) }}
         />
 
         <View style={{ flexDirection: "row", gap: width * 0.05 }}>

@@ -91,12 +91,13 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontFamily: "Montserrat_500Medium",
     fontSize: width * 0.04,
-    marginBottom: 20,
+    marginBottom: height * 0.03,
     textAlign: "center",
   },
   button: {
     backgroundColor: "#9E9E9E",
-    width: width * 0.26,
+    minWidth: width * 0.26,
+    paddingHorizontal: width * 0.04,
     height: height * 0.06,
     alignItems: "center",
     justifyContent: "center",
@@ -108,9 +109,8 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     width: "100%",
-    paddingHorizontal: 20,
   },
   buttonText: {
     color: "white",

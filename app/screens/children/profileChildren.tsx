@@ -7,8 +7,8 @@ import {
   Dimensions,
   StyleSheet,
 } from "react-native";
-import React, { useCallback, useState } from "react";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React from "react";
+import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import GradientText from "@/components/ui/GradientText";
@@ -17,8 +17,9 @@ import ContainerAcessibilidade from "@/components/ui/Children/Profile/ContainerA
 import ContainerActionChildren from "@/components/ui/Children/Profile/ContainerActionChildren";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
-import Error from "@/components/ui/Error";
 import { useCustomAlert } from "@/contexts/AlertContext";
+import { useUser } from "@/contexts/UserContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profileChildren">;
 
@@ -26,54 +27,50 @@ const { width, height } = Dimensions.get("window");
 
 export default function ProfileChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { user, setUser } = useUser();
   const { showLoadingModal, hideLoadingModal } = useLoading();
   const { request } = useApi();
   const { showAlert } = useCustomAlert();
-  const [data, setData] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null)
 
-  const fetchData = async () => {
-    showLoadingModal();
-    setError(null);
-
-    const result = await request({
-      endpoint: "/criancas",
-    });
-
-    if (result.error) {
-      setError(result.message);
-      hideLoadingModal();
-      return null;
+  const handleLogout = async () => {
+    try {
+      setUser(null);
+      await AsyncStorage.multiRemove(["user", "token"]);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "index" }],
+      })
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
     }
-
-    setData(result ?? null);
-    hideLoadingModal();
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
+  }
 
   const atualizarAudio = async (novoValor: boolean) => {
+    showLoadingModal();
     const result = await request({
       endpoint: "/criancas",
       method: "PUT",
       body: { 
         audio: novoValor,
       },
+      navigation,
     })
     
     if (result && !result.error) {
-      setData((prev: any) => ({ ...prev, audio: novoValor }));
-    } else {
-      showAlert({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro ao atualizar o áudio!",
-        message: result.message,
+      setUser((prev) => {
+        if (!prev) return prev;
+        return { ...prev, audioAtivado: novoValor };
       });
+    } else {
+      if (result.status != 401) {
+        showAlert({
+          icon: require("@/assets/icons/icon-alerta.png"),
+          title: "Erro ao atualizar o áudio!",
+          message: result.message,
+        });
+      }
     }
+    hideLoadingModal();
   };
 
   const handleSair = () => {
@@ -84,19 +81,18 @@ export default function ProfileChildrenScreen() {
       dualAction: true,
       closeLabel: "Cancelar",
       redirectLabel: "Sair",
-      onRedirect: () => navigation.replace("index")
+      onRedirect: () => handleLogout()
     });
   };
 
-  if (!data) return null;
+  if (!user) return null;
 
-  const { foto, nome, pontos, audio } = data;
+  const { foto, nome, pontos, audioAtivado } = user;
   const nivel = Math.floor(pontos / 100);
   const progressoNivel = pontos % 100;
 
   return (
     <ScrollView style={styles.container}>
-      {error && <Error error={error} onReload={fetchData} />}
       <View style={styles.containerDados}>
         <TouchableOpacity
           onPress={() => navigation.navigate("iconChildren")}
@@ -146,7 +142,7 @@ export default function ProfileChildrenScreen() {
         <ProgressBarLvl pontos={progressoNivel.toString()} progresso={progressoNivel} />
         <View style={{ gap: 10 }}>
           <ContainerAcessibilidade
-            audioAtivo={audio}
+            audioAtivo={audioAtivado}
             onChangeAudio={(novoValor) => atualizarAudio(novoValor)}
           />
           <ContainerActionChildren
@@ -184,7 +180,7 @@ const styles = StyleSheet.create({
   },
   containerDados: {
     flexDirection: "row",
-    marginTop: height * 0.04,
+    marginTop: height * 0.08,
     gap: width * 0.05,
   },
   foto: {
@@ -205,7 +201,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   nameText: {
-    marginTop: -height * 0.015,
     fontSize: width * 0.07,
     fontFamily: "Montserrat_800ExtraBold",
   },

@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useCheckMedalha } from "./useCheckMedalha";
 import { useCustomAlert } from "@/contexts/AlertContext";
+import { useUser } from "@/contexts/UserContext";
 
 export const useCheckHint = () => {
-  const { checkMedalha } = useCheckMedalha();
+  const { user } = useUser();
   const { showAlert } = useCustomAlert();
   const [hintUsed, setHintUsed] = useState(false);
 
@@ -17,7 +17,8 @@ export const useCheckHint = () => {
       return false;
     }
 
-    const medalha = await checkMedalha();
+    const medalha = user?.medalhaSelecionada ? user?.medalhaSelecionada.nome : null;
+
     if (medalha !== "Desvendando") {
       showAlert({
         icon: require("@/assets/icons/icon-alerta.png"),

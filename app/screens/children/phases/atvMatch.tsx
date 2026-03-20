@@ -15,9 +15,11 @@ import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import SoundCard from "@/components/ui/Children/Phases/SoundCard";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
-import { useAudio } from "@/contexts/AudioContext";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useCheckHint } from "@/hooks/useCheckHint";
+import { useLoading } from "@/contexts/LoadingContext";
+import { useUser } from "@/contexts/UserContext";
+import { scale } from "react-native-size-matters";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -55,8 +57,9 @@ export default function AtvMatchScreen() {
   const [shuffledOptions, setShuffledOptions] = useState<Option[]>([]);
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
 
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const { getDuration } = useScreenDuration();
-  const { audioEnabled, checkAudio } = useAudio();
+  const { user } = useUser();
   const { submitMission } = useSubmitMission();
   const { setHintUsed, checkHint } = useCheckHint();
 
@@ -69,7 +72,10 @@ export default function AtvMatchScreen() {
   }
 
   const handleHint = async () => {
+    showLoadingModal();
     const canUse = await checkHint();
+    hideLoadingModal();
+
     if (!canUse) return;
 
     if (!selectedDino || shuffledOptions.length <= 2) return;
@@ -89,6 +95,7 @@ export default function AtvMatchScreen() {
   };
 
   const handleConfirm = async (pontosFase: number, porcentagemFase: number) => {
+    showLoadingModal();
     const { durationFormatted } = getDuration();
     let pontos = pontosFase;
     let porcentagem = porcentagemFase;
@@ -103,6 +110,7 @@ export default function AtvMatchScreen() {
       const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
       navigation.navigate("score", { score });
     }
+    hideLoadingModal();
   };
 
   const handleError = (dino: Option) => {
@@ -118,10 +126,6 @@ export default function AtvMatchScreen() {
       },
     });
   };
-
-  useEffect(() => {
-    checkAudio();
-  }, []);
 
   useEffect(() => {
     // Escolhe um dino aleatoriamente
@@ -147,7 +151,7 @@ export default function AtvMatchScreen() {
         image={require("@/assets/images/eye.png")}
         title="Look & Match"
         description="Veja a imagem e ligue a emoção correta"
-        color="#6CD2FF"
+        color="#94ECA5"
         onPressInfo={() => setInfoVisible(true)}
       />
 
@@ -164,7 +168,7 @@ export default function AtvMatchScreen() {
           <Image
             //@ts-ignore
             source={selectedDino.image}
-            style={{ width: width * 0.75, aspectRatio: 350 / 257 }}
+            style={{ width: scale(300), height: scale(217) }}
           />
         )}
 
@@ -176,7 +180,7 @@ export default function AtvMatchScreen() {
               text={
                 option.emotion.charAt(0).toUpperCase() + option.emotion.slice(1)
               }
-              audio={audioEnabled ? option.audio : null}
+              audio={user?.audioAtivado ? option.audio : null}
               type="grande"
               onPress={() => {
                 if (option.emotion === selectedDino?.emotion) {
@@ -218,35 +222,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: width * 0.08,
     gap: width * 0.5,
-  },
-  containerDados: {
-    display: "flex",
-    height: "auto",
-    flexDirection: "row",
-    marginTop: height * 0.03,
-    gap: width * 0.05,
-  },
-  foto: {
-    width: width * 0.33,
-    aspectRatio: 139 / 129,
-  },
-  viewVoltar: {
-    position: "relative",
-    alignItems: "center",
-    paddingLeft: width * 0.01,
-    paddingTop: height * 0.01,
-    gap: height * 0.015,
-  },
-  iconVoltar: {
-    width: width * 0.075,
-    height: width * 0.075,
-  },
-  iconInfo: {
-    width: width * 0.06,
-    height: width * 0.06,
-  },
-  containerNamePhase: {
-    justifyContent: "center",
   },
   txt: {
     color: "#6CD2FF",

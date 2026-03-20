@@ -9,6 +9,7 @@ import {
 import { useRef } from "react";
 import { useAudioPlayer } from 'expo-audio';
 import { colorMap } from "@/constants/phaseData";
+import { scale } from "react-native-size-matters";
 
 type Props = {
   image?: ImageSourcePropType;
@@ -63,10 +64,10 @@ export default function SoundCard({
         <View
           style={{
             backgroundColor: colorMap[text ? text : ""] || "#ccc",
-            width: width * 0.23,
+            width: scale(85),
             alignItems: "center",
             justifyContent: "center",
-            height: width * 0.2,
+            height: scale(80),
             borderRadius: 20,
             elevation: 5,
           }}

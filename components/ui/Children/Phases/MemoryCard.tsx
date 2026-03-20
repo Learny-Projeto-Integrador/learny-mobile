@@ -5,6 +5,7 @@ import {
   ImageSourcePropType,
 } from "react-native";
 import { useAudioPlayer } from 'expo-audio';
+import { scale} from "react-native-size-matters";
 
 type Props = {
   id: string;
@@ -43,7 +44,7 @@ export default function MemoryCard({
       <Image
         source={image}
         style={{
-          width: width * 0.26,
+          width: scale(95),
           aspectRatio: 141 / 169,
           marginHorizontal: width * 0.06,
         }}

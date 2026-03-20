@@ -5,16 +5,14 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import React, { useCallback, useState } from "react";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React from "react";
+import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import GradientText from "@/components/ui/GradientText";
-import { useLoading } from "@/contexts/LoadingContext";
-import { useApi } from "@/hooks/useApi";
-import Error from "@/components/ui/Error";
-import { useCustomAlert } from "@/contexts/AlertContext";
 import CharacterSprite from "@/components/ui/Children/CharacterSprite";
+import { useUser } from "@/contexts/UserContext";
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList,"iconChildren">;
 
@@ -26,75 +24,11 @@ type ChildData = {
 
 export default function IconChildrenScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { showLoadingModal, hideLoadingModal } = useLoading();
-  const { request } = useApi();
-  const { showAlert } = useCustomAlert();
-  const [data, setData] = useState<ChildData | undefined>(undefined);
-  const [error, setError] = useState<string | null>(null)
+  const { user } = useUser();
   const chacaterSprites = ["boy", "girl"];
-
-  const fetchData = async () => {
-    showLoadingModal();
-    setError(null)
-
-    const result = await request({
-      endpoint: "/criancas",
-    });
-
-    if (result.error) {
-      setError(result.message);
-      hideLoadingModal();
-      return null;
-    }
-
-    setData(result ?? null);
-    hideLoadingModal();
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
-
-  const getAvatarImage = (name: string) => {
-    switch (name) {
-      case "avatar1":
-        return require("@/assets/icons/avatars/avatar1.png");
-      case "avatar2":
-        return require("@/assets/icons/avatars/avatar2.png");
-      default:
-        return undefined;
-    }
-  };
-  
-  const changeAvatar = async (avatarName: string) => {
-    const result = await request({
-      endpoint: "/criancas",
-      method: "PUT",
-      body: { 
-        avatar: avatarName,
-      },
-    })
-
-    if (result && !result.error) {
-      showAlert({
-        icon: require("@/assets/icons/icon-check-gradiente.png"),
-        title: "Sucesso!",
-        message: "Avatar alterado com sucesso!",
-      });
-    } else {
-      showAlert({
-        icon: require("@/assets/icons/icon-alerta.png"),
-        title: "Erro ao alterar o avatar!",
-        message: result.message,
-      });
-    }
-  };
 
   return (
     <View style={styles.container}>
-      {error && <Error error={error} onReload={fetchData} />}
       <View style={styles.scrollContainer}>
         <View style={styles.fundoBranco}></View>
         <View style={styles.containerDados}>
@@ -104,8 +38,8 @@ export default function IconChildrenScreen() {
                 <Image
                   style={styles.foto}
                   source={
-                    data && data.foto
-                      ? { uri: data.foto }
+                    user && user.foto
+                      ? { uri: user.foto }
                       : require("@/assets/images/logo.png")
                   }
                 />
@@ -115,7 +49,7 @@ export default function IconChildrenScreen() {
                 color2="#5c94b3"
                 style={styles.nameText}
               >
-                {data ? data.nome : ""}
+                {user ? user.nome : ""}
               </GradientText>
             </View>
             <TouchableOpacity
@@ -136,9 +70,6 @@ export default function IconChildrenScreen() {
               return (
                 <TouchableOpacity
                   key={index}
-                  onPress={
-                    avatar ? () => changeAvatar(avatar) : undefined
-                  }
                   disabled={!avatar}
                   style={styles.selectIcon}
                 >
@@ -157,7 +88,7 @@ export default function IconChildrenScreen() {
 
 const { width, height } = Dimensions.get("window");
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#4C4C4C",
@@ -167,16 +98,16 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   fundoBranco: {
-    height: height * 0.83,
+    height: verticalScale(600),
     backgroundColor: "#fff",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    borderTopLeftRadius: scale(35),
+    borderTopRightRadius: scale(35),
   },
   containerDados: {
     position: "absolute",
     width: "100%",
     height: "100%",
-    paddingVertical: height * 0.1,
+    paddingVertical: verticalScale(100),
     alignItems: "center",
     gap: height * 0.04,
   },
@@ -191,7 +122,7 @@ const styles = StyleSheet.create({
   },
   foto: {
     width: width * 0.4,
-    borderRadius: 50,
+    borderRadius: scale(30),
     aspectRatio: 147 / 141,
     elevation: 15,
   },
@@ -215,9 +146,9 @@ const styles = StyleSheet.create({
     gap: width * 0.04,
   },
   selectIcon: {
-    width: width * 0.22,
-    height: width * 0.22,
-    borderRadius: 30,
+    width: scale(80),
+    height: scale(80),
+    borderRadius: scale(20),
     backgroundColor: "#c9c9c9",
     alignItems: "center",
     justifyContent: "center",

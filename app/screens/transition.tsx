@@ -12,14 +12,14 @@ import type { RootStackParamList } from '@/types';
 type Props = NativeStackScreenProps<RootStackParamList, 'transition'>;
 
 export default function TransitionScreen({ route, navigation }: Props) {
-  const { name, type } = route.params;
+  const { name } = route.params;
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      type == "pai" ? navigation.navigate('profileParent') : navigation.navigate('home')
+      navigation.navigate('home')
     }, 2000);
 
-    return () => clearTimeout(timer); // Limpa o timer ao desmontar a tela
+    return () => clearTimeout(timer);
   }, [navigation]);
 
   return (
@@ -29,7 +29,7 @@ export default function TransitionScreen({ route, navigation }: Props) {
       style={styles.container}
       >
         <View style={{ marginTop: height * 0.05 }}>
-          <Text style={styles.text}>Bem Vindo,</Text>
+          <Text style={styles.text}>Bem Vindo (a),</Text>
           <Text style={styles.nameText}>{name}</Text>
         </View>
       </ImageBackground>

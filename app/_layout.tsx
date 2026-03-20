@@ -2,6 +2,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import "../global.css";
 import { createStackNavigator } from '@react-navigation/stack';
 import { 
   Montserrat_400Regular, 
@@ -15,7 +16,7 @@ import {
 } from '@expo-google-fonts/montserrat';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { RootStackParamList } from '@/types';
-import LoginScreen from './screens';
+import LoginScreen from './index';
 import TransitionScreen from './screens/transition';
 import HomeScreen from './screens/children/home';
 import ProfileChildrenScreen from './screens/children/profileChildren';
@@ -34,11 +35,10 @@ import ScoreScreen from './screens/children/phases/score';
 import ScoreFailScreen from './screens/children/phases/scoreFail';
 import { LoadingProvider } from '@/contexts/LoadingContext';
 import { AlertProvider } from '@/contexts/AlertContext';
-import { AudioProvider } from '@/contexts/AudioContext';
 import AtvBossScreen from './screens/children/phases/atvBoss';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import AtvSecretScreen from './screens/children/phases/atvSecret';
+import { UserProvider } from '@/contexts/UserContext';
+import { ProgressProvider } from '@/contexts/ProgressContext';
 
 const Stack = createStackNavigator<RootStackParamList>()
 
@@ -56,6 +56,17 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
+    async function prepare() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+      } catch (e) {
+        console.warn('Erro splash:', e);
+      }
+    }
+    prepare();
+  }, []);
+
+  useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
@@ -66,103 +77,110 @@ export default function RootLayout() {
   }
 
   return (
-    <AlertProvider>
-      <AudioProvider>
-        <LoadingProvider>
-          <Stack.Navigator>
-            <Stack.Screen
-              name="index"
-              component={LoginScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="transition"
-              component={TransitionScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="home"
-              component={HomeScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="profileChildren"
-              component={ProfileChildrenScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="iconChildren"
-              component={IconChildrenScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="world"
-              component={WorldScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="menu"
-              component={MenuScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="diary"
-              component={DiaryScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="ranking"
-              component={RankingScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="atvFeeling"
-              component={AtvFeelingScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="atvMatch"
-              component={AtvMatchScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="atvMatchAnswer"
-              component={AtvMatchAnswerScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="atvListening"
-              component={AtvListeningScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="atvMemory"
-              component={AtvMemoryScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="atvConnect"
-              component={AtvConnectScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="atvBoss"
-              component={AtvBossScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="score"
-              component={ScoreScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="scoreFail"
-              component={ScoreFailScreen}
-              options={{headerShown: false}}
-            />
-          </Stack.Navigator>
-        </LoadingProvider>
-        </AudioProvider>
-      </AlertProvider>
+    <UserProvider>
+      <ProgressProvider>
+        <AlertProvider>
+          <LoadingProvider>
+            <Stack.Navigator>
+              <Stack.Screen
+                name="index"
+                component={LoginScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="transition"
+                component={TransitionScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="home"
+                component={HomeScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="profileChildren"
+                component={ProfileChildrenScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="iconChildren"
+                component={IconChildrenScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="world"
+                component={WorldScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="menu"
+                component={MenuScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="diary"
+                component={DiaryScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="ranking"
+                component={RankingScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="atvFeeling"
+                component={AtvFeelingScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="atvMatch"
+                component={AtvMatchScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="atvMatchAnswer"
+                component={AtvMatchAnswerScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="atvListening"
+                component={AtvListeningScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="atvMemory"
+                component={AtvMemoryScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="atvConnect"
+                component={AtvConnectScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="atvBoss"
+                component={AtvBossScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="atvSecret"
+                component={AtvSecretScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="score"
+                component={ScoreScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="scoreFail"
+                component={ScoreFailScreen}
+                options={{headerShown: false}}
+              />
+            </Stack.Navigator>
+          </LoadingProvider>
+        </AlertProvider>
+      </ProgressProvider>
+    </UserProvider>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, View } from 'react-native';
+import { Dimensions, Image, View } from 'react-native';
 
 type Direction = 'up' | 'down' | 'left' | 'right';
 
@@ -22,6 +22,8 @@ interface CharacterSpriteProps {
  * - Pode ficar parado ou se mover automaticamente até um ponto alvo.
  */
 
+const { width, height } = Dimensions.get("window");
+
 const CharacterSprite: React.FC<CharacterSpriteProps> = ({
   sprite,
   direction = 'down',
@@ -29,7 +31,7 @@ const CharacterSprite: React.FC<CharacterSpriteProps> = ({
   target,
   speed = 2,
   frameDuration = 150,
-  spriteSize = { width: 100, height: 100 },
+  spriteSize = { width: width * 0.2, height: width * 0.2 },
   rows = 4,
   columns = 4,
   onArrive,

@@ -14,10 +14,10 @@ import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import MemoryCard from "@/components/ui/Children/Phases/MemoryCard";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
-import CustomAlert from "@/components/ui/CustomAlert";
-import { useAudio } from "@/contexts/AudioContext";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useCheckHint } from "@/hooks/useCheckHint";
+import { useLoading } from "@/contexts/LoadingContext";
+import { useUser } from "@/contexts/UserContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -46,7 +46,7 @@ export default function AtvMemoryScreen() {
   const navigation = useNavigation<NavigationProp>();
 
   const generateCards = () => {
-    if (audioEnabled === null) return [];
+    if (user?.audioAtivado === null) return [];
     
     const cards = [];
     let id = 1;
@@ -62,7 +62,7 @@ export default function AtvMemoryScreen() {
         id: `${id++}`,
         animal,
         type: "icon",
-        image: audioEnabled ? animalCards[animal].icon : animalCards[animal].iconText,
+        image: user?.audioAtivado ? animalCards[animal].icon : animalCards[animal].iconText,
         audio: animalCards[animal].audio,
       });
     }
@@ -77,13 +77,17 @@ export default function AtvMemoryScreen() {
   const [isChecking, setIsChecking] = useState(false);
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
   
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const { getDuration } = useScreenDuration();
-  const { audioEnabled, checkAudio } = useAudio();
+  const { user } = useUser();
   const { submitMission } = useSubmitMission();
   const { setHintUsed, checkHint } = useCheckHint();
   
   const handleHint = async () => {
+    showLoadingModal();
     const canUse = await checkHint();
+    hideLoadingModal();
+
     if (!canUse) return;
 
     // Filtra cartas disponíveis (não selecionadas nem combinadas)
@@ -156,6 +160,7 @@ export default function AtvMemoryScreen() {
   };
 
   const handleConfirm = async () => {
+    showLoadingModal();
     const { durationFormatted } = getDuration();
     let pontos = 100;
     let porcentagem = 100;
@@ -170,17 +175,15 @@ export default function AtvMemoryScreen() {
       const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
       navigation.navigate("score", { score });
     }
+    hideLoadingModal();
   };
 
-  useEffect(() => {
-    checkAudio();
-  }, []);
 
   useEffect(() => {
-    if (audioEnabled !== null) {
+    if (user?.audioAtivado !== null) {
       setCards(generateCards());
     }
-  }, [audioEnabled]);
+  }, [user?.audioAtivado]);
 
   useEffect(() => {
     if (matched.length === cards.length) {
@@ -215,7 +218,7 @@ export default function AtvMemoryScreen() {
                 ? card.image
                 : require("@/assets/images/cards/memory/card-base.png")
             }
-            audio={audioEnabled ? card.audio : null}
+            audio={user?.audioAtivado ? card.audio : null}
             onPress={() => handleCardPress(card.id, card.animal, card.type)}
             disabled={isChecking}
           />

@@ -3,6 +3,7 @@ import {
   Dimensions,
   StyleSheet,
   TouchableOpacity,
+  ImageBackground,
   Text,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
@@ -11,13 +12,13 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
-import { useCheckHint } from "@/hooks/useCheckHint";
-import { useAudio } from "@/contexts/AudioContext";
-import { ImageBackground } from "expo-image";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import BaloonLetter from "@/components/ui/Children/Phases/BaloonLetter";
 import { MotiView } from "moti";
+import { useLoading } from "@/contexts/LoadingContext";
+import { useUser } from "@/contexts/UserContext";
+import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 
 const { width, height } = Dimensions.get("window");
 
@@ -33,6 +34,7 @@ interface FloatingItem {
 
 export default function AtvBossScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const { user } = useUser();
   const [items, setItems] = useState<FloatingItem[]>([]);
   const [selectedWord, setSelectedWord] = useState<string>("");
   const [revealedLetters, setRevealedLetters] = useState<string[]>([]);
@@ -45,20 +47,19 @@ export default function AtvBossScreen() {
   const [qtdAcertos, setQtdAcertos] = useState(0);
   const lastLetterRef = useRef<string | null>(null);
 
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const { start, reset, getDuration } = useScreenDuration();
-  const { audioEnabled, checkAudio } = useAudio();
   const { submitMission } = useSubmitMission();
-  const { setHintUsed, checkHint } = useCheckHint();
 
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
   const colors = ["#EF5B6A", "#6CD2FF", "#FFB300", "#80D25B"];
   const wordList = [
     "APPLE",
-    "HOUSE",
-    "LEARNY",
-    "GARDEN",
+    "MAP",
+    "CAR",
+    "SUN",
     "MOON",
-    "BRAIN",
+    "DOG",
     "COLOR",
   ];
 
@@ -144,6 +145,7 @@ export default function AtvBossScreen() {
   }, [currentLettersSet, iniciou]);
 
   const gerarPontuacao = async() => {
+    showLoadingModal();
     const { durationFormatted } = getDuration();
     let porcentagem = (qtdAcertos / totalClicados) * 100;
     const response = await submitMission({
@@ -155,9 +157,9 @@ export default function AtvBossScreen() {
       const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
       navigation.navigate("score", { score });
     }
+    hideLoadingModal();
   }
 
-  // Modifique o handlePress para avançar na palavra apenas quando clicar na letra correta
   const handlePress = (item: FloatingItem) => {
     const letter = item.letter;
     const wordArray = selectedWord.split("");
@@ -220,6 +222,11 @@ export default function AtvBossScreen() {
         </View>
       ) : (
         <View>
+          {/* Fundo de nuvens */}
+          <ImageBackground
+            source={require("@/assets/images/nuvens-cima.png")}
+            style={styles.nuvensCima}
+          />
           {/* SCORE */}
           <View style={styles.scoreContainer}>
             <Text style={styles.scoreLabel}>Score: </Text>
@@ -252,9 +259,7 @@ export default function AtvBossScreen() {
           transition={{ type: "timing", duration: 5000 }}
           style={[styles.balao, { left: item.left }]}
         >
-          <TouchableOpacity activeOpacity={0.8} onPress={() => handlePress(item)}>
-            <BaloonLetter letter={item.letter} color={item.color} />
-          </TouchableOpacity>
+          <BaloonLetter letter={item.letter} color={item.color} isAudioEnabled={user?.audioAtivado} onPress={() => handlePress(item)} />
         </MotiView>
       ))}
 
@@ -290,7 +295,7 @@ export default function AtvBossScreen() {
           setIniciou(!iniciou)
         }} style={{
           backgroundColor: "#4c4c4c",
-          borderRadius: 20,
+          borderRadius: scale(10),
           width: width * 0.3,
           alignItems: "center",
           justifyContent: "center",
@@ -300,32 +305,40 @@ export default function AtvBossScreen() {
             fontFamily: "Montserrat_700Bold",
             padding: width * 0.02,
             color: "#fff"
-          }}>{!iniciou ? "Iniciar" : "Parar"}</Text>
+          }}>{!iniciou ? "Start" : "Stop"}</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     backgroundColor: "#fff",
     flex: 1,
   },
   scoreContainer: {
     flexDirection: "row",
-    marginTop: height * 0.02,
-    marginLeft: width * 0.02,
+    backgroundColor: "#4c4c4c",
+    borderTopEndRadius: scale(20),
+    borderBottomEndRadius: scale(20),
+    maxWidth: scale(150),
+    alignItems: "center",
+    marginTop: scale(50),
+    paddingLeft: scale(15),
+    paddingRight: scale(25),
+    paddingVertical: verticalScale(5),
+    gap: scale(5),
   },
   scoreLabel: {
-    fontSize: width * 0.07,
-    fontFamily: "Montserrat_900Black",
-    color: "#4C4C4C",
+    fontSize: scale(20),
+    fontFamily: "Montserrat_600SemiBold",
+    color: "#fff",
   },
   scoreValue: {
-    fontSize: width * 0.07,
-    fontFamily: "Montserrat_900Black",
-    color: "#FFB300",
+    color: "#fff",
+    fontSize: scale(20),
+    fontFamily: "Montserrat_400Regular",
   },
   balao: {
     position: "absolute",
@@ -357,8 +370,14 @@ const styles = StyleSheet.create({
   },
   nuvens: {
     position: "absolute",
-    bottom: -25,
+    bottom: -height * 0.01,
     width: width,
     aspectRatio: 390 / 227,
+  },
+  nuvensCima: {
+    position: "absolute",
+    top: -height * 0.03,
+    width: width,
+    aspectRatio: 562 / 262,
   },
 });

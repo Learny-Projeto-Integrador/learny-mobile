@@ -7,31 +7,16 @@ import {
   ImageBackground,
 } from "react-native";
 import { useState, useCallback } from "react";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 import { useApi } from "@/hooks/useApi";
 import { imgsMissoes } from "@/constants/dadosFases";
-
-type MissaoDiaria = {
-  nome: string;
-  descricao: string;
-};
+import { useLoading } from "@/contexts/LoadingContext";
+import { useUser } from "@/contexts/UserContext";
 
 export default function ContainerMissoes() {
-  const [missoesDiarias, setMissoesDiarias] = useState<MissaoDiaria[] | null>(null);
+  const { user } = useUser();
   const { request } = useApi();
-
-  const fetchData = async () => {
-    const result = await request({
-      endpoint: "/criancas",
-    });
-    setMissoesDiarias(result.medalhas ?? null);
-  };
-  
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
+  const { showLoadingModal, hideLoadingModal } = useLoading();
 
   return (
     <ImageBackground
@@ -39,8 +24,8 @@ export default function ContainerMissoes() {
       style={styles.container}
     >
       <Text style={styles.title}>Missões Diárias</Text>
-      {missoesDiarias
-        ? missoesDiarias.map((missao, index) => (
+      {user?.missoesDiarias
+        ? user?.missoesDiarias.map((missao, index) => (
             <View key={index} style={{ flexDirection: "row", gap: 10 }}>
               <Image source={imgsMissoes[missao.nome]} style={styles.missao} />
             </View>

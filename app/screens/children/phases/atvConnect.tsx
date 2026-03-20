@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Svg, { Line } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -18,7 +18,8 @@ import { useSubmitMission } from "@/hooks/useSubmitMission";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useCheckHint } from "@/hooks/useCheckHint";
 import { animalColors } from "@/constants/dadosFases";
-import { useAudio } from "@/contexts/AudioContext";
+import { useLoading } from "@/contexts/LoadingContext";
+import { useUser } from "@/contexts/UserContext";
 
 const cards = [
   { id: "1", title: "monkey", img: require("@/assets/images/cards/connect/card-macaco.png"), audio: require("@/assets/audios/monkey.wav") },
@@ -42,8 +43,9 @@ export default function AtvConnectScreen() {
   const [hiddenCardIds, setHiddenCardIds] = useState<Set<string>>(new Set());
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
   
+  const { showLoadingModal, hideLoadingModal } = useLoading();
   const { getDuration } = useScreenDuration();
-  const { audioEnabled, checkAudio } = useAudio();
+  const { user } = useUser();
   const { submitMission } = useSubmitMission();
   const { setHintUsed, checkHint } = useCheckHint();
 
@@ -78,6 +80,7 @@ export default function AtvConnectScreen() {
   };
 
   const handleConfirm = async () => {
+    showLoadingModal();
     const { durationFormatted } = getDuration();
     const correctCount = connections.filter((c) => c.isCorrect).length;
     let porcentagem = (correctCount / 4) * 100;
@@ -93,10 +96,14 @@ export default function AtvConnectScreen() {
       const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
       navigation.navigate("score", { score });
     }
+    hideLoadingModal();
   };
 
   const handleHint = async () => {
+    showLoadingModal();
     const canUse = await checkHint();
+    hideLoadingModal();
+    
     if (!canUse) return;
 
     const allPairs: { left: CardInfo; right: CardInfo }[] = [
@@ -149,10 +156,6 @@ export default function AtvConnectScreen() {
     setHintUsed(true); // marca que a dica foi usada
   };
 
-  useEffect(() => {
-    checkAudio();
-  }, []);
-
   return (
     <ScrollView style={styles.container}>
       <ContainerInfo
@@ -194,7 +197,7 @@ export default function AtvConnectScreen() {
                 id={card.id}
                 title={card.title}
                 image={card.img}
-                audio={audioEnabled ? card.audio : null}
+                audio={user?.audioAtivado ? card.audio : null}
                 column="left"
                 onSelect={handleSelect}
               />
@@ -210,7 +213,7 @@ export default function AtvConnectScreen() {
                 id={card.id}
                 title={card.title}
                 image={card.img}
-                audio={audioEnabled ? card.audio : null}
+                audio={user?.audioAtivado ? card.audio : null}
                 column="right"
                 onSelect={handleSelect}
               />

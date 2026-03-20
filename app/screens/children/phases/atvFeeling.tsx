@@ -93,35 +93,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: width * 0.08,
     gap: width * 0.5,
   },
-  containerDados: {
-    display: "flex",
-    height: "auto",
-    flexDirection: "row",
-    marginTop: height * 0.03,
-    gap: width * 0.05,
-  },
-  foto: {
-    width: width * 0.33,
-    aspectRatio: 139 / 129,
-  },
-  viewVoltar: {
-    position: "relative",
-    alignItems: "center",
-    paddingLeft: width * 0.01,
-    paddingTop: height * 0.01,
-    gap: height * 0.015,
-  },
-  iconVoltar: {
-    width: width * 0.075,
-    height: width * 0.075,
-  },
-  iconInfo: {
-    width: width * 0.06,
-    height: width * 0.06,
-  },
-  containerNamePhase: {
-    justifyContent: "center",
-  },
   txt: {
     color: "#94ECA5",
     fontSize: width * 0.075,

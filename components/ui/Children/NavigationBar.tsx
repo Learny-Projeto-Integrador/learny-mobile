@@ -1,72 +1,65 @@
 import {
-  Dimensions,
   Image,
-  StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
-import { useNavigation } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types";
+import { RH, RW } from "@/theme";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function NavigationBar() {
   const navigation = useNavigation<NavigationProp>();
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("profileChildren")}
-        style={{ flexDirection: "row" }}
-      >
+    <View
+      className="w-full flex-row items-center justify-between bg-[#4C4C4C]"
+      style={{
+        height: RH(60),
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+        paddingHorizontal: RW(46),
+      }}
+    >
+      {/* Perfil */}
+      <TouchableOpacity onPress={() => navigation.navigate("profileChildren")}>
         <Image
-          style={styles.icon}
           source={require("@/assets/icons/icon-perfil.png")}
+          style={{
+            width: RW(46),
+            height: RW(46),
+            marginTop: -RH(36),
+          }}
+          resizeMode="contain"
         />
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("home")}
-        style={{ flexDirection: "row" }}
-      >
+
+      {/* Home (maior destaque) */}
+      <TouchableOpacity onPress={() => navigation.navigate("home")}>
         <Image
-          style={styles.iconHome}
           source={require("@/assets/icons/icon-home.png")}
+          style={{
+            width: RW(56),
+            height: RW(56),
+            marginTop: -RH(36),
+          }}
+          resizeMode="contain"
         />
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("menu")}
-        style={{ flexDirection: "row" }}
-      >
+
+      {/* Menu */}
+      <TouchableOpacity onPress={() => navigation.navigate("menu")}>
         <Image
-          style={styles.icon}
           source={require("@/assets/icons/icon-menu.png")}
+          style={{
+            width: RW(46),
+            height: RW(46),
+            marginTop: -RH(36),
+          }}
+          resizeMode="contain"
         />
       </TouchableOpacity>
     </View>
   );
 }
-
-const { width, height } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#4C4C4C",
-    width: "100%",
-    height: height * 0.07,
-    borderTopRightRadius: 30,
-    borderTopLeftRadius: 30,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: width * 0.12,
-  },
-  icon: {
-    width: width * 0.13,
-    aspectRatio: 1 / 1,
-    top: -height * 0.02,
-  },
-  iconHome: {
-    width: width * 0.15,
-    aspectRatio: 1 / 1,
-    top: -height * 0.03,
-  },
-});
