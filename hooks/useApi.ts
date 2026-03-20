@@ -25,7 +25,7 @@ type UseApiReturn<T> = {
 };
 
 export function useApi<T = any>(
-  baseUrl = "https://learny-mobile-api.onrender.com"
+  baseUrl = process.env.EXPO_PUBLIC_API_URL
 ): UseApiReturn<T> {
   const [loading, setLoading] = useState(false);
   const { getToken } = useGetToken();
