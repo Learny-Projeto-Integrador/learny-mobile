@@ -7,7 +7,7 @@ export type RootStackParamList = {
   home: undefined;
   profileChildren: undefined;
   iconChildren: undefined;
-  world: undefined;
+  world: { worldCode: string };
   menu: undefined;
   diary: undefined;
   ranking: undefined;
@@ -30,42 +30,68 @@ export type RoutesWithoutParams = {
     : never;
 }[keyof RootStackParamList];
 
-export type User = {
-  id: number;
-  foto: string;
-  nome: string;
-  pontos: number;
-  fasesConcluidas: number;
-  medalhas: Array<Medalha>;
-  medalhaSelecionada: Medalha | null;
-  rankingAtual: number;
-  missoesDiarias: Array<MissaoDiaria>;
-  audioAtivado: boolean;
-  rankingAtivado: boolean;
-  mundos: Array<Mundo>;
+export interface TokenPayload {
+  user: {
+    username: string;
+    name: string;
+    type: "parent" | "child";
+  }
 };
 
-export type Medalha = {
-  nome: string;
-  descricao: string;
-  mundo: number;
-  dataConquista: string;
+export interface User {
+  _id?: string;
+  profilePicture: string | null;
+  username: string;
+  name: string;
+  audioActive: boolean | null;
+  rankingActive: boolean | null;
 };
 
-export type MissaoDiaria = {
-  nome: string;
-  descricao: string;
-};
-
-export type Fase = {
-  fase: number;
-  concluida: boolean;
+export interface Phase {
+  code: string;
+  completed: boolean;
+  name: string;
+  order: number;
+  type: "common" | "boss";
 }
 
-export type Mundo = {
-  mundo: number;
-  faseAtual: number;
-  fases: Array<Fase>;
+export interface World{
+  code: string;
+  name: string;
+  description: string;
+  order: number;
+  phases: Array<Phase>
+}
+
+export interface MedalUnlocked {
+  medalId: string;
+  unlockedAt: string;
+  selected: boolean;
+};
+
+export interface WorldProgress {
+  worldCode: string;
+  percentage: number;
+  completedPhases: Array<string>;
+  unlocked: boolean;
+}
+
+export interface MissionProgress {
+    missionId: string;
+    completed: boolean;
+    assignedAt: string;
+}
+
+export interface Progress {
+  _id?: string;
+  child: string;
+  points: number;
+  completedPhases: number;
+  ranking: number;
+  selectedMedal: string;
+  worlds: Array<WorldProgress>;
+  dailyMissions: Array<MissionProgress>;
+  medals: Array<MedalUnlocked>;
 }
 
 export type AlertProps = {
