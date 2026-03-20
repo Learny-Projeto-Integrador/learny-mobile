@@ -82,7 +82,7 @@ export function useApi<T = any>(
       const result = await res.json();
 
       if (!res.ok) {
-        return { error: true, status: 400, message: result.error || "Erro inesperado." };
+        return { error: true, status: res.status, message: result.error || "Erro inesperado." };
       }
 
       return result;
