@@ -1,163 +1,207 @@
 import {
   ImageBackground,
   Text,
-  StyleSheet,
   View,
-  Dimensions,
   ScrollView,
 } from "react-native";
 import Header from "@/components/ui/Children/Header";
-import ContainerMundo from "@/components/ui/Children/ContainerMundo";
+import WorldCard from "@/components/ui/Children/WorldCard";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
 import { LinearGradient } from "expo-linear-gradient";
-import { useUser } from "@/contexts/UserContext";
+import { useApi } from "@/hooks/useApi";
+import { useEffect } from "react";
+import { useProgress } from "@/contexts/ProgressContext";
+import { useCustomAlert } from "@/contexts/AlertContext";
+import { fontSizes, RH, RS, RW, spacing } from "@/theme";
 
-const { width, height } = Dimensions.get("window");
+const WORLDS_CONFIG = [
+  {
+    code: "WORLD_1",
+    name: "Dino's Forest",
+    description: "Floresta do Dino",
+    image: require("@/assets/images/fundo-mundo1.png"),
+    color: "#329F00",
+  },
+  {
+    code: "WORLD_2",
+    name: "Jigsaw World",
+    description: "Mundo quebra-cabeça",
+    image: require("@/assets/images/fundo-mundo2.png"),
+    color: "#25A6DE",
+  },
+  {
+    code: "WORLD_3",
+    name: "Space Realm",
+    description: "Reino Espacial",
+    image: require("@/assets/images/fundo-mundo3.png"),
+    color: "#B060C2",
+  },
+  {
+    code: "WORLD_4",
+    name: "Pop Party",
+    description: "Festa Pop",
+    image: require("@/assets/images/fundo-mundo4.png"),
+    color: "#B82A38",
+  },
+];
 
 export default function HomeScreen() {
-  const { user } = useUser();
-  const progressoMundo = user ? (user?.mundos[0].faseAtual/4) * 100 : 0;
+  const { progress, setProgress } = useProgress();
+  const { showAlert } = useCustomAlert();
+  const { request } = useApi();
+
+  const getProgress = async () => {
+    const result = await request({
+      endpoint: `/child/progress`,
+      method: "GET",
+    });
+
+    if (result && !result.error) {
+      setProgress(result);
+    } else {
+      if (result.status === 404) return;
+      showAlert({
+        icon: "/icons/erro.png",
+        title: "Erro ao buscar filho!",
+        message: result.message || "Erro desconhecido ao carregar filho",
+      });
+    }
+  }
+
+  useEffect(() => {
+    getProgress();
+  }, [])
+
+  const getWorldProgress = (code: string) => {
+    return progress?.worlds?.find(w => w.worldCode === code);
+  };
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
+    <View className="flex-1">
+      <ScrollView className="flex-1">
         <LinearGradient
-            colors={['#973e4a', '#4b85a1']}
-            style={styles.gradiente}
-          >
-          <View style={{ alignItems: "center" }}>
-            {user && (
-              <Header
-                pontos={user.pontos}
-                medalhas={user.medalhas?.length || 0}
-                ranking={user.rankingAtual}
-              />
-            )}
+          colors={["#973e4a", "#4b85a1"]}
+          style={{
+            flex: 1,
+            gap: RS(20),
+            paddingTop: RH(80),
+            paddingBottom: RH(110),
+          }}
+        >
+          {/* Header */}
+          <View className="items-center">
+            <Header
+              points={progress?.points || 0}
+              medals={progress?.medals?.length || 0}
+              ranking={progress?.ranking || 0}
+            />
           </View>
-          <View style={styles.containerTitulo}>
-            <Text style={styles.txtTitulo}>Mundos</Text>
-            <Text style={styles.txtSubTitulo}>
+
+          {/* Título */}
+          <View
+            className="items-center"
+            style={{ paddingVertical: RH(32), gap: spacing.sm }}
+          >
+            <Text
+              className="text-white font-montserratBold text-center"
+              style={{ fontSize: fontSizes.title }}
+            >
+              Mundos
+            </Text>
+
+            <Text
+              className="text-white font-montserratMedium text-center"
+              style={{
+                fontSize: fontSizes.lg,
+                width: RW(220),
+              }}
+            >
               Escolha um Mundo para aprender
             </Text>
           </View>
-          <ContainerMundo
-            imagem={require("@/assets/images/fundo-mundo1.png")}
-            nome="Floresta do Dino"
-            nomeIngles="Dinos's Forest"
-            num={1}
-            progresso={progressoMundo.toString()}
-            cor="#329F00"
-          />
-          <ContainerMundo
-            imagem={require("@/assets/images/fundo-mundo2.png")}
-            nome="Mundo quebra-cabeça"
-            nomeIngles="Jigsaw World"
-            num={2}
-            progresso="0"
-            cor="#25A6DE"
-          />
-          <ContainerMundo
-            imagem={require("@/assets/images/fundo-mundo3.png")}
-            nome="Reino Espacial"
-            nomeIngles="Space Realm"
-            num={3}
-            progresso="0"
-            cor="#B060C2"
-          />
-          <ContainerMundo
-            imagem={require("@/assets/images/fundo-mundo4.png")}
-            nome="Festa Pop"
-            nomeIngles="Pop Party"
-            num={4}
-            progresso="0"
-            cor="#B82A38"
-          />
+
+          {/* Lista de mundos */}
+          {WORLDS_CONFIG.map((world, index) => {
+            const worldProgress = getWorldProgress(world.code);
+
+            return (
+              <WorldCard
+                key={world.code}
+                image={world.image}
+                name={world.name}
+                description={world.description}
+                num={index + 1}
+                progress={worldProgress?.percentage || 0}
+                color={world.color}
+                worldCode={world.code}
+              />
+            );
+          })}
+
+          {/* Divider */}
           <View
-            style={{ alignItems: "center", paddingVertical: height * 0.03 }}
+            className="items-center"
+            style={{ paddingVertical: spacing.lg }}
           >
-            <View style={styles.divider} />
+            <View
+              className="bg-black/40 rounded-2xl"
+              style={{
+                width: "80%",
+                height: RH(10),
+              }}
+            />
           </View>
-          <View style={styles.viewTimeAttack}>
+
+          {/* Time Attack */}
+          <View className="items-center">
             <ImageBackground
-              style={styles.viewTimeAttack}
               source={require("@/assets/images/fundo-timeAttack.png")}
+              style={{
+                width: RW(300),
+                aspectRatio: 423 / 142,
+                justifyContent: "center",
+              }}
+              imageStyle={{ borderRadius: 16 }}
             >
-              <View style={styles.containerDadosTimeAttack}>
-                <Text style={styles.txtTimeAttack}>Modo de Jogo</Text>
-                <Text style={styles.txtBlack}>Time Attack</Text>
+              <View
+                style={{
+                  width: "85%",
+                  paddingLeft: spacing.md,
+                  gap: spacing.xs,
+                }}
+              >
+                <Text
+                  className="text-white font-montserratSemiBold"
+                  style={{ fontSize: fontSizes.md }}
+                >
+                  Modo de Jogo
+                </Text>
+
+                <Text
+                  className="text-white font-montserratBlack"
+                  style={{
+                    fontSize: fontSizes.xl,
+                    width: RW(120),
+                  }}
+                >
+                  Time Attack
+                </Text>
               </View>
             </ImageBackground>
           </View>
         </LinearGradient>
       </ScrollView>
-      <View style={styles.navigationBarWrapper}>
+
+      {/* Navigation */}
+      <View
+        className="absolute left-0 right-0"
+        style={{
+          bottom: 0,
+          height: RH(60),
+        }}
+      >
         <NavigationBar />
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  navigationBarWrapper: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: height * 0.07,
-    backgroundColor: "transparent",
-  },
-  gradiente: {
-    flex: 1,
-    gap: height * 0.025,
-    paddingTop: height * 0.1,
-    paddingBottom: height * 0.14,
-  },
-  containerTitulo: {
-    paddingVertical: height * 0.04,
-    alignItems: "center",
-  },
-  txtTitulo: {
-    color: "#fff",
-    fontSize: width * 0.06,
-    fontFamily: "Montserrat_700Bold",
-    textAlign: "center",
-  },
-  txtSubTitulo: {
-    width: width * 0.6,
-    paddingTop: height * 0.01,
-    color: "#fff",
-    fontSize: width * 0.04,
-    fontFamily: "Montserrat_500Medium",
-    textAlign: "center",
-  },
-  divider: {
-    backgroundColor: "rgba(55,55,55,0.5)",
-    width: "80%",
-    height: width * 0.015,
-    borderRadius: 15,
-  },
-  viewTimeAttack: {
-    width: width * 0.8,
-    aspectRatio: 423 / 142,
-  },
-  containerDadosTimeAttack: {
-      width: width * 0.85,
-      height: "100%",
-      justifyContent: "center",
-      paddingLeft: width * 0.06,
-  },
-  txtTimeAttack: {
-    color: "#fff",
-    fontSize: width * 0.035,
-    fontFamily: 'Montserrat_600SemiBold_Italic',
-  },
-  txtBlack: {
-    color: "#fff",
-    width: width * 0.3,
-    fontSize: width * 0.05,
-    fontFamily: 'Montserrat_900Black',
-  },
-});

@@ -16,14 +16,14 @@ import { ScaledSheet, scale } from "react-native-size-matters";
 
 type Props = {
   navigation: any;
-  medalhas: any;
+  medals: any;
   visible: boolean;
   onClose: () => void;
 };
 
-export default function ContainerSelectMedalha({
+export default function MedalSelectModal({
   navigation,
-  medalhas,
+  medals,
   visible,
   onClose,
 }: Props) {
@@ -75,12 +75,12 @@ export default function ContainerSelectMedalha({
               style={{ width: width * 0.4, height: height * 0.4 }}
               contentFit="contain"
             /> :
-          medalhas.length === 0 ? (
+          medals.length === 0 ? (
             <Text style={[styles.message, { color: "#fff" }]}>
               Ainda não possui medalhas
             </Text>
           ) : (
-            medalhas.map((medalha: any, index: any) => {
+            medals.map((medalha: any, index: any) => {
               const imgSource = imgMedalhas[medalha.nome];
 
               if (!imgSource) return null;

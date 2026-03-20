@@ -1,11 +1,9 @@
 import {
   Image,
   Text,
-  StyleSheet,
   TouchableOpacity,
   View,
   ActivityIndicator,
-  Dimensions,
   KeyboardAvoidingView,
   ScrollView,
   Platform,
@@ -13,39 +11,60 @@ import {
   Keyboard,
 } from "react-native";
 import { useState } from "react";
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
+import type { RootStackParamList, TokenPayload } from "@/types";
 import { useApi } from "@/hooks/useApi";
 import LoginInput from "@/components/ui/LoginInput";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCustomAlert } from "@/contexts/AlertContext";
 import { useUser } from "@/contexts/UserContext";
+import { jwtDecode } from "jwt-decode";
+import { fontSizes, RH, RW, spacing } from "@/theme";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
 export default function LoginScreen() {
   const navigation = useNavigation<NavigationProp>();
+
   const { setUser } = useUser();
   const { loading, request } = useApi();
   const { showAlert } = useCustomAlert();
-  const [usuario, setUsuario] = useState("");
-  const [senha, setSenha] = useState("");
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
     const result = await request({
-      endpoint: "/login",
+      endpoint: "/auth/login",
       method: "POST",
-      body: { usuario, senha },
+      body: { username, password },
     });
 
-    if (result && !result.error && result.tipo == "crianca") {
-      await AsyncStorage.setItem("token", result.access_token);
-      setUser(result.user);
-      navigation.navigate("transition", {
-        name: result.user.nome,
-      });
+    if (result && !result.error) {
+      const decoded = jwtDecode<TokenPayload>(result.access_token);
+      if (decoded.user.type === "child") {
+        setUser({
+          profilePicture: null,
+          username: decoded.user.username,
+          name: decoded.user.name,
+          audioActive: null,
+          rankingActive: null,
+        });
+        await AsyncStorage.setItem("token", result.access_token);
+        navigation.navigate("transition", {
+          name: decoded.user.name,
+        });
+      } else {
+        showAlert({
+          icon: require("@/assets/icons/icon-alerta.png"),
+          title: "Erro ao logar!",
+          message:
+            result.message ||
+            "O usuário deve ser do tipo criança para acessar o app",
+        });
+      }
     } else {
       showAlert({
         icon: require("@/assets/icons/icon-alerta.png"),
@@ -57,119 +76,86 @@ export default function LoginScreen() {
 
   return (
     <LinearGradient
-    colors={["#973e4a", "#4b85a1"]}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 1 }}
-    style={{ flex: 1 }}
-  >
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
-        <ScrollView
-          contentContainerStyle={styles.container}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
+      colors={["#973e4a", "#4b85a1"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={{ flex: 1 }}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1"
         >
-          <Image style={styles.logo} source={require("@/assets/images/logo.png")} />
+          <ScrollView
+            contentContainerClassName="flex-1 items-center justify-center"
+            contentContainerStyle={{
+              paddingHorizontal: spacing.lg,
+              gap: spacing.lg,
+            }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Logo */}
+            <Image
+              style={{
+                width: RW(120),
+                height: RW(120),
+              }}
+              source={require("@/assets/images/logo.png")}
+              resizeMode="contain"
+            />
 
-          <View style={styles.viewTitle}>
-            <Text style={styles.title}>Entre em sua conta Learny</Text>
-            <Text style={styles.subTitle}>
-              Faça login com suas informações de cadastro
-            </Text>
-          </View>
+            {/* Títulos */}
+            <View className="w-5/6 items-center gap-4">
+              <Text 
+                className="text-white font-montserratBold text-center"
+                style={{ fontSize: fontSizes.xl }}
+              >
+                Entre em sua conta Learny
+              </Text>
+              <Text 
+                className="text-white font-montserratRegular text-center"
+                style={{ fontSize: fontSizes.lg }}
+              >
+                Faça login com suas informações de cadastro
+              </Text>
+            </View>
 
-          <View style={styles.viewInputs}>
-            <LoginInput campo="Usuário" valor={usuario} atualizar={setUsuario} />
-            <LoginInput campo="Senha" valor={senha} atualizar={setSenha} />
+            {/* Inputs */}
+            <View className="w-[90%] gap-4 items-center">
+              <LoginInput
+                field="Usuário"
+                value={username}
+                onChange={setUsername}
+              />
+              <LoginInput
+                field="Senha"
+                value={password}
+                onChange={setPassword}
+                isPassword
+              />
 
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-              {loading ? (
-                <ActivityIndicator size="large" color="#547d98" />
-              ) : (
-                <Text style={styles.buttonText}>Entrar</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
-  </LinearGradient>
+              {/* Botão */}
+              <TouchableOpacity
+                className="w-full bg-gray-100 rounded-2xl items-center justify-center"
+                style={{ height: RH(56) }}
+                onPress={handleLogin}
+              >
+                {loading ? (
+                  <ActivityIndicator size="large" color="#547d98" />
+                ) : (
+                  <Text 
+                    className="text-[#547d98] font-montserratBold"
+                    style={{ fontSize: fontSizes.md }}
+                  >
+                    Entrar
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
+    </LinearGradient>
   );
 }
-
-const { width, height } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: height * 0.025,
-  },
-  logo: {
-    width: width * 0.3,
-    height: width * 0.3,
-  },
-  viewTitle: {
-    width: "78%",
-    backgroundColor: "rgba(52, 52, 52, 0)",
-    display: "flex",
-    alignItems: "center",
-    gap: height * 0.01,
-  },
-  title: {
-    color: "#fff",
-    fontSize: width * 0.055,
-    fontFamily: "Montserrat_700Bold",
-    textAlign: "center",
-  },
-  subTitle: {
-    color: "#fff",
-    textAlign: "center",
-    fontSize: width * 0.045,
-    fontFamily: "Montserrat_400Regular",
-  },
-  viewInputs: {
-    backgroundColor: "rgba(52, 52, 52, 0)",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    width: "80%",
-    gap: height * 0.015,
-  },
-  button: {
-    display: "flex",
-    justifyContent: "center",
-    backgroundColor: "#f0f0f0",
-    width: "100%",
-    height: height * 0.07,
-    borderRadius: 15,
-  },
-  buttonText: {
-    fontSize: width * 0.04,
-    fontFamily: "Montserrat_700Bold",
-    color: "#547d98",
-    textAlign: "center",
-  },
-  viewLink: {
-    backgroundColor: "rgba(52, 52, 52, 0)",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: width * 0.06,
-  },
-  txt: {
-    fontSize: width * 0.04,
-    fontFamily: "Montserrat_400Regular",
-    color: "#fff",
-  },
-  link: {
-    fontSize: width * 0.04,
-    fontFamily: "Montserrat_700Bold",
-    textDecorationLine: "underline",
-    color: "#fff",
-  },
-});

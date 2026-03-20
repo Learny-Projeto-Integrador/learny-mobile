@@ -1,110 +1,77 @@
-import {
-  ImageBackground,
-  Image,
-  Text,
-  StyleSheet,
-  View,
-  Dimensions,
-} from "react-native";
+import { ImageBackground, Image, Text, View } from "react-native";
+import { fontSizes, spacing, RW } from "@/theme";
 
 type Props = {
-  pontos: number;
-  medalhas: number;
+  points: number;
+  medals: number;
   ranking: number | string;
-}
+};
 
-export default function Header({ pontos, medalhas, ranking }: Props) {
+export default function Header({ points, medals, ranking }: Props) {
+  const sectionsHeader = [
+    {
+      icon: require("@/assets/icons/icon-chama.png"),
+      value: points,
+      aspect: 41 / 48,
+    },
+    {
+      icon: require("@/assets/icons/icon-medalha.png"),
+      value: medals,
+      aspect: 43 / 49,
+    },
+    {
+      icon: require("@/assets/icons/icon-estrela.png"),
+      value: ranking,
+      aspect: 38 / 38,
+    },
+  ]
+
   return (
-      <View style={styles.container}>
-        <View style={styles.areaPontos}>
-          <View style={styles.pontos}>
+    <View className="flex-row">
+      <View
+        className="flex-row items-center justify-center"
+        style={{ marginLeft: RW(-5), gap: spacing.md }}
+      >
+        {/* ITEM */}
+        {sectionsHeader.map((item, index) => (
+          <View key={index} className="flex-row items-center">
+            {/* Ícone */}
             <Image
-              style={styles.iconChama}
-              source={require("@/assets/icons/icon-chama.png")}
+              source={item.icon}
+              style={{
+                width: RW(34),
+                aspectRatio: item.aspect,
+                position: "relative",
+                top: -RW(5),
+                left: RW(10),
+                zIndex: 10,
+              }}
             />
+
+            {/* Fundo + valor */}
             <ImageBackground
-              style={styles.retanguloPontos}
               source={require("@/assets/images/area-pontos.png")}
+              style={{
+                width: RW(82),
+                aspectRatio: 89 / 38,
+                justifyContent: "center",
+                alignItems: "center",
+                marginLeft: -RW(12),
+              }}
             >
-              <Text style={styles.txtPontos}>{pontos}</Text>
+              <Text
+                className="font-montserratBold text-center"
+                style={{
+                  fontSize: fontSizes.lg,
+                  marginLeft: RW(6),
+                }}
+              >
+                {item.value}
+              </Text>
             </ImageBackground>
           </View>
-          <View style={styles.pontos}>
-            <Image
-              style={styles.iconMedalha}
-              source={require("@/assets/icons/icon-medalha.png")}
-            />
-            <ImageBackground
-              style={styles.retanguloPontos}
-              source={require("@/assets/images/area-pontos.png")}
-            >
-              <Text style={styles.txtPontos}>{medalhas}</Text>
-            </ImageBackground>
-          </View>
-          <View style={styles.pontos}>
-            <Image
-              style={styles.iconEstrela}
-              source={require("@/assets/icons/icon-estrela.png")}
-            />
-            <ImageBackground
-              style={styles.retanguloPontos}
-              source={require("@/assets/images/area-pontos.png")}
-            >
-              <Text style={styles.txtPontos}>{ranking}</Text>
-            </ImageBackground>
-          </View>
-        </View>
+        ))}
       </View>
+    </View>
   );
 }
-
-const { width, height } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-  },
-  areaPontos: {
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-  },
-  pontos: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  retanguloPontos: {
-    width: width * 0.22,
-    right: width * 0.03,
-    aspectRatio: 89 / 38,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  iconChama: {
-    top: -5,
-    left: width * 0.03,
-    width: width * 0.09, // tamanho menor para alinhar melhor com o texto
-    aspectRatio: 41 / 48,
-    zIndex: 10,
-  },
-  iconMedalha: {
-    top: -5,
-    left: width * 0.03,
-    width: width * 0.09, // tamanho menor para alinhar melhor com o texto
-    aspectRatio: 43 / 49,
-    zIndex: 10,
-  },
-  iconEstrela: {
-    top: -5,
-    left: width * 0.03,
-    width: width * 0.09, // tamanho menor para alinhar melhor com o texto
-    aspectRatio: 38 / 38,
-    zIndex: 10,
-  },
-  txtPontos: {
-    left: width * 0.016,
-    fontSize: width * 0.04,
-    fontFamily: "Montserrat_700Bold",
-    textAlign: "center",
-  },
-});
