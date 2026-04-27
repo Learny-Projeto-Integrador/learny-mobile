@@ -25,7 +25,7 @@ export default function NavigationBar() {
       {/* Perfil */}
       <TouchableOpacity onPress={() => navigation.navigate("profileChildren")}>
         <Image
-          source={require("@/assets/icons/icon-perfil.png")}
+          source={require("@/assets/icons/navbar/store.png")}
           style={{
             width: RW(46),
             height: RW(46),
@@ -38,7 +38,7 @@ export default function NavigationBar() {
       {/* Home (maior destaque) */}
       <TouchableOpacity onPress={() => navigation.navigate("home")}>
         <Image
-          source={require("@/assets/icons/icon-home.png")}
+          source={require("@/assets/icons/navbar/world.png")}
           style={{
             width: RW(56),
             height: RW(56),
@@ -51,7 +51,7 @@ export default function NavigationBar() {
       {/* Menu */}
       <TouchableOpacity onPress={() => navigation.navigate("menu")}>
         <Image
-          source={require("@/assets/icons/icon-menu.png")}
+          source={require("@/assets/icons/navbar/menu.png")}
           style={{
             width: RW(46),
             height: RW(46),

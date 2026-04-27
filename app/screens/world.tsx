@@ -20,7 +20,7 @@ import { useProgress } from "@/contexts/ProgressContext";
 import { useCustomAlert } from "@/contexts/AlertContext";
 import { useApi } from "@/hooks/useApi";
 import { spacing, fontSizes, RW, RH, RS } from "@/theme";
-import Trail from "@/components/ui/Children/Trail";
+import ModuleTrail from "@/components/ui/Children/Trail/ModuleTrail";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "world">;
 type Props = NativeStackScreenProps<RootStackParamList, "world">;
@@ -111,66 +111,67 @@ export default function WorldScreen({ route }: Props) {
             medals={progress?.medals?.length || 0}
             ranking={progress?.ranking || 0}
           />
-
-          {/* Área central */}
-          <View className="flex-row items-center" style={{ gap: spacing.lg }}>
-            {/* Medalha */}
-            <TouchableOpacity onPress={() => setVisible(true)}>
-              <ImageBackground
-                source={require("@/assets/images/circulo-sombra.png")}
-                style={{
-                  width: RW(64),
-                  aspectRatio: 1,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={
-                    progress?.selectedMedal
-                      ? imgMedalhas[progress?.selectedMedal]
-                      : undefined
-                  }
-                  resizeMode="contain"
-                  style={{
-                    width: RW(42),
-                    height: RW(42),
-                  }}
-                />
-              </ImageBackground>
-            </TouchableOpacity>
-
-            {/* Mundo */}
-            <TouchableOpacity onPress={() => navigation.navigate("home")}>
-              <ImageBackground
-                source={require("@/assets/images/img-mundo1.png")}
-                style={{
-                  width: RW(210),
-                  aspectRatio: 233 / 103,
-                  justifyContent: "center",
-                  paddingHorizontal: RW(20),
-                  gap: spacing.xs,
-                }}
-              >
-                <Text
-                  className="font-montserratMedium text-white"
-                  style={{ fontSize: fontSizes.md }}
-                >
-                  Mundo-1
-                </Text>
-
-                <Text
-                  className="font-montserratBold text-white"
-                  style={{ fontSize: fontSizes.xl }}
-                >
-                  Dino's Forest
-                </Text>
-              </ImageBackground>
-            </TouchableOpacity>
-          </View>
           
           {/* Trilha */}
-          <Trail phases={phasesWithStatus} />
+          <View style={{ width: "100%", alignSelf: "flex-end", marginBottom: RH(20) }}>
+            {/* 🔹 START */}
+            <View style={{ alignItems: "center", marginRight: RW(50) }}>
+              <Image
+                source={require("@/assets/images/trilha/inicio.png")}
+                style={{ width: RW(80), height: RW(80) }}
+                resizeMode="contain"
+              />
+            </View>
+            
+            <ModuleTrail
+              moduleNumber={1}
+              phases={phasesWithStatus}
+              illustration={require("@/assets/images/trilha/ovo.png")}
+              bossIcon={require("@/assets/images/trilha/boss.png")}
+              colorTheme="#EF5B6A"
+            />
+
+            <ModuleTrail
+              moduleNumber={2}
+              initialPhase={4}
+              phases={phasesWithStatus}
+              illustration={require("@/assets/images/trilha/dino1.png")}
+              bossIcon={require("@/assets/images/trilha/boss2.png")}
+              colorTheme="#6CD2FF"
+              variant="left"
+            />
+
+            <ModuleTrail
+              moduleNumber={3}
+              initialPhase={7}
+              phases={phasesWithStatus}
+              illustration={require("@/assets/images/trilha/dino2.png")}
+              bossIcon={require("@/assets/images/trilha/boss3.png")}
+              colorTheme="#80D25B"
+            />
+            
+            <View style={{ alignItems: "center", marginTop: RH(40) }}>
+              <Image
+                source={require("@/assets/images/trilha/dino3.png")}
+                style={{
+                  width: RW(180),
+                  height: RW(140),
+                }}
+                resizeMode="contain"
+              />
+              <Text
+                className="font-montserratBold"
+                style={{
+                  fontSize: fontSizes.xl,
+                  color: "#4c4c4c",
+                  marginTop: RH(8),
+                }}
+              >
+                Em desenvolvimento...
+              </Text>
+            </View>
+
+          </View>
 
           {/* Espaçador */}
           <View style={{ height: RH(60)}} />
@@ -178,12 +179,47 @@ export default function WorldScreen({ route }: Props) {
         </View>
       </ScrollView>
 
+      {/* 🏅 BOTÃO MEDALHA FIXO */}
+      <TouchableOpacity
+        onPress={() => setVisible(true)}
+        style={{
+          position: "absolute",
+          left: RW(30),
+          top: RH(150), // 👈 acima da navbar
+          zIndex: 10,
+        }}
+      >
+        <ImageBackground
+          source={require("@/assets/images/circulo-sombra.png")}
+          style={{
+            width: RW(70),
+            aspectRatio: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Image
+            source={
+              progress?.selectedMedal
+                ? imgMedalhas[progress?.selectedMedal]
+                : undefined
+            }
+            resizeMode="contain"
+            style={{
+              width: RW(42),
+              height: RW(42),
+            }}
+          />
+        </ImageBackground>
+      </TouchableOpacity>
+
       {/* Navbar */}
       <View
         className="absolute left-0 right-0"
         style={{
           bottom: 0,
           height: RH(60),
+          zIndex: 0,
         }}
       >
         <NavigationBar />
