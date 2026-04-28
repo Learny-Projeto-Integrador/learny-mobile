@@ -33,9 +33,9 @@ const { width, height } = Dimensions.get("window");
 
 const PHRASE = ["I", "SEE", "A TRAIN"];
 const IMAGE_PATHS = [
-  require("@/assets/images/fases/secret/train/i.png"),
-  require("@/assets/images/fases/secret/train/see.png"),
-  require("@/assets/images/fases/secret/train/a-train.png"),
+  require("@/assets/images/phases/secret/train/i.png"),
+  require("@/assets/images/phases/secret/train/see.png"),
+  require("@/assets/images/phases/secret/train/a-train.png"),
 ];
 
 const COLORS = ["#EF5B6A", "#6CD2FF", "#80D25B"];
@@ -132,7 +132,7 @@ export default function AtvSecretScreen() {
         gerarPontuacao();
       } else {
         showAlert({
-          icon: require("@/assets/icons/icon-alerta.png"),
+          icon: require("@/assets/icons/custom-alert/alert.png"),
           title: "Ops...",
           message: "Algumas combinações estão incorretas. Deseja ver a resposta correta?",
           dualAction: true,
@@ -205,9 +205,9 @@ export default function AtvSecretScreen() {
 
   const playAudio = async (word: string) => {
     const audioMap: Record<string, any> = {
-      "I": require("@/assets/images/fases/secret/train/i.m4a"),
-      "SEE": require("@/assets/images/fases/secret/train/see.m4a"),
-      "A TRAIN": require("@/assets/images/fases/secret/train/a-train.m4a"),
+      "I": require("@/assets/audios/train-phase/i.m4a"),
+      "SEE": require("@/assets/audios/train-phase/see.m4a"),
+      "A TRAIN": require("@/assets/audios/train-phase/a-train.m4a"),
     };
 
     const { sound } = await Audio.Sound.createAsync(audioMap[word]);
@@ -231,7 +231,7 @@ export default function AtvSecretScreen() {
       />
 
       <HeaderFase
-        image={require("@/assets/images/secret.png")}
+        image={require("@/assets/images/phases/secret/intro.png")}
         title="Secret Stage"
         description="Junte as peças e faça Frases"
         color="#6CD2FF"
@@ -246,7 +246,7 @@ export default function AtvSecretScreen() {
             source={
               placed[i]
                 ? placedImage[i] // imagem do drag que foi colocado ali
-                : require("@/assets/images/retangulo-sombra5.png")
+                : require("@/assets/images/shadow-rectangles/phase-train/option-container.png")
             }
             style={styles.target}
             resizeMode="contain"
@@ -256,7 +256,7 @@ export default function AtvSecretScreen() {
 
       {/* FRASE COLORIDA */}
       <ImageBackground
-        source={require("@/assets/images/retangulo-sombra6.png")}
+        source={require("@/assets/images/shadow-rectangles/phase-train/phrase-container.png")}
         style={styles.viewFrase}
         resizeMode="contain"
       >
@@ -284,7 +284,7 @@ export default function AtvSecretScreen() {
             >
               <TouchableOpacity 
                 activeOpacity={1} 
-                onPress={() => user?.audioAtivado ? playAudio(word) : null}
+                onPress={() => user?.audioActive ? playAudio(word) : null}
                 style={{width: "100%", height: "100%"}}
                 >
                 <ImageBackground

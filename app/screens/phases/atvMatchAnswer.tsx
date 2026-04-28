@@ -39,7 +39,7 @@ export default function AtvMatchAnswerScreen({ route }: RouteProp) {
     <ScrollView style={styles.container}>
       <View style={{ flexDirection: "row" }}>
         <Image
-          source={require("@/assets/images/confetes.png")}
+          source={require("@/assets/images/phases/completion-images/confetti.png")}
           style={{
             width: width,
             aspectRatio: 390 / 220,
@@ -68,7 +68,7 @@ export default function AtvMatchAnswerScreen({ route }: RouteProp) {
         }}
       >
         <ImageBackground
-          source={require("@/assets/images/retangulo-sombra-preto.png")}
+          source={require("@/assets/images/shadow-rectangles/black.png")}
           style={styles.retangulo}
         >
           <Text style={styles.txtTipoFase}>

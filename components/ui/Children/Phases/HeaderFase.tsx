@@ -56,20 +56,20 @@ export default function HeaderFase({
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image
               style={styles.iconVoltar}
-              source={require("@/assets/icons/icon-voltar2.png")}
+              source={require("@/assets/icons/back.png")}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={onPressInfo}>
             <Image
               style={styles.iconInfo}
-              source={require("@/assets/icons/icon-info-transparente.png")}
+              source={require("@/assets/icons/phases/info-transparent.png")}
             />
           </TouchableOpacity>
         </View>
       </View>
       <View style={{ flexDirection: "row", marginTop: height * 0.01 }}>
         <ImageBackground
-          source={require("@/assets/images/retangulo-sombra-preto.png")}
+          source={require("@/assets/images/shadow-rectangles/black.png")}
           style={styles.retangulo}
         >
           <Text style={styles.txtTipoFase}>{description}</Text>

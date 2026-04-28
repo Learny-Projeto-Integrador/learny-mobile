@@ -1,23 +1,23 @@
 export const dinoOptions: any = {
   dino1: {
-    image: require("@/assets/images/dinos/dino1.png"),
-    imageApagado: require("@/assets/images/dinos/dino1-apagado.png"),
-    audio: require("@/assets/audios/sad.wav"),
+    image: require("@/assets/images/phases/watch/dinos/dino1/revealed.png"),
+    imageApagado: require("@/assets/images/phases/watch/dinos/dino1/hidden.png"),
+    audio: require("@/assets/audios/emotions/sad.wav"),
   },
   dino2: {
-    image: require("@/assets/images/dinos/dino2.png"),
-    imageApagado: require("@/assets/images/dinos/dino2-apagado.png"),
-    audio: require("@/assets/audios/angry.wav"),
+    image: require("@/assets/images/phases/watch/dinos/dino2/revealed.png"),
+    imageApagado: require("@/assets/images/phases/watch/dinos/dino2/hidden.png"),
+    audio: require("@/assets/audios/emotions/angry.wav"),
   },
   dino3: {
-    image: require("@/assets/images/dinos/dino3.png"),
-    imageApagado: require("@/assets/images/dinos/dino3-apagado.png"),
-    audio: require("@/assets/audios/happy.wav"),
+    image: require("@/assets/images/phases/watch/dinos/dino3/revealed.png"),
+    imageApagado: require("@/assets/images/phases/watch/dinos/dino3/hidden.png"),
+    audio: require("@/assets/audios/emotions/happy.wav"),
   },
   dino4: {
-    image: require("@/assets/images/dinos/dino4.png"),
-    imageApagado: require("@/assets/images/dinos/dino4-apagado.png"),
-    audio: require("@/assets/audios/afraid.wav"),
+    image: require("@/assets/images/phases/watch/dinos/dino4/revealed.png"),
+    imageApagado: require("@/assets/images/phases/watch/dinos/dino4/hidden.png"),
+    audio: require("@/assets/audios/emotions/afraid.wav"),
   },
 };
 

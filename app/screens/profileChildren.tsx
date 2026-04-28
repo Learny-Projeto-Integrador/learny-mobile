@@ -64,7 +64,7 @@ export default function ProfileChildrenScreen() {
     } else {
       if (result.status != 401) {
         showAlert({
-          icon: require("@/assets/icons/icon-alerta.png"),
+          icon: require("@/assets/icons/custom-alert/alert.png"),
           title: "Erro ao atualizar o áudio!",
           message: result.message,
         });
@@ -75,7 +75,7 @@ export default function ProfileChildrenScreen() {
 
   const handleSair = () => {
     showAlert({
-      icon: require("@/assets/icons/icon-alerta.png"),
+      icon: require("@/assets/icons/custom-alert/alert.png"),
       title: "Alerta",
       message: "Deseja mesmo sair?",
       dualAction: true,
@@ -87,9 +87,9 @@ export default function ProfileChildrenScreen() {
 
   if (!user) return null;
 
-  const { foto, nome, pontos, audioAtivado } = user;
-  const nivel = Math.floor(pontos / 100);
-  const progressoNivel = pontos % 100;
+  const { profilePicture, name, points, audioActive } = user;
+  const nivel = Math.floor(points / 100);
+  const progressoNivel = points % 100;
 
   return (
     <ScrollView style={styles.container}>
@@ -101,7 +101,7 @@ export default function ProfileChildrenScreen() {
           <View style={{position: "relative"}}>
             <Image
               style={styles.foto}
-              source={foto ? { uri: foto } : require("@/assets/images/logo.png")}
+              source={profilePicture ? { uri: profilePicture } : require("@/assets/images/logo.png")}
             />
             <Image
               style={{
@@ -111,13 +111,13 @@ export default function ProfileChildrenScreen() {
               bottom: width * 0.02,
               right: width * 0.02,
               borderRadius: 20,}}
-              source={require("@/assets/icons/editar.png")}
+              source={require("@/assets/icons/profile/edit.png")}
             />
           </View>
         </TouchableOpacity>
         <View style={{ justifyContent: "center" }}>
           <View style={styles.containerNameChildren}>
-            {nome.split(" ").map((parte: string, index: number) => (
+            {name.split(" ").map((parte: string, index: number) => (
               <GradientText
                 color1="#EF5B6A"
                 color2="#6CD2FF"
@@ -133,7 +133,7 @@ export default function ProfileChildrenScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.viewVoltar}>
           <Image
             style={styles.iconVoltar}
-            source={require("@/assets/icons/icon-voltar2.png")}
+            source={require("@/assets/icons/back.png")}
           />
         </TouchableOpacity>
       </View>
@@ -142,10 +142,10 @@ export default function ProfileChildrenScreen() {
         <ProgressBarLvl pontos={progressoNivel.toString()} progresso={progressoNivel} />
         <View style={{ gap: 10 }}>
           <ContainerAcessibilidade
-            audioAtivo={audioAtivado}
+            audioAtivo={audioActive}
             onChangeAudio={(novoValor) => atualizarAudio(novoValor)}
           />
-          <ContainerActionChildren
+          {/* <ContainerActionChildren
             icon={require("@/assets/icons/icon-estatisticas.png")}
             title="Estatísticas"
           />
@@ -158,12 +158,12 @@ export default function ProfileChildrenScreen() {
           <ContainerActionChildren
             icon={require("@/assets/icons/icon-notificacoes.png")}
             title="Notificações"
-          />
+          /> */}
         </View>
         <TouchableOpacity style={styles.viewBtn} onPress={handleSair}>
           <Image
             style={styles.btn}
-            source={require("@/assets/images/btn-sair.png")}
+            source={require("@/assets/images/profile/leave-btn.png")}
           />
         </TouchableOpacity>
       </View>

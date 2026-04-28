@@ -10,7 +10,7 @@ type Props = {
 export default function OtherRanking ({ rank, name, points }: Props) {
   return (
     <View style={styles.container}>
-      <Image source={require("@/assets/images/circulo-gradiente.png")} style={styles.avatar} />
+      <Image source={require("@/assets/images/ranking/gradient-circle.png")} style={styles.avatar} />
       <View style={styles.card}>
         <View style={{flexDirection: "row", alignItems: "center", gap: width * 0.02}}>
           <Text style={styles.rank}>{rank}º</Text>

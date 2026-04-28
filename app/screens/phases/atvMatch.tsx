@@ -33,21 +33,21 @@ type Option = {
 const options: any = [
   {
     id: "dino1",
-    image: require("@/assets/images/dinos/dino1-grande.png"),
+    image: require("@/assets/images/phases/watch/dinos/dino1/big.png"),
     emotion: "Sad",
-    audio: require("@/assets/audios/sad.wav"),
+    audio: require("@/assets/audios/emotions/sad.wav"),
   },
   {
     id: "dino2",
-    image: require("@/assets/images/dinos/dino2-grande.png"),
+    image: require("@/assets/images/phases/watch/dinos/dino2/big.png"),
     emotion: "Angry",
-    audio: require("@/assets/audios/angry.wav"),
+    audio: require("@/assets/audios/emotions/angry.wav"),
   },
   {
     id: "dino3",
-    image: require("@/assets/images/dinos/dino3-grande.png"),
+    image: require("@/assets/images/phases/watch/dinos/dino3/big.png"),
     emotion: "Happy",
-    audio: require("@/assets/audios/happy.wav"),
+    audio: require("@/assets/audios/emotions/happy.wav"),
   },
 ];
 
@@ -148,7 +148,7 @@ export default function AtvMatchScreen() {
         onClose={() => setInfoVisible(false)}
       />
       <HeaderFase
-        image={require("@/assets/images/eye.png")}
+        image={require("@/assets/images/phases/watch/intro.png")}
         title="Look & Match"
         description="Veja a imagem e ligue a emoção correta"
         color="#94ECA5"
@@ -180,7 +180,7 @@ export default function AtvMatchScreen() {
               text={
                 option.emotion.charAt(0).toUpperCase() + option.emotion.slice(1)
               }
-              audio={user?.audioAtivado ? option.audio : null}
+              audio={user?.audioActive ? option.audio : null}
               type="grande"
               onPress={() => {
                 if (option.emotion === selectedDino?.emotion) {
@@ -206,7 +206,7 @@ export default function AtvMatchScreen() {
         }}
       >
         <Image
-          source={require("@/assets/icons/icon-dica.png")}
+          source={require("@/assets/icons/phases/hint.png")}
           style={styles.iconDica}
         />
       </TouchableOpacity>

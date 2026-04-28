@@ -20,7 +20,7 @@ export default function ContainerMissoes() {
 
   return (
     <ImageBackground
-      source={require("@/assets/images/retangulo-sombra4.png")}
+      source={require("@/assets/images/shadow-rectangles/daily-missions.png")}
       style={styles.container}
     >
       <Text style={styles.title}>Missões Diárias</Text>

@@ -37,7 +37,7 @@ export default function ScoreFailScreen({ route }: RouteProp) {
           }}
         >
           <Image
-            source={require("@/assets/images/img-try-again.png")}
+            source={require("@/assets/images/phases/completion-images/fail.png")}
             style={{
               width: width * 0.6,
               aspectRatio: 1 / 1,
@@ -52,13 +52,13 @@ export default function ScoreFailScreen({ route }: RouteProp) {
           }}
         >
           <ImageBackground
-            source={require("@/assets/images/pontos.png")}
+            source={require("@/assets/images/phases/completion-images/points.png")}
             style={styles.containerScore}
           >
             <Text style={styles.txtScore}>{score.pontos}</Text>
           </ImageBackground>
           <ImageBackground
-            source={require("@/assets/images/tempo-azul.png")}
+            source={require("@/assets/images/phases/completion-images/time.png")}
             style={[
               styles.containerScore,
               {
@@ -81,7 +81,7 @@ export default function ScoreFailScreen({ route }: RouteProp) {
           }}
         >
           <Image
-            source={require("@/assets/icons/icon-fechar2.png")}
+            source={require("@/assets/icons/phases/close-score.png")}
             style={{
               width: width * 0.1,
               aspectRatio: 1,

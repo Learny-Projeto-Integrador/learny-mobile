@@ -26,9 +26,9 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, "world">;
 type Props = NativeStackScreenProps<RootStackParamList, "world">;
 
 const imgMedalhas: any = {
-  "Iniciando!": require("@/assets/icons/medalha-verde.png"),
-  "A todo o vapor!": require("@/assets/icons/medalha-vermelha.png"),
-  "Desvendando": require("@/assets/icons/medalha-azul.png"),
+  "Iniciando!": require("@/assets/images/medals/resource.png"),
+  "A todo o vapor!": require("@/assets/images/medals/double-points.png"),
+  "Desvendando": require("@/assets/images/medals/clue.png"),
 };
 
 export default function WorldScreen({ route }: Props) {
@@ -89,7 +89,7 @@ export default function WorldScreen({ route }: Props) {
       <ScrollView className="flex-1">
         {/* Fundo topo */}
         <Image
-          source={require("@/assets/images/teste.png")}
+          source={require("@/assets/images/top-green.png")}
           style={{
             width: "100%",
             height: RH(145),
@@ -117,7 +117,7 @@ export default function WorldScreen({ route }: Props) {
             {/* 🔹 START */}
             <View style={{ alignItems: "center", marginRight: RW(50) }}>
               <Image
-                source={require("@/assets/images/trilha/inicio.png")}
+                source={require("@/assets/images/trail/start.png")}
                 style={{ width: RW(80), height: RW(80) }}
                 resizeMode="contain"
               />
@@ -126,8 +126,8 @@ export default function WorldScreen({ route }: Props) {
             <ModuleTrail
               moduleNumber={1}
               phases={phasesWithStatus}
-              illustration={require("@/assets/images/trilha/ovo.png")}
-              bossIcon={require("@/assets/images/trilha/boss.png")}
+              illustration={require("@/assets/images/trail/ilustrations/egg.png")}
+              bossIcon={require("@/assets/images/trail/bosses/boss.png")}
               colorTheme="#EF5B6A"
             />
 
@@ -135,8 +135,8 @@ export default function WorldScreen({ route }: Props) {
               moduleNumber={2}
               initialPhase={4}
               phases={phasesWithStatus}
-              illustration={require("@/assets/images/trilha/dino1.png")}
-              bossIcon={require("@/assets/images/trilha/boss2.png")}
+              illustration={require("@/assets/images/trail/ilustrations/dino1.png")}
+              bossIcon={require("@/assets/images/trail/bosses/boss2.png")}
               colorTheme="#6CD2FF"
               variant="left"
             />
@@ -145,14 +145,14 @@ export default function WorldScreen({ route }: Props) {
               moduleNumber={3}
               initialPhase={7}
               phases={phasesWithStatus}
-              illustration={require("@/assets/images/trilha/dino2.png")}
-              bossIcon={require("@/assets/images/trilha/boss3.png")}
+              illustration={require("@/assets/images/trail/ilustrations/dino2.png")}
+              bossIcon={require("@/assets/images/trail/bosses/boss3.png")}
               colorTheme="#80D25B"
             />
             
             <View style={{ alignItems: "center", marginTop: RH(40) }}>
               <Image
-                source={require("@/assets/images/trilha/dino3.png")}
+                source={require("@/assets/images/trail/ilustrations/dino3.png")}
                 style={{
                   width: RW(180),
                   height: RW(140),
@@ -190,7 +190,7 @@ export default function WorldScreen({ route }: Props) {
         }}
       >
         <ImageBackground
-          source={require("@/assets/images/circulo-sombra.png")}
+          source={require("@/assets/images/medals/resource.png")}
           style={{
             width: RW(70),
             aspectRatio: 1,

@@ -27,23 +27,23 @@ const { width, height } = Dimensions.get("window");
 const sounds: SoundItem[] = [
   {
     id: "1",
-    audio: require("@/assets/audios/cow.wav"),
-    image: require("@/assets/images/som-vermelho.png"),
-    icon: require("@/assets/icons/icon-vaca.png"),
+    audio: require("@/assets/audios/animals/cow.wav"),
+    image: require("@/assets/images/phases/listen/speakers/red.png"),
+    icon: require("@/assets/images/phases/listen/dinos/dino1.png"),
     expectedLabel: "Cow",
   },
   {
     id: "2",
-    audio: require("@/assets/audios/bird.wav"),
-    image: require("@/assets/images/som-amarelo.png"),
-    icon: require("@/assets/icons/icon-passaro.png"),
+    audio: require("@/assets/audios/animals/bird.wav"),
+    image: require("@/assets/images/phases/listen/speakers/yellow.png"),
+    icon: require("@/assets/images/phases/listen/dinos/dino2.png"),
     expectedLabel: "Bird",
   },
   {
     id: "3",
-    audio: require("@/assets/audios/dog.wav"),
-    image: require("@/assets/images/som-azul.png"),
-    icon: require("@/assets/icons/icon-cachorro.png"),
+    audio: require("@/assets/audios/animals/dog.wav"),
+    image: require("@/assets/images/phases/listen/speakers/blue.png"),
+    icon: require("@/assets/images/phases/listen/dinos/dino3.png"),
     expectedLabel: "Dog",
   },
 ];
@@ -123,7 +123,7 @@ export default function AtvListeningScreen() {
         onClose={() => setInfoVisible(false)}
       />
       <HeaderFase
-        image={require("@/assets/images/listen.png")}
+        image={require("@/assets/images/phases/listen/intro.png")}
         title="Listen & Answer"
         description="Ouça o nome e encontre ele escrito"
         color="#EF5B6A"
@@ -132,7 +132,7 @@ export default function AtvListeningScreen() {
 
       <View style={styles.containerSounds}>
         {sounds.map((sound) =>
-          user?.audioAtivado ? (
+          user?.audioActive ? (
             <SoundCard
               key={sound.id}
               id={sound.id}
@@ -211,7 +211,7 @@ export default function AtvListeningScreen() {
       <View style={styles.viewButtons}>
         <TouchableOpacity onPress={handleHint} style={{ flexDirection: "row" }}>
           <Image
-            source={require("@/assets/icons/icon-dica.png")}
+            source={require("@/assets/icons/phases/hint.png")}
             style={styles.icon}
           />
         </TouchableOpacity>
@@ -220,7 +220,7 @@ export default function AtvListeningScreen() {
           onPress={handleConfirm}
         >
           <Image
-            source={require("@/assets/icons/icon-confirmar-vermelho.png")}
+            source={require("@/assets/icons/phases/confirm-red.png")}
             style={styles.icon}
           />
         </TouchableOpacity>

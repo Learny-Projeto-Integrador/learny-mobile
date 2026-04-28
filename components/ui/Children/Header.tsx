@@ -10,17 +10,17 @@ type Props = {
 export default function Header({ points, medals, ranking }: Props) {
   const sectionsHeader = [
     {
-      icon: require("@/assets/icons/icon-chama.png"),
+      icon: require("@/assets/icons/header/fire.png"),
       value: points,
       aspect: 41 / 48,
     },
     {
-      icon: require("@/assets/icons/icon-medalha.png"),
+      icon: require("@/assets/icons/header/coins.png"),
       value: medals,
       aspect: 43 / 49,
     },
     {
-      icon: require("@/assets/icons/icon-estrela.png"),
+      icon: require("@/assets/icons/header/points.png"),
       value: ranking,
       aspect: 38 / 38,
     },
@@ -50,7 +50,7 @@ export default function Header({ points, medals, ranking }: Props) {
 
             {/* Fundo + valor */}
             <ImageBackground
-              source={require("@/assets/images/area-pontos.png")}
+              source={require("@/assets/images/header-item-background.png")}
               style={{
                 width: RW(82),
                 aspectRatio: 89 / 38,

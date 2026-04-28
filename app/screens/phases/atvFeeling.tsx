@@ -30,7 +30,7 @@ export default function AtvFeelingScreen() {
           onClose={() => setInfoVisible(false)}
         />
       <HeaderFase
-        image={require("@/assets/images/watch.png")}
+        image={require("@/assets/images/phases/watch/intro.png")}
         title="Watch & Listen"
         description="Sentimentos"
         color="#94ECA5"
@@ -76,7 +76,7 @@ export default function AtvFeelingScreen() {
         }}
       >
         <Image
-          source={require("@/assets/icons/icon-confirmar-vermelho.png")}
+          source={require("@/assets/icons/phases/confirm-red.png")}
           style={styles.iconConfirmar}
         />
       </TouchableOpacity>

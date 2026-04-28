@@ -1,7 +1,7 @@
 export const imgMedalhas: any = {
-  "Iniciando!": require("@/assets/icons/medalha-verde-select.png"),
-  "A todo o vapor!": require("@/assets/icons/medalha-vermelha-select.png"),
-  "Desvendando": require("@/assets/icons/medalha-azul-select.png"),
+  "Iniciando!": require("@/assets/images/medals/resource.png"),
+  "A todo o vapor!": require("@/assets/images/medals/double-points.png"),
+  "Desvendando": require("@/assets/images/medals/clue.png"),
 };
 
 export const efeitos: any = {

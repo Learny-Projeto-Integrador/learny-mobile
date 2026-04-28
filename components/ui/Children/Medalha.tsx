@@ -47,17 +47,13 @@ export default function Medalha({
         >
           <View style={styles.container}>
             <Image
-              source={require("@/assets/icons/icon-medalha-branca.png")}
+              source={require("@/assets/images/medals/resource.png")}
               style={styles.avatar}
             />
             <View style={styles.info}>
               <Text style={styles.label}>Mundo-1</Text>
               <Text style={styles.nome}>{nome}</Text>
             </View>
-            <Image
-              source={require("@/assets/icons/icon-dropdown.png")}
-              style={styles.dropdownIcon}
-            />
           </View>
         </TouchableOpacity>
         {dropdownVisible && (

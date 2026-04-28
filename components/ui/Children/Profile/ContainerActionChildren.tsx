@@ -19,7 +19,7 @@ export default function ContainerActionChildren({
 }: ContainerActionChildrenProps) {
   return (
     <ImageBackground
-      source={require("@/assets/images/ferramentas.png")}
+      source={require("@/assets/images/profile/navigation-option.png")}
       style={styles.container}
     >
       <View style={styles.viewTitle}>

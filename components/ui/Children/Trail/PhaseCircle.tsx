@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function PhaseCircle({ number, completed, locked }: Props) {
-    const backgroundImage = completed ? require("@/assets/images/trilha/fundo-fase.png") : require("@/assets/images/trilha/fundo-fase-apagado.png");
+    const backgroundImage = completed ? require("@/assets/images/trail/phases-backgrounds/unlocked.png") : require("@/assets/images/trail/phases-backgrounds/locked.png");
 
     return (
         <ImageBackground

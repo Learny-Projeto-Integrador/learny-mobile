@@ -22,14 +22,14 @@ import { useLoading } from "@/contexts/LoadingContext";
 import { useUser } from "@/contexts/UserContext";
 
 const cards = [
-  { id: "1", title: "monkey", img: require("@/assets/images/cards/connect/card-macaco.png"), audio: require("@/assets/audios/monkey.wav") },
-  { id: "2", title: "horse",  img: require("@/assets/images/cards/connect/card-cavalo.png"), audio: require("@/assets/audios/horse.wav") },
-  { id: "3", title: "snake",  img: require("@/assets/images/cards/connect/card-cobra.png"),  audio: require("@/assets/audios/snake.wav") },
-  { id: "4", title: "bird",   img: require("@/assets/images/cards/connect/card-passaro.png"), audio: require("@/assets/audios/bird.wav") },
-  { id: "5", title: "horse",  img: require("@/assets/images/cards/connect/card-cavalo.png"), audio: require("@/assets/audios/horse.wav") },
-  { id: "6", title: "bird",   img: require("@/assets/images/cards/connect/card-passaro.png"), audio: require("@/assets/audios/bird.wav") },
-  { id: "7", title: "monkey", img: require("@/assets/images/cards/connect/card-macaco.png"), audio: require("@/assets/audios/monkey.wav") },
-  { id: "8", title: "snake",  img: require("@/assets/images/cards/connect/card-cobra.png"),  audio: require("@/assets/audios/snake.wav") },
+  { id: "1", title: "monkey", img: require("@/assets/images/phases/connect/animals/monkey.png"), audio: require("@/assets/audios/animals/monkey.wav") },
+  { id: "2", title: "horse",  img: require("@/assets/images/phases/connect/animals/horse.png"), audio: require("@/assets/audios/animals/horse.wav") },
+  { id: "3", title: "snake",  img: require("@/assets/images/phases/connect/animals/snake.png"),  audio: require("@/assets/audios/animals/snake.wav") },
+  { id: "4", title: "bird",   img: require("@/assets/images/phases/connect/animals/bird.png"), audio: require("@/assets/audios/animals/bird.wav") },
+  { id: "5", title: "horse",  img: require("@/assets/images/phases/connect/animals/horse.png"), audio: require("@/assets/audios/animals/horse.wav") },
+  { id: "6", title: "bird",   img: require("@/assets/images/phases/connect/animals/bird.png"), audio: require("@/assets/audios/animals/bird.wav") },
+  { id: "7", title: "monkey", img: require("@/assets/images/phases/connect/animals/monkey.png"), audio: require("@/assets/audios/animals/monkey.wav") },
+  { id: "8", title: "snake",  img: require("@/assets/images/phases/connect/animals/snake.png"),  audio: require("@/assets/audios/animals/snake.wav") },
 ];
 
 const { width, height } = Dimensions.get("window");
@@ -166,7 +166,7 @@ export default function AtvConnectScreen() {
         onClose={() => setInfoVisible(false)}
       />
       <HeaderFase
-        image={require("@/assets/images/watch.png")}
+        image={require("@/assets/images/phases/connect/intro.png")}
         title="Look & Connect"
         description="Ligue os animais"
         color="#6CD2FF"
@@ -197,7 +197,7 @@ export default function AtvConnectScreen() {
                 id={card.id}
                 title={card.title}
                 image={card.img}
-                audio={user?.audioAtivado ? card.audio : null}
+                audio={user?.audioActive ? card.audio : null}
                 column="left"
                 onSelect={handleSelect}
               />
@@ -213,7 +213,7 @@ export default function AtvConnectScreen() {
                 id={card.id}
                 title={card.title}
                 image={card.img}
-                audio={user?.audioAtivado ? card.audio : null}
+                audio={user?.audioActive ? card.audio : null}
                 column="right"
                 onSelect={handleSelect}
               />
@@ -225,7 +225,7 @@ export default function AtvConnectScreen() {
       <View style={styles.viewButtons}>
         <TouchableOpacity style={{ flexDirection: "row" }} onPress={handleHint}>
           <Image
-            source={require("@/assets/icons/icon-dica.png")}
+            source={require("@/assets/icons/phases/hint.png")}
             style={styles.icon}
           />
         </TouchableOpacity>
@@ -234,7 +234,7 @@ export default function AtvConnectScreen() {
           onPress={handleConfirm}
         >
           <Image
-            source={require("@/assets/icons/icon-confirmar-vermelho.png")}
+            source={require("@/assets/icons/phases/confirm-red.png")}
             style={styles.icon}
           />
         </TouchableOpacity>
@@ -243,7 +243,7 @@ export default function AtvConnectScreen() {
           onPress={handleClearConnections}
         >
           <Image
-            source={require("@/assets/icons/icon-limpar.png")}
+            source={require("@/assets/icons/phases/clear.png")}
             style={styles.icon}
           />
         </TouchableOpacity>

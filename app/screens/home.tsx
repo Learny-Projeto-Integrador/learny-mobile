@@ -19,28 +19,28 @@ const WORLDS_CONFIG = [
     code: "WORLD_1",
     name: "Dino's Forest",
     description: "Floresta do Dino",
-    image: require("@/assets/images/fundo-mundo1.png"),
+    image: require("@/assets/images/worlds/banners/world1.png"),
     color: "#329F00",
   },
   {
     code: "WORLD_2",
     name: "Jigsaw World",
     description: "Mundo quebra-cabeça",
-    image: require("@/assets/images/fundo-mundo2.png"),
+    image: require("@/assets/images/worlds/banners/world2.png"),
     color: "#25A6DE",
   },
   {
     code: "WORLD_3",
     name: "Space Realm",
     description: "Reino Espacial",
-    image: require("@/assets/images/fundo-mundo3.png"),
+    image: require("@/assets/images/worlds/banners/world3.png"),
     color: "#B060C2",
   },
   {
     code: "WORLD_4",
     name: "Pop Party",
     description: "Festa Pop",
-    image: require("@/assets/images/fundo-mundo4.png"),
+    image: require("@/assets/images/worlds/banners/world4.png"),
     color: "#B82A38",
   },
 ];
@@ -155,7 +155,7 @@ export default function HomeScreen() {
           {/* Time Attack */}
           <View className="items-center">
             <ImageBackground
-              source={require("@/assets/images/fundo-timeAttack.png")}
+              source={require("@/assets/images/worlds/banners/time-attack.png")}
               style={{
                 width: RW(300),
                 aspectRatio: 423 / 142,

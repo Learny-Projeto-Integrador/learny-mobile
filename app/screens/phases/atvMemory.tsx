@@ -23,22 +23,22 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const animalCards: Record<string, MemoryCardType> = {
   monkey: {
-    text: require("@/assets/images/cards/memory/card-monkey-text.png"),
-    icon: require("@/assets/images/cards/memory/card-monkey-icon.png"),
-    iconText: require("@/assets/images/cards/memory/card-monkey-icon-text.png"),
-    audio: require("@/assets/audios/monkey.wav"),
+    text: require("@/assets/images/phases/memory/animals/monkey/text.png"),
+    icon: require("@/assets/images/phases/memory/animals/monkey/icon.png"),
+    iconText: require("@/assets/images/phases/memory/animals/monkey/icon-text.png"),
+    audio: require("@/assets/audios/animals/monkey.wav"),
   },
   bird: {
-    text: require("@/assets/images/cards/memory/card-bird-text.png"),
-    icon: require("@/assets/images/cards/memory/card-bird-icon.png"),
-    iconText: require("@/assets/images/cards/memory/card-bird-icon-text.png"),
-    audio: require("@/assets/audios/bird.wav"),
+    text: require("@/assets/images/phases/memory/animals/bird/text.png"),
+    icon: require("@/assets/images/phases/memory/animals/bird/icon.png"),
+    iconText: require("@/assets/images/phases/memory/animals/bird/icon-text.png"),
+    audio: require("@/assets/audios/animals/bird.wav"),
   },
   snake: {
-    text: require("@/assets/images/cards/memory/card-snake-text.png"),
-    icon: require("@/assets/images/cards/memory/card-snake-icon.png"),
-    iconText: require("@/assets/images/cards/memory/card-snake-icon-text.png"),
-    audio: require("@/assets/audios/snake.wav"),
+    text: require("@/assets/images/phases/memory/animals/snake/text.png"),
+    icon: require("@/assets/images/phases/memory/animals/snake/icon.png"),
+    iconText: require("@/assets/images/phases/memory/animals/snake/icon-text.png"),
+    audio: require("@/assets/audios/animals/snake.wav"),
   },
 };
 
@@ -46,7 +46,7 @@ export default function AtvMemoryScreen() {
   const navigation = useNavigation<NavigationProp>();
 
   const generateCards = () => {
-    if (user?.audioAtivado === null) return [];
+    if (user?.audioActive === null) return [];
     
     const cards = [];
     let id = 1;
@@ -62,7 +62,7 @@ export default function AtvMemoryScreen() {
         id: `${id++}`,
         animal,
         type: "icon",
-        image: user?.audioAtivado ? animalCards[animal].icon : animalCards[animal].iconText,
+        image: user?.audioActive ? animalCards[animal].icon : animalCards[animal].iconText,
         audio: animalCards[animal].audio,
       });
     }
@@ -180,10 +180,10 @@ export default function AtvMemoryScreen() {
 
 
   useEffect(() => {
-    if (user?.audioAtivado !== null) {
+    if (user?.audioActive !== null) {
       setCards(generateCards());
     }
-  }, [user?.audioAtivado]);
+  }, [user?.audioActive]);
 
   useEffect(() => {
     if (matched.length === cards.length) {
@@ -201,7 +201,7 @@ export default function AtvMemoryScreen() {
         onClose={() => setInfoVisible(false)}
       />
       <HeaderFase
-        image={require("@/assets/images/memory.png")}
+        image={require("@/assets/images/phases/memory/intro.png")}
         title="Memory Game"
         description="Ache os pares de texto e imagem"
         color="#FFB300"
@@ -216,9 +216,9 @@ export default function AtvMemoryScreen() {
             image={
               selected.includes(card.id) || matched.includes(card.id)
                 ? card.image
-                : require("@/assets/images/cards/memory/card-base.png")
+                : require("@/assets/images/phases/memory/cards-base/yellow.png")
             }
-            audio={user?.audioAtivado ? card.audio : null}
+            audio={user?.audioActive ? card.audio : null}
             onPress={() => handleCardPress(card.id, card.animal, card.type)}
             disabled={isChecking}
           />
@@ -227,7 +227,7 @@ export default function AtvMemoryScreen() {
 
       <TouchableOpacity onPress={handleHint} style={styles.viewButton}>
         <Image
-          source={require("@/assets/icons/icon-dica.png")}
+          source={require("@/assets/icons/phases/hint.png")}
           style={styles.icon}
         />
       </TouchableOpacity>

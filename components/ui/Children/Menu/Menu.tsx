@@ -38,7 +38,7 @@ export default function Menu({navigation}: Props) {
       style={styles.container}
     >
       <CustomAlert
-        icon={require("@/assets/icons/icon-alerta.png")}
+        icon={require("@/assets/icons/custom-alert/alert.png")}
         visible={alertVisible}
         title="Alerta"
         message={"Deseja mesmo sair?"}
@@ -57,7 +57,7 @@ export default function Menu({navigation}: Props) {
           style={{ flexDirection: "row" }}
         >
           <Image
-            source={require("@/assets/icons/icon-diario.png")}
+            source={require("@/assets/icons/menu/diary.png")}
             style={styles.icon}
           />
         </TouchableOpacity>
@@ -66,7 +66,7 @@ export default function Menu({navigation}: Props) {
           style={{ flexDirection: "row" }}
         >
           <Image
-            source={require("@/assets/icons/icon-sair-menu.png")}
+            source={require("@/assets/icons/menu/profile.png")}
             style={styles.icon}
           />
         </TouchableOpacity>
@@ -75,7 +75,7 @@ export default function Menu({navigation}: Props) {
           style={{ flexDirection: "row" }}
         >
           <Image
-            source={require("@/assets/icons/icon-ranking.png")}
+            source={require("@/assets/icons/menu/ranking.png")}
             style={styles.icon}
           />
         </TouchableOpacity>

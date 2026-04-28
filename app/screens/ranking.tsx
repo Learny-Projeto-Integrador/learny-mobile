@@ -48,7 +48,7 @@ export default function RankingScreen() {
     } else {
       if (result.status != 401) {
         showAlert({
-          icon: require("@/assets/icons/icon-alerta.png"),
+          icon: require("@/assets/icons/custom-alert/alert.png"),
           title: "Erro ao buscar ranking!",
           message: result.message,
           dualAction: true,
@@ -92,23 +92,23 @@ export default function RankingScreen() {
       <ScrollView>
         <View style={{ flexDirection: "row" }}>
           <Image
-            source={require("@/assets/images/teste3.png")}
+            source={require("@/assets/images/top-blue.png")}
             style={styles.fundoAzul}
           />
         </View>
         <View style={styles.containerDados}>
-          <Header
-            pontos={user?.pontos || 0}
-            medalhas={user?.medalhas.length || 0}
-            ranking={user?.rankingAtual || ""}
-          />
+          {/* <Header
+            pontos={0}
+            medalhas={0}
+            ranking={0}
+          /> */}
           <View style={styles.containerTitle}>
             <TouchableOpacity
               style={{ flexDirection: "row" }}
               onPress={() => setInfoVisible(true)}
             >
               <Image
-                source={require("@/assets/icons/icon-info.png")}
+                source={require("@/assets/icons/phases/info.png")}
                 style={styles.icon}
               />
             </TouchableOpacity>
@@ -118,7 +118,7 @@ export default function RankingScreen() {
               onPress={() => navigation.goBack()}
             >
               <Image
-                source={require("@/assets/icons/icon-voltar2.png")}
+                source={require("@/assets/icons/back.png")}
                 style={[styles.icon, { width: scale(24) }]}
               />
             </TouchableOpacity>
@@ -136,7 +136,7 @@ export default function RankingScreen() {
           </View>
 
           <ImageBackground
-            source={require("@/assets/images/fundo-planeta.png")}
+            source={require("@/assets/images/ranking/planet.png")}
             style={{
               width: "100%",
               height: height * 0.5,

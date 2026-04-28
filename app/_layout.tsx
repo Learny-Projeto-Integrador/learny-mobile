@@ -20,7 +20,6 @@ import LoginScreen from './index';
 import TransitionScreen from './screens/transition';
 import HomeScreen from './screens/home';
 import ProfileChildrenScreen from './screens/profileChildren';
-import IconChildrenScreen from './screens/iconChildren';
 import WorldScreen from './screens/world';
 import MenuScreen from './screens/menu';
 import DiaryScreen from './screens/diary';
@@ -100,11 +99,6 @@ export default function RootLayout() {
               <Stack.Screen
                 name="profileChildren"
                 component={ProfileChildrenScreen}
-                options={{headerShown: false}}
-              />
-              <Stack.Screen
-                name="iconChildren"
-                component={IconChildrenScreen}
                 options={{headerShown: false}}
               />
               <Stack.Screen

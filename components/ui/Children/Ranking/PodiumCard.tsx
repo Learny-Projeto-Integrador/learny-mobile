@@ -15,7 +15,7 @@ export default function PodiumCard({ rank, name, points, image }: Props){
   const color = colors[rank - 1] || "#000";
   return (
     <View style={styles.container}>
-      <Image source={image ? {uri: image} : require("@/assets/images/avatar.png")} style={[styles.avatar, {borderColor}]} />
+      <Image source={image ? {uri: image} : require("@/assets/images/ranking/avatar.png")} style={[styles.avatar, {borderColor}]} />
       <View style={[styles.card, {borderColor}]}>
         <View style={{flexDirection: "row", alignItems: "center", gap: scale(6)}}>
           <Text style={[styles.rank, {color}]}>{rank}º</Text>

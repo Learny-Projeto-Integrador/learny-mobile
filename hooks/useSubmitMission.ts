@@ -6,9 +6,9 @@ import type { RootStackParamList } from "@/types";
 import { useNavigation } from "@react-navigation/native";
 
 const imgsMedalhas: any = {
-  "Iniciando!": require("@/assets/icons/icon-medalha-verde.png"),
-  "A todo o vapor!": require("@/assets/icons/icon-medalha-vermelha.png"),
-  "Desvendando": require("@/assets/icons/icon-medalha-azul.png"),
+  "Iniciando!": require("@/assets/images/logo.png"),
+  "A todo o vapor!": require("@/assets/images/logo.png"),
+  "Desvendando": require("@/assets/images/logo.png"),
 };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -66,7 +66,7 @@ export const useSubmitMission = () => {
 
         if (result.missaoConcluida) {
           showAlert({
-            icon: require("@/assets/icons/icon-check-gradiente.png"),
+            icon: require("@/assets/icons/custom-alert/check-gradient.png"),
             title: "Missão diária concluída!",
             message: result.missaoConcluida.descricao,
           });
@@ -87,7 +87,7 @@ export const useSubmitMission = () => {
       } else {
         if (result.status != 401) {
           showAlert({
-            icon: require("@/assets/icons/icon-check-gradiente.png"),
+            icon: require("@/assets/icons/custom-alert/check-gradient.png"),
             title: "Erro ao adicionar pontução!",
             message: result.message,
           });

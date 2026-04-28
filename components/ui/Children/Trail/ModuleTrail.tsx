@@ -35,7 +35,7 @@ export default function ModuleTrail({
 }: Props) {
   const navigation = useNavigation<NavigationProp>();
 
-  const bossImage = bossIcon || require("@/assets/images/trilha/boss.png");
+  const bossImage = bossIcon || require("@/assets/images/trail/bosses/boss.png");
 
   const sortedPhases = [...phases].sort((a, b) => a.order - b.order);
 

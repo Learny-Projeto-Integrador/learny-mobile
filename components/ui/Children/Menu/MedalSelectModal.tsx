@@ -53,7 +53,7 @@ export default function MedalSelectModal({
     } else {
       if (result.status != 401) {
         showAlert({
-          icon: require("@/assets/icons/icon-alerta.png"),
+          icon: require("@/assets/icons/custom-alert/alert.png"),
           title: "Erro ao trocar a medalha!",
           message: result.message,
         });

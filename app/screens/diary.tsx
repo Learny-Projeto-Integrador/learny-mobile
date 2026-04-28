@@ -25,7 +25,7 @@ export default function DiaryScreen() {
       <ScrollView>
         <View style={{flexDirection: "row"}}>
           <Image
-            source={require("@/assets/images/teste2.png")}
+            source={require("@/assets/images/top-gradient.png")}
           style={styles.fundoGradiente}/>
         </View>
         <View style={styles.containerDados}>
@@ -33,7 +33,7 @@ export default function DiaryScreen() {
                 <Text style={styles.title}>Diário</Text>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={{flexDirection: "row"}}>
                   <Image
-                      source={require("@/assets/icons/icon-voltar2.png")}
+                      source={require("@/assets/icons/back.png")}
                       style={styles.iconFechar}
                       />
                 </TouchableOpacity>

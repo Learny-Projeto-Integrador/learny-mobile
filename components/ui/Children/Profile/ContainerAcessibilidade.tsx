@@ -20,15 +20,14 @@ export default function ContainerAcessibilidade({
   onChangeAudio,
 }: Props) {
   return (
-    <ImageBackground
-      source={require("@/assets/images/retangulo-sombra3.png")}
+    <View
       style={styles.container}
     >
     <View style={styles.containerElementos}>
         <View style={styles.viewTitle}>
             <Image
             style={styles.icon}
-            source={require("@/assets/icons/icon-acessibilidade.png")}
+            source={require("@/assets/icons/profile/acessibility.png")}
             />
             <GradientText color1="#946274" color2="#5c94b3" style={styles.txtGradient}>Acessibilidade</GradientText>
         </View>
@@ -41,7 +40,7 @@ export default function ContainerAcessibilidade({
             <CustomSwitch value={true} />
         </View>
     </View>
-    </ImageBackground>
+    </View>
   );
 }
 

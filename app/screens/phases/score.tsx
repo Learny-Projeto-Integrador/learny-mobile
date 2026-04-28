@@ -37,7 +37,7 @@ export default function ScoreScreen({ route }: RouteProp) {
           }}
         >
           <Image
-            source={require("@/assets/images/confetes2.png")}
+            source={require("@/assets/images/phases/completion-images/confetti2.png")}
             style={{
               width: width * 0.5,
               aspectRatio: 1 / 1,
@@ -65,13 +65,13 @@ export default function ScoreScreen({ route }: RouteProp) {
           }}
         >
           <ImageBackground
-            source={require("@/assets/images/pontos.png")}
+            source={require("@/assets/images/phases/completion-images/points.png")}
             style={styles.containerScore}
           >
             <Text style={styles.txtScore}>{score.pontosAtualizados}</Text>
           </ImageBackground>
           <ImageBackground
-            source={require("@/assets/images/porcentagem.png")}
+            source={require("@/assets/images/phases/completion-images/percentage.png")}
             style={[
               styles.containerScore,
               {
@@ -92,7 +92,7 @@ export default function ScoreScreen({ route }: RouteProp) {
           }}
         >
           <ImageBackground
-            source={require("@/assets/images/tempo.png")}
+            source={require("@/assets/images/phases/completion-images/time.png")}
             style={[
               styles.containerScore,
               {
@@ -116,7 +116,7 @@ export default function ScoreScreen({ route }: RouteProp) {
           }}
         >
           <Image
-            source={require("@/assets/icons/icon-fechar2.png")}
+            source={require("@/assets/icons/phases/close-score.png")}
             style={{
               width: width * 0.1,
               aspectRatio: 1,

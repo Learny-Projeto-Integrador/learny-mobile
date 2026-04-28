@@ -24,7 +24,7 @@ export default function MenuScreen() {
       <ScrollView>
         <View style={{flexDirection: "row"}}>
           <Image
-            source={require("@/assets/images/teste2.png")}
+            source={require("@/assets/images/top-gradient.png")}
           style={styles.fundoGradiente}/>
         </View>
         <View style={styles.containerDados}>
@@ -32,7 +32,7 @@ export default function MenuScreen() {
                 <Text style={styles.title}>Atalhos</Text>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={{flexDirection: "row"}}>
                   <Image
-                      source={require("@/assets/icons/icon-fechar.png")}
+                      source={require("@/assets/icons/close.png")}
                       style={styles.iconFechar}
                       />
                 </TouchableOpacity>

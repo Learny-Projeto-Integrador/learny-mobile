@@ -213,7 +213,7 @@ export default function AtvBossScreen() {
         onClose={() => setInfoVisible(false)}
       />
           <HeaderFase
-            image={require("@/assets/images/boss.png")}
+            image={require("@/assets/images/phases/watch/intro.png")}
             title="Boss Stage"
             description="Estoure os balões para formar a frase"
             color="#EF5B6A"
@@ -224,7 +224,7 @@ export default function AtvBossScreen() {
         <View>
           {/* Fundo de nuvens */}
           <ImageBackground
-            source={require("@/assets/images/nuvens-cima.png")}
+            source={require("@/assets/images/phases/balloon/clouds-top.png")}
             style={styles.nuvensCima}
           />
           {/* SCORE */}
@@ -259,13 +259,13 @@ export default function AtvBossScreen() {
           transition={{ type: "timing", duration: 5000 }}
           style={[styles.balao, { left: item.left }]}
         >
-          <BaloonLetter letter={item.letter} color={item.color} isAudioEnabled={user?.audioAtivado} onPress={() => handlePress(item)} />
+          <BaloonLetter letter={item.letter} color={item.color} isAudioEnabled={user?.audioActive || undefined} onPress={() => handlePress(item)} />
         </MotiView>
       ))}
 
       {/* Fundo de nuvens */}
       <ImageBackground
-        source={require("@/assets/images/nuvens.png")}
+        source={require("@/assets/images/phases/balloon/clouds-bottom.png")}
         style={styles.nuvens}
       />
 

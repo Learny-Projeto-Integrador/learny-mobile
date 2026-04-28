@@ -27,7 +27,7 @@ export default function ContainerInfo({
         <View style={styles.infoBox}>
           <View style={styles.containerTitle}>
             <Image
-              source={require("@/assets/icons/icon-info.png")}
+              source={require("@/assets/icons/phases/info.png")}
               style={{
                 width: width * 0.06,
                 aspectRatio: 1/1
@@ -39,7 +39,7 @@ export default function ContainerInfo({
               style={{ flexDirection: "row" }}
             >
               <Image
-                source={require("@/assets/icons/icon-fechar.png")}
+                source={require("@/assets/icons/close.png")}
                 style={styles.iconFechar}
               />
             </TouchableOpacity>

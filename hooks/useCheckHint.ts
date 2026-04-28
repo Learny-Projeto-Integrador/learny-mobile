@@ -10,7 +10,7 @@ export const useCheckHint = () => {
   const checkHint = async (): Promise<boolean> => {
     if (hintUsed) {
       showAlert({
-        icon: require("@/assets/icons/icon-alerta.png"),
+        icon: require("@/assets/icons/custom-alert/alert.png"),
         title: "Erro!",
         message: "Você já utilizou a dica!",
       });
@@ -21,7 +21,7 @@ export const useCheckHint = () => {
 
     if (medalha !== "Desvendando") {
       showAlert({
-        icon: require("@/assets/icons/icon-alerta.png"),
+        icon: require("@/assets/icons/custom-alert/alert.png"),
         title: "Erro!",
         message: 'Você precisa estar com a medalha "Desvendando"',
       });
