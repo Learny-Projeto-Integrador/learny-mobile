@@ -43,8 +43,9 @@ export interface User {
   profilePicture: string | null;
   username: string;
   name: string;
-  audioActive: boolean | null;
-  rankingActive: boolean | null;
+  points: number;
+  audioActive: boolean;
+  rankingActive: boolean;
 };
 
 export interface Phase {
@@ -84,7 +85,6 @@ export interface MissionProgress {
 
 export interface Progress {
   _id?: string;
-  child: string;
   points: number;
   completedPhases: number;
   ranking: number;

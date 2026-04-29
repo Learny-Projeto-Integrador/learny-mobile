@@ -22,6 +22,7 @@ import { useCustomAlert } from "@/contexts/AlertContext";
 import { useUser } from "@/contexts/UserContext";
 import { jwtDecode } from "jwt-decode";
 import { fontSizes, RH, RW, spacing } from "@/theme";
+import { useProgress } from "@/contexts/ProgressContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
 
@@ -29,11 +30,61 @@ export default function LoginScreen() {
   const navigation = useNavigation<NavigationProp>();
 
   const { setUser } = useUser();
+  const { setProgress } = useProgress();
   const { loading, request } = useApi();
   const { showAlert } = useCustomAlert();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const getChildData = async () => {
+    const result = await request({
+      endpoint: "/child",
+      method: "GET",
+    });
+
+    if (result && !result.error) { 
+      setUser({
+        username: result.username,
+        name: result.name,
+        rankingActive: result.rankingActive,
+        audioActive: result.audioActive,
+        points: result.points,
+        profilePicture: result.profilePicture,
+      });
+    } else {
+      showAlert({
+        icon: require("@/assets/icons/custom-alert/alert.png"),
+        title: "Erro ao carregar dados!",
+        message: result.message || "Erro ao carregar informações do usuário",
+      });
+    }
+  };
+
+  const getProgressData = async () => {
+    const result = await request({
+      endpoint: "/child/progress",
+      method: "GET",
+    });
+
+    if (result && !result.error) { 
+      setProgress({
+        points: result.points,
+        completedPhases: result.completedPhases,
+        ranking: result.ranking,
+        selectedMedal: result.selectedMedal,
+        worlds: result.worlds,
+        dailyMissions: result.dailyMissions,
+        medals: result.medals
+      });
+    } else {
+      showAlert({
+        icon: require("@/assets/icons/custom-alert/alert.png"),
+        title: "Erro ao carregar progresso!",
+        message: result.message || "Erro ao carregar informações de progresso do usuário",
+      });
+    }
+  };
 
   const handleLogin = async () => {
     const result = await request({
@@ -44,21 +95,15 @@ export default function LoginScreen() {
 
     if (result && !result.error) {
       const decoded = jwtDecode<TokenPayload>(result.access_token);
+
       if (decoded.user.type === "child") {
-        setUser({
-          profilePicture: null,
-          username: decoded.user.username,
-          name: decoded.user.name,
-          audioActive: null,
-          rankingActive: null,
-        });
         await AsyncStorage.setItem("token", result.access_token);
-        navigation.navigate("transition", {
-          name: decoded.user.name,
-        });
+        getChildData();
+        getProgressData();
+        navigation.navigate("transition", { name: decoded.user.name });
       } else {
         showAlert({
-          icon: require("@/assets/icons/icon-alerta.png"),
+          icon: require("@/assets/icons/custom-alert/alert.png"),
           title: "Erro ao logar!",
           message:
             result.message ||
@@ -67,7 +112,7 @@ export default function LoginScreen() {
       }
     } else {
       showAlert({
-        icon: require("@/assets/icons/icon-alerta.png"),
+        icon: require("@/assets/icons/custom-alert/alert.png"),
         title: "Erro ao logar!",
         message: result.message || "Usuário e/ou senha inválidos",
       });

@@ -57,7 +57,15 @@ export default function HomeScreen() {
     });
 
     if (result && !result.error) {
-      setProgress(result);
+      setProgress({
+        points: result.points,
+        completedPhases: result.completedPhases,
+        ranking: result.ranking,
+        selectedMedal: result.selectedMedal,
+        worlds: result.worlds,
+        dailyMissions: result.dailyMissions,
+        medals: result.medals
+      });
     } else {
       if (result.status === 404) return;
       showAlert({
