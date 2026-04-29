@@ -1,15 +1,11 @@
 import {
   View,
   Dimensions,
-  StyleSheet,
   TouchableOpacity,
   ImageBackground,
   Text,
 } from "react-native";
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
+import { useState, useEffect, useRef } from "react";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
 import { useSubmitMission } from "@/hooks/useSubmitMission";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
@@ -19,10 +15,9 @@ import { MotiView } from "moti";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useUser } from "@/contexts/UserContext";
 import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
+import { useRouter } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 interface FloatingItem {
   id: string;
@@ -33,8 +28,9 @@ interface FloatingItem {
 }
 
 export default function AtvBossScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
   const { user } = useUser();
+
   const [items, setItems] = useState<FloatingItem[]>([]);
   const [selectedWord, setSelectedWord] = useState<string>("");
   const [revealedLetters, setRevealedLetters] = useState<string[]>([]);
@@ -155,7 +151,10 @@ export default function AtvBossScreen() {
     if (response.success) {
       let pontosAtualizados = response.pontosAtualizados ?? pontos;
       const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
-      navigation.navigate("score", { score });
+      router.push({
+        pathname: '/screens/phasesscore',
+        params: { score: JSON.stringify(score) },
+      });
     }
     hideLoadingModal();
   }

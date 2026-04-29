@@ -6,10 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { MemoryCardType, RootStackParamList } from "@/types";
+import { useEffect, useState } from "react";
+import type { MemoryCardType } from "@/types";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import MemoryCard from "@/components/ui/Children/Phases/MemoryCard";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
@@ -18,8 +16,7 @@ import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useCheckHint } from "@/hooks/useCheckHint";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useUser } from "@/contexts/UserContext";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+import { useRouter } from "expo-router";
 
 const animalCards: Record<string, MemoryCardType> = {
   monkey: {
@@ -43,7 +40,7 @@ const animalCards: Record<string, MemoryCardType> = {
 };
 
 export default function AtvMemoryScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
 
   const generateCards = () => {
     if (user?.audioActive === null) return [];
@@ -173,7 +170,10 @@ export default function AtvMemoryScreen() {
     if (response.success) {
       let pontosAtualizados = response.pontosAtualizados ?? pontos;
       const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
-      navigation.navigate("score", { score });
+      router.push({
+        pathname: '/screens/phasesscore',
+        params: { score: JSON.stringify(score) },
+      });
     }
     hideLoadingModal();
   };

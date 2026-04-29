@@ -1,35 +1,3 @@
-export type RootStackParamList = {
-  index: undefined;
-  register: { idParent?: string };
-  transition: { name: string };
-  profileParent: undefined;
-  edit: { userFilho?: string }
-  home: undefined;
-  profileChildren: undefined;
-  iconChildren: undefined;
-  world: { worldCode: string };
-  menu: undefined;
-  diary: undefined;
-  ranking: undefined;
-  atvFeeling: undefined;
-  atvMatch: undefined;
-  atvMatchAnswer: { score: any; answer: any };
-  atvListening: undefined;
-  atvMemory: undefined;
-  atvConnect: undefined;
-  atvBoss: undefined;
-  atvSecret: undefined;
-  score: { score: any };
-  scoreFail: { score: any };
-};
-
-// rotas que não exigem parâmetros
-export type RoutesWithoutParams = {
-  [K in keyof RootStackParamList]: RootStackParamList[K] extends undefined
-    ? K
-    : never;
-}[keyof RootStackParamList];
-
 export interface TokenPayload {
   user: {
     username: string;

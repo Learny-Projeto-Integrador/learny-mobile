@@ -3,15 +3,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
 import { RH, RW } from "@/theme";
+import { useRouter } from "expo-router";
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function NavigationBar() {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
   return (
     <View
       className="w-full flex-row items-center justify-between bg-[#4C4C4C]"
@@ -23,7 +20,7 @@ export default function NavigationBar() {
       }}
     >
       {/* Perfil */}
-      <TouchableOpacity onPress={() => navigation.navigate("profileChildren")}>
+      <TouchableOpacity onPress={() => router.push("/screens/profileChildren")}>
         <Image
           source={require("@/assets/icons/navbar/store.png")}
           style={{
@@ -36,7 +33,7 @@ export default function NavigationBar() {
       </TouchableOpacity>
 
       {/* Home (maior destaque) */}
-      <TouchableOpacity onPress={() => navigation.navigate("home")}>
+      <TouchableOpacity onPress={() => router.push("/screens/home")}>
         <Image
           source={require("@/assets/icons/navbar/world.png")}
           style={{
@@ -49,7 +46,7 @@ export default function NavigationBar() {
       </TouchableOpacity>
 
       {/* Menu */}
-      <TouchableOpacity onPress={() => navigation.navigate("menu")}>
+      <TouchableOpacity onPress={() => router.push("/screens/menu")}>
         <Image
           source={require("@/assets/icons/navbar/menu.png")}
           style={{

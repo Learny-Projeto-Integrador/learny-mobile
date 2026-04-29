@@ -7,26 +7,21 @@ import {
   Dimensions,
   StyleSheet,
 } from "react-native";
-import React from "react";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
 import GradientText from "@/components/ui/GradientText";
 import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
 import ContainerAcessibilidade from "@/components/ui/Children/Profile/ContainerAcessibilidade";
-import ContainerActionChildren from "@/components/ui/Children/Profile/ContainerActionChildren";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
 import { useCustomAlert } from "@/contexts/AlertContext";
 import { useUser } from "@/contexts/UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "profileChildren">;
+import { useRouter } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
 
 export default function ProfileChildrenScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
+  
   const { user, setUser } = useUser();
   const { showLoadingModal, hideLoadingModal } = useLoading();
   const { request } = useApi();
@@ -36,10 +31,7 @@ export default function ProfileChildrenScreen() {
     try {
       setUser(null);
       await AsyncStorage.multiRemove(["user", "token"]);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "index" }],
-      })
+      router.replace("/")
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }
@@ -94,7 +86,6 @@ export default function ProfileChildrenScreen() {
     <ScrollView style={styles.container}>
       <View style={styles.containerDados}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("iconChildren")}
           style={{ flexDirection: "row" }}
         >
           <View style={{position: "relative"}}>
@@ -129,7 +120,7 @@ export default function ProfileChildrenScreen() {
             <Text style={styles.txt}>lvl <Text style={[styles.txt, {fontSize: width * 0.05,fontFamily: "Montserrat_700Bold"}]}>{nivel}</Text></Text>
           </View>
         </View>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.viewVoltar}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.viewVoltar}>
           <Image
             style={styles.iconVoltar}
             source={require("@/assets/icons/back.png")}

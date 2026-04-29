@@ -8,9 +8,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import SoundCard from "@/components/ui/Children/Phases/SoundCard";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
@@ -20,8 +17,7 @@ import { useCheckHint } from "@/hooks/useCheckHint";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useUser } from "@/contexts/UserContext";
 import { scale } from "react-native-size-matters";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+import { useRouter } from "expo-router";
 
 type Option = {
   id: string;
@@ -52,7 +48,7 @@ const options: any = [
 ];
 
 export default function AtvMatchScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
   const [selectedDino, setSelectedDino] = useState<Option | null>(null);
   const [shuffledOptions, setShuffledOptions] = useState<Option[]>([]);
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
@@ -108,21 +104,28 @@ export default function AtvMatchScreen() {
     if (response.success) {
       let pontosAtualizados = response.pontosAtualizados ?? pontos;
       const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
-      navigation.navigate("score", { score });
+      router.push({
+        pathname: '/screens/phasesscore',
+        params: { score: JSON.stringify(score) },
+      });
     }
     hideLoadingModal();
   };
 
   const handleError = (dino: Option) => {
     const { durationFormatted } = getDuration();
-    navigation.navigate("atvMatchAnswer", {
-      score: {
-        pontos: 0,
-        tempo: durationFormatted,
-      },
-      answer: {
-        image: dino.image,
-        emotion: dino.emotion,
+    router.push({
+      pathname: '/screens/phasesatvMatchAnswer',
+      params: { score: JSON.stringify({
+          score: {
+            pontos: 0,
+            tempo: durationFormatted,
+          },
+          answer: {
+            image: dino.image,
+            emotion: dino.emotion,
+          }
+        }) 
       },
     });
   };

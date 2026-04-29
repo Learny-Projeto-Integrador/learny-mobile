@@ -7,32 +7,22 @@ import {
   ImageBackground,
   ScrollView,
 } from "react-native";
-import React from "react";
-import { useNavigation } from "@react-navigation/native";
 import SoundCard from "@/components/ui/Children/Phases/SoundCard";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList, Score } from "@/types";
 import GradientText from "@/components/ui/GradientText";
 import { scale } from "react-native-size-matters";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
-type RouteProp = NativeStackScreenProps<RootStackParamList, "atvMatchAnswer">;
+export default function AtvMatchAnswerScreen() {
+  const { data } = useLocalSearchParams();
+  const parsedData = JSON.parse(data as string);
 
-type DinoOption = {
-  id: string;
-  image: string;
-  emotion: string;
-  audio: string;
-};
-
-export default function AtvMatchAnswerScreen({ route }: RouteProp) {
-  const { answer }: { answer: DinoOption } = route.params;
-  const { score }: { score: Score } = route.params;
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
 
   const handleConfirm = () => {
-    navigation.navigate("scoreFail", {score: score});
+    router.push({
+        pathname: '/screens/phasesscoreFail',
+        params: { score: JSON.stringify(data) },
+      });
   };
 
   return (
@@ -73,12 +63,12 @@ export default function AtvMatchAnswerScreen({ route }: RouteProp) {
         >
           <Text style={styles.txtTipoFase}>
             O dinossauro está
-            {answer.emotion == "Sad"
+            {parsedData.answer.emotion == "Sad"
               ? " triste "
-              : answer.emotion == "Happy"
+              : parsedData.emotion == "Happy"
               ? " feliz "
               : " bravo "}
-            ({answer.emotion})
+            ({parsedData.emotion})
           </Text>
         </ImageBackground>
       </View>
@@ -97,7 +87,7 @@ export default function AtvMatchAnswerScreen({ route }: RouteProp) {
         />
 
         <View style={{ flexDirection: "row", gap: width * 0.05 }}>
-          <SoundCard id="1" text={answer.emotion} onPress={handleConfirm} />
+          <SoundCard id="1" text={parsedData.emotion} onPress={handleConfirm} />
         </View>
       </View>
     </ScrollView>

@@ -7,12 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import type {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
-import type { Phase, RootStackParamList } from "@/types";
+import type { Phase } from "@/types";
 import Header from "@/components/ui/Children/Header";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
 import MedalSelectModal from "@/components/ui/Children/Menu/MedalSelectModal";
@@ -21,9 +16,7 @@ import { useCustomAlert } from "@/contexts/AlertContext";
 import { useApi } from "@/hooks/useApi";
 import { spacing, fontSizes, RW, RH, RS } from "@/theme";
 import ModuleTrail from "@/components/ui/Children/Trail/ModuleTrail";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "world">;
-type Props = NativeStackScreenProps<RootStackParamList, "world">;
+import { useLocalSearchParams } from "expo-router";
 
 const imgMedalhas: any = {
   "Iniciando!": require("@/assets/images/medals/resource.png"),
@@ -31,9 +24,9 @@ const imgMedalhas: any = {
   "Desvendando": require("@/assets/images/medals/clue.png"),
 };
 
-export default function WorldScreen({ route }: Props) {
-  const navigation = useNavigation<NavigationProp>();
-  const { worldCode } = route.params;
+export default function WorldScreen() {
+  const router = userRouter();
+  const { worldCode } = useLocalSearchParams();
 
   const { progress } = useProgress();
   const { showAlert } = useCustomAlert();
@@ -227,3 +220,7 @@ export default function WorldScreen({ route }: Props) {
     </View>
   );
 }
+function userRouter() {
+  throw new Error("Function not implemented.");
+}
+

@@ -3,12 +3,11 @@ import {
   View,
   Text,
   Dimensions,
-  StyleSheet,
   ImageBackground,
   Alert,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
@@ -16,9 +15,6 @@ import Animated, {
   withSpring,
   runOnJS,
 } from "react-native-reanimated";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import { useLoading } from "@/contexts/LoadingContext";
@@ -28,6 +24,7 @@ import { Audio } from "expo-av";
 import { useUser } from "@/contexts/UserContext";
 import { useCustomAlert } from "@/contexts/AlertContext";
 import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
+import { useRouter } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
 
@@ -52,11 +49,9 @@ const START_POSITIONS = [
   { x: width * 0.71, y: height * 0.65 },
 ];
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "atvSecret">;
-
 export default function AtvSecretScreen() {
   const [infoVisible, setInfoVisible] = useState(false);
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
 
   const { user } = useUser();
   const { showAlert } = useCustomAlert();
@@ -118,7 +113,10 @@ export default function AtvSecretScreen() {
     if (response.success) {
       let pontosAtualizados = response.pontosAtualizados ?? 150;
       const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
-      navigation.navigate("score", { score });
+      router.push({
+        pathname: '/screens/phasesscore',
+        params: { score: JSON.stringify(score) },
+      });
     }
     hideLoadingModal();
   }

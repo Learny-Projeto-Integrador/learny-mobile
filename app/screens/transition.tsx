@@ -6,21 +6,20 @@ import {
   View 
 } from 'react-native';
 import React, { useEffect } from 'react';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '@/types';
+import { useRouter } from 'expo-router';
+import { useUser } from '@/contexts/UserContext';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'transition'>;
-
-export default function TransitionScreen({ route, navigation }: Props) {
-  const { name } = route.params;
+export default function TransitionScreen() {
+  const router = useRouter();
+  const { user } = useUser();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.navigate('home')
+      router.push('/home')
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [navigation]);
+  }, []);
 
   return (
     <ImageBackground 
@@ -30,7 +29,7 @@ export default function TransitionScreen({ route, navigation }: Props) {
       >
         <View style={{ marginTop: height * 0.05 }}>
           <Text style={styles.text}>Bem Vindo (a),</Text>
-          <Text style={styles.nameText}>{name}</Text>
+          <Text style={styles.nameText}>{user?.name}</Text>
         </View>
       </ImageBackground>
   );

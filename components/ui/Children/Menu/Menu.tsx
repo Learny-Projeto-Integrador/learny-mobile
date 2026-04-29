@@ -4,18 +4,17 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import { useState } from "react";
 import CustomAlert from "../../CustomAlert";
 import { LinearGradient } from "expo-linear-gradient";
 import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 import { useUser } from "@/contexts/UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
-type Props = {
-  navigation: any;
-}
+export default function Menu() {
+  const router = useRouter();
 
-export default function Menu({navigation}: Props) {
   const [alertVisible, setAlertVisible] = useState(false);
   const { setUser } = useUser();
     
@@ -23,10 +22,7 @@ export default function Menu({navigation}: Props) {
     try {
       setUser(null);
       await AsyncStorage.multiRemove(["user", "token"]);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "index" }],
-      })
+      router.replace("/")
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }
@@ -53,7 +49,7 @@ export default function Menu({navigation}: Props) {
       />
       <View style={styles.containerFilho}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("diary")}
+          onPress={() => router.push("/screens/diary")}
           style={{ flexDirection: "row" }}
         >
           <Image
@@ -71,7 +67,7 @@ export default function Menu({navigation}: Props) {
           />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate("ranking")}
+          onPress={() => router.push("/screens/ranking")}
           style={{ flexDirection: "row" }}
         >
           <Image

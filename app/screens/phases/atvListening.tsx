@@ -8,10 +8,6 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import {
-  useNavigation,
-  NavigationProp,
-} from "@react-navigation/native";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import SoundCard from "@/components/ui/Children/Phases/SoundCard";
 import { useScreenDuration } from "@/hooks/useScreenDuration";
@@ -21,6 +17,7 @@ import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
 import { useCheckHint } from "@/hooks/useCheckHint";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useUser } from "@/contexts/UserContext";
+import { useRouter } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
 
@@ -51,7 +48,7 @@ const sounds: SoundItem[] = [
 const colors = ["#EF5B6A", "#FFB300", "#6CD2FF"];
 
 export default function AtvListeningScreen() {
-  const navigation = useNavigation<NavigationProp<any>>();
+  const router = useRouter();
   const [assignments, setAssignments] = useState<{ [soundId: string]: string }>({});
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
 
@@ -108,7 +105,10 @@ export default function AtvListeningScreen() {
     if (response.success) {
       let pontosAtualizados = response.pontosAtualizados ?? pontos;
       const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
-      navigation.navigate("score", { score });
+      router.push({
+        pathname: '/screens/phasesscore',
+        params: { score: JSON.stringify(score) },
+      });
     }
     hideLoadingModal();
   };

@@ -6,18 +6,14 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
+import { useState } from "react";
 import ContainerEmotion from "@/components/ui/Children/Phases/ContainerEmotion";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
 import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+import { useRouter } from "expo-router";
 
 export default function AtvFeelingScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
   const [infoVisible, setInfoVisible] = useState<boolean>(false);
 
   return (
@@ -67,7 +63,7 @@ export default function AtvFeelingScreen() {
         />
       </View>
       <TouchableOpacity
-        onPress={() => navigation.navigate("atvMatch")}
+        onPress={() => router.push("/screens/atvMatch")}
         style={{
           flexDirection: "row",
           alignItems: "center",

@@ -12,9 +12,7 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList, TokenPayload } from "@/types";
+import type { TokenPayload } from "@/types";
 import { useApi } from "@/hooks/useApi";
 import LoginInput from "@/components/ui/LoginInput";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,11 +21,10 @@ import { useUser } from "@/contexts/UserContext";
 import { jwtDecode } from "jwt-decode";
 import { fontSizes, RH, RW, spacing } from "@/theme";
 import { useProgress } from "@/contexts/ProgressContext";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "index">;
+import { useRouter } from "expo-router";
 
 export default function LoginScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
 
   const { setUser } = useUser();
   const { setProgress } = useProgress();
@@ -100,7 +97,7 @@ export default function LoginScreen() {
         await AsyncStorage.setItem("token", result.access_token);
         getChildData();
         getProgressData();
-        navigation.navigate("transition", { name: decoded.user.name });
+        router.push("/screens/transition");
       } else {
         showAlert({
           icon: require("@/assets/icons/custom-alert/alert.png"),

@@ -8,8 +8,6 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import Svg, { Line } from "react-native-svg";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { CardInfo, Connection, RootStackParamList } from "@/types";
 import AnimalCard from "@/components/ui/Children/Phases/AnimalCard";
 import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
@@ -20,6 +18,7 @@ import { useCheckHint } from "@/hooks/useCheckHint";
 import { animalColors } from "@/constants/dadosFases";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useUser } from "@/contexts/UserContext";
+import { useRouter } from "expo-router";
 
 const cards = [
   { id: "1", title: "monkey", img: require("@/assets/images/phases/connect/animals/monkey.png"), audio: require("@/assets/audios/animals/monkey.wav") },
@@ -34,10 +33,8 @@ const cards = [
 
 const { width, height } = Dimensions.get("window");
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
-
 export default function AtvConnectScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
   const [selected, setSelected] = useState<CardInfo[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [hiddenCardIds, setHiddenCardIds] = useState<Set<string>>(new Set());
@@ -94,7 +91,10 @@ export default function AtvConnectScreen() {
     if (response.success) {
       let pontosAtualizados = response.pontosAtualizados ?? pontos;
       const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
-      navigation.navigate("score", { score });
+      router.push({
+        pathname: '/screens/phasesscore',
+        params: { score: JSON.stringify(score) },
+      });
     }
     hideLoadingModal();
   };

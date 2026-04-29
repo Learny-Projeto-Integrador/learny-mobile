@@ -7,18 +7,14 @@ import {
   Dimensions,
   ScrollView,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
 import ContainerMissoes from "@/components/ui/Children/Menu/ContainerMissoes";
 import ContainerMedalhas from "@/components/ui/Children/ContainerMedalhas";
 import GradientText from "@/components/ui/GradientText";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "diary">;
+import { useRouter } from "expo-router";
 
 export default function DiaryScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
@@ -31,7 +27,7 @@ export default function DiaryScreen() {
         <View style={styles.containerDados}>
             <View style={styles.containerTitle}>
                 <Text style={styles.title}>Diário</Text>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={{flexDirection: "row"}}>
+                <TouchableOpacity onPress={() => router.back()} style={{flexDirection: "row"}}>
                   <Image
                       source={require("@/assets/icons/back.png")}
                       style={styles.iconFechar}

@@ -1,19 +1,13 @@
 import {
   Text,
-  StyleSheet,
   View,
-  Dimensions,
   ImageBackground,
   TouchableOpacity,
   ImageSourcePropType,
 } from "react-native";
 import ProgressBarMundo from "./ProgressBarMundo";
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '@/types';
-import { useNavigation } from "@react-navigation/native";
 import { fontSizes, spacing, RW, RH, RS } from "@/theme";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+import { useRouter } from "expo-router";
 
 type Props = {
   image: ImageSourcePropType;
@@ -26,12 +20,15 @@ type Props = {
 }
 
 export default function WorldCard({ image, name, description, num, progress, color, worldCode } : Props) {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
 
   return (
     <TouchableOpacity
       onPress={() =>
-        num === 1 ? navigation.navigate("world", { worldCode }) : null
+        num === 1 ? router.push({
+          pathname:"world", 
+          params: { worldCode: worldCode }
+        }) : null
       }
       activeOpacity={1}
       style={{

@@ -9,9 +9,6 @@ import {
   ScrollView,
 } from "react-native";
 import { useState, useCallback } from "react";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
 import Header from "@/components/ui/Children/Header";
 import NavigationBar from "@/components/ui/Children/NavigationBar";
 import PodiumCard from "@/components/ui/Children/Ranking/PodiumCard";
@@ -23,11 +20,10 @@ import { useApi } from "@/hooks/useApi";
 import { useUser } from "@/contexts/UserContext";
 import { useCustomAlert } from "@/contexts/AlertContext";
 import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "ranking">;
+import { useRouter } from "expo-router";
 
 export default function RankingScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
   const { user } = useUser();
   const { request } = useApi();
   const { showAlert } = useCustomAlert();
@@ -114,7 +110,7 @@ export default function RankingScreen() {
             <Text style={styles.title}>Ranking</Text>
             <TouchableOpacity
               style={{ flexDirection: "row" }}
-              onPress={() => navigation.goBack()}
+              onPress={() => router.back()}
             >
               <Image
                 source={require("@/assets/icons/back.png")}

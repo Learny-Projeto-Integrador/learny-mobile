@@ -1,30 +1,24 @@
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Image,
-  StyleSheet,
   Dimensions,
   View,
   Text,
   ImageBackground,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
 import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
-type RouteProp = NativeStackScreenProps<RootStackParamList, "scoreFail">;
 
 type ScoreFail = {
   pontos: number;
   tempo: number;
 };
 
-export default function ScoreFailScreen({ route }: RouteProp) {
-  const { score }: { score: ScoreFail } = route.params;
-  const navigation = useNavigation<NavigationProp>();
+export default function ScoreFailScreen() {
+  const { score } = useLocalSearchParams();
+  const parsedScore = JSON.parse(score as string);
+  
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
@@ -55,7 +49,7 @@ export default function ScoreFailScreen({ route }: RouteProp) {
             source={require("@/assets/images/phases/completion-images/points.png")}
             style={styles.containerScore}
           >
-            <Text style={styles.txtScore}>{score.pontos}</Text>
+            <Text style={styles.txtScore}>{parsedScore.pontos}</Text>
           </ImageBackground>
           <ImageBackground
             source={require("@/assets/images/phases/completion-images/time.png")}
@@ -67,12 +61,12 @@ export default function ScoreFailScreen({ route }: RouteProp) {
               },
             ]}
           >
-            <Text style={styles.txtScore}>{score.tempo}</Text>
+            <Text style={styles.txtScore}>{parsedScore.tempo}</Text>
           </ImageBackground>
         </View>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("world")}
+          onPress={() => router.push("/screens/world")}
           style={{
             flexDirection: "row",
             alignItems: "center",

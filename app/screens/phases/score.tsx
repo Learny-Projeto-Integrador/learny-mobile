@@ -1,3 +1,4 @@
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Image,
   StyleSheet,
@@ -7,14 +8,6 @@ import {
   ImageBackground,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "@/types";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
-type RouteProp = NativeStackScreenProps<RootStackParamList, "score">;
 
 type Score = {
   pontosAtualizados: number;
@@ -22,9 +15,11 @@ type Score = {
   tempo: number;
 };
 
-export default function ScoreScreen({ route }: RouteProp) {
-  const { score }: { score: Score } = route.params;
-  const navigation = useNavigation<NavigationProp>();
+export default function ScoreScreen() {
+  const { score } = useLocalSearchParams();
+  const parsedScore = JSON.parse(score as string);
+
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
@@ -68,7 +63,7 @@ export default function ScoreScreen({ route }: RouteProp) {
             source={require("@/assets/images/phases/completion-images/points.png")}
             style={styles.containerScore}
           >
-            <Text style={styles.txtScore}>{score.pontosAtualizados}</Text>
+            <Text style={styles.txtScore}>{parsedScore.pontosAtualizados}</Text>
           </ImageBackground>
           <ImageBackground
             source={require("@/assets/images/phases/completion-images/percentage.png")}
@@ -80,7 +75,7 @@ export default function ScoreScreen({ route }: RouteProp) {
               },
             ]}
           >
-            <Text style={styles.txtScore}>{score.porcentagem}%</Text>
+            <Text style={styles.txtScore}>{parsedScore.porcentagem}%</Text>
           </ImageBackground>
         </View>
 
@@ -102,12 +97,12 @@ export default function ScoreScreen({ route }: RouteProp) {
               },
             ]}
           >
-            <Text style={styles.txtScore}>{score.tempo}</Text>
+            <Text style={styles.txtScore}>{parsedScore.tempo}</Text>
           </ImageBackground>
         </View>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("world")}
+          onPress={() => router.push("/screens/world")}
           style={{
             flexDirection: "row",
             alignItems: "center",

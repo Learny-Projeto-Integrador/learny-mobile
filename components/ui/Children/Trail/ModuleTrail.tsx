@@ -1,11 +1,8 @@
 import { View, Image, TouchableOpacity, Text } from "react-native";
 import { fontSizes, RH, RW } from "@/theme";
-import { Phase, RootStackParamList, RoutesWithoutParams } from "@/types";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
+import { Phase } from "@/types";
 import PhaseCircle from "./PhaseCircle";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+import { useRouter } from "expo-router";
 
 interface Props {
   phases: Phase[];
@@ -17,11 +14,11 @@ interface Props {
   variant?: "right" | "left"; // 🔥 NOVO
 }
 
-const phasesScreens: RoutesWithoutParams[] = [
-  "atvConnect",
-  "atvMemory",
-  "atvFeeling",
-  "atvBoss",
+const phasesScreens = [
+  "/screens/phases/atvConnect",
+  "/screens/phases/atvMemory",
+  "/screens/phases/atvFeeling",
+  "/screens/phases/atvBoss",
 ];
 
 export default function ModuleTrail({
@@ -33,7 +30,7 @@ export default function ModuleTrail({
   colorTheme,
   variant = "right", // padrão
 }: Props) {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
 
   const bossImage = bossIcon || require("@/assets/images/trail/bosses/boss.png");
 
@@ -52,7 +49,7 @@ export default function ModuleTrail({
     const route = phasesScreens[index];
     if (!route) return;
 
-    navigation.navigate(route);
+    router.push(route);
   };
 
   // 🔹 alinhamento (arco)
