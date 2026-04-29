@@ -48,12 +48,11 @@ export default function ProfileChildrenScreen() {
   const atualizarAudio = async (novoValor: boolean) => {
     showLoadingModal();
     const result = await request({
-      endpoint: "/criancas",
+      endpoint: "/child",
       method: "PUT",
       body: { 
         audio: novoValor,
-      },
-      navigation,
+      }
     })
     
     if (result && !result.error) {

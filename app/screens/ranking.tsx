@@ -39,8 +39,7 @@ export default function RankingScreen() {
     showLoadingModal();
 
     const result = await request({
-      endpoint: "/criancas/ranking",
-      navigation,
+      endpoint: "/criancas/ranking"
     });
 
     if (result && !result.error) {

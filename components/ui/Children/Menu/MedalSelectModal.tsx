@@ -39,8 +39,7 @@ export default function MedalSelectModal({
       method: "PUT",
       body: { 
         medalhaSelecionada: medalha
-      },
-      navigation,
+      }
     })
 
     if (result && !result.error) {
