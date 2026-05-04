@@ -2,7 +2,7 @@ import { Text } from "react-native";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 
-type Props = {
+interface Props {
   style: any;
   children: any;
   color1: string;

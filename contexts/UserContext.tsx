@@ -1,10 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList, User } from "@/types";
+import type { User } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "world">;
+import { useRouter } from "expo-router";
+import { useApi } from "@/hooks/useApi";
+import { useCustomAlert } from "./AlertContext";
 
 type UserContextType = {
   user: User | null;
@@ -15,7 +14,8 @@ type UserContextType = {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
+
   const [user, setUser] = useState<User | null>(null);
 
   // 🔁 Recupera usuário salvo ao iniciar
@@ -56,10 +56,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     try {
       setUser(null);
       await AsyncStorage.multiRemove(["user", "token"]);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "index" as never }],
-      });
+      router.replace("/");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }

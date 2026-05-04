@@ -1,88 +1,114 @@
 import {
   Image,
+  ImageBackground,
   Text,
-  StyleSheet,
   TouchableOpacity,
   View,
-  Dimensions,
-  ScrollView,
 } from "react-native";
-import NavigationBar from "@/components/ui/Children/NavigationBar";
-import ContainerMissoes from "@/components/ui/Children/Menu/ContainerMissoes";
-import Menu from "@/components/ui/Children/Menu/Menu";
 import { useRouter } from "expo-router";
+import Container from "@/components/ui/Container";
+import { RF, RS, RW } from "@/theme";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function MenuScreen() {
   const router = useRouter();
-  
+
+  /** Listagem dos botões do menu */
+  const buttons = [
+    {
+      route: "/screens/diary",
+      icon: require("@/assets/icons/menu/diary.png")
+    },
+    {
+      route: "/screens/profile",
+      icon: require("@/assets/icons/menu/profile.png")
+    },
+    {
+      route: "/screens/ranking",
+      icon: require("@/assets/icons/menu/ranking.png")
+    }
+  ]
+
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        <View style={{flexDirection: "row"}}>
-          <Image
-            source={require("@/assets/images/top-gradient.png")}
-          style={styles.fundoGradiente}/>
+    <Container 
+      topImage={require("@/assets/images/top-gradient.png")}
+      hasHeader={false}
+    >
+      <View style={{ paddingHorizontal: RS(40), gap: RS(50) }}>
+        {/* Título e botão de fechar */}
+        <View 
+          className="flex-row items-center justify-center"
+          style={{ marginHorizontal: RW(20) }}
+        >
+          <Text
+            className="font-montserratBold"
+            style={{ color:"#4C4C4C", fontSize: RF(30)}}
+          >
+            Atalhos
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={{ position: "absolute", right: 0 }}
+          >
+            <Image
+              source={require("@/assets/icons/close.png")}
+              style={{ width: RW(30), height: RW(30) }}
+            />
+          </TouchableOpacity>
         </View>
-        <View style={styles.containerDados}>
-            <View style={styles.containerTitle}>
-                <Text style={styles.title}>Atalhos</Text>
-                <TouchableOpacity onPress={() => router.back()} style={{flexDirection: "row"}}>
-                  <Image
-                      source={require("@/assets/icons/close.png")}
-                      style={styles.iconFechar}
-                      />
-                </TouchableOpacity>
+
+        {/* Botões do menu */}
+        <LinearGradient
+          colors={['#b25563', '#669bbb']}
+          className="flex-row justify-between items-center w-full"
+          style={{ padding: RS(30), borderRadius: 50 }}
+        >
+          {buttons.map((button, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => router.push(button.route)}
+              style={{ flexDirection: "row" }}
+            >
+              <Image
+                source={button.icon}
+                style={{ width: RW(60), height: RW(60) }}
+              />
+            </TouchableOpacity>
+          ))}
+        </LinearGradient>
+
+        {/* Quadro de missões Diárias */}
+        <ImageBackground
+            source={require("@/assets/images/shadow-rectangles/daily-missions.png")}
+            className="flex items-center"
+            style={{
+              aspectRatio: 356 / 399,
+              paddingVertical: RS(40)
+            }}
+          >
+            <Text 
+              className="font-montserratBold text-center"
+              style={{
+                color: "#b5b5b5",
+                fontSize: RW(20),
+              }}
+            >
+                Missões Diárias
+            </Text>
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <Image 
+                source={require("@/assets/images/missions/daily/one-phase.png")} 
+                style={{
+                  width: RW(250),
+                  aspectRatio: 378 / 103,
+                  marginTop: RS(20),
+                }} 
+              />
             </View>
-            <Menu />
-            <ContainerMissoes />
-            <View style={{width: "100%", height: 100}}/>
-        </View>
-      </ScrollView>
-      <View style={styles.navigationBarWrapper}>
-        <NavigationBar />
+        </ImageBackground>
+
       </View>
-    </View>
+    </Container>
   );
 }
-
-const { width, height } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff", // fundo cinza
-  },
-  fundoGradiente: {
-    width: "100%",
-    aspectRatio: 390/124
-  },
-  containerDados: {
-    width: "100%",
-    height: "100%",
-    paddingHorizontal: width * 0.08,
-    gap: height * 0.04,
-  },
-  navigationBarWrapper: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: height * 0.07,
-    backgroundColor: "transparent",
-  },
-  containerTitle: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: width * 0.12,
-    paddingLeft: width * 0.28,
-  },
-  title: {
-    color: "#4C4C4C",
-    fontFamily: "Montserrat_700Bold",
-    fontSize: width * 0.07,
-  },
-  iconFechar: {
-    width: width * 0.07,
-    aspectRatio: 1 / 1
-  },
-});

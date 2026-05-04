@@ -16,20 +16,47 @@ export interface User {
   rankingActive: boolean;
 };
 
-export interface Phase {
+export type Phase = {
   code: string;
-  completed: boolean;
   name: string;
   order: number;
-  type: "common" | "boss";
-}
+  type: string;
+  completed: boolean;
+};
 
-export interface World{
+export type Module = {
+  code: string;
+  name: string;
+  order: number;
+  phases: Phase[];
+};
+
+export type World = {
+  code: string;
+  name: string;
+  modules: Module[];
+};
+
+export interface WorldInfoCatalog{
   code: string;
   name: string;
   description: string;
+  color: string;
   order: number;
-  phases: Array<Phase>
+  picture: string;
+}
+
+export interface ProgressWorld {
+  worldCode: string;
+  percentage: number;
+  completedPhases: Array<string>;
+  unlocked: boolean;
+}
+
+export interface WorldWithProgress extends WorldInfoCatalog {
+  progress: number;
+  unlocked: boolean;
+  completedPhases: Array<string>;
 }
 
 export interface MedalUnlocked {
@@ -38,12 +65,6 @@ export interface MedalUnlocked {
   selected: boolean;
 };
 
-export interface WorldProgress {
-  worldCode: string;
-  percentage: number;
-  completedPhases: Array<string>;
-  unlocked: boolean;
-}
 
 export interface MissionProgress {
     missionId: string;
@@ -57,30 +78,10 @@ export interface Progress {
   completedPhases: number;
   ranking: number;
   selectedMedal: string;
-  worlds: Array<WorldProgress>;
+  worlds: Array<ProgressWorld>;
   dailyMissions: Array<MissionProgress>;
   medals: Array<MedalUnlocked>;
 }
-
-export type AlertProps = {
-  icon: any;
-  visible?: boolean;
-  title: string;
-  message: string;
-  dualAction?: boolean;
-  closeLabel?: string;
-  redirectLabel?: string;
-  onClose?: () => void;
-  onRedirect?: () => void;
-};
-
-export type AlertData = AlertProps & {
-  score?: {
-    pontos: number;
-    porcentagem: number;
-    tempo: string;
-  };
-};
 
 export type CardInfo = {
   id: string;

@@ -6,7 +6,7 @@ import React, { useRef, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ScaledSheet, scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
-type Props = {
+interface Props {
   value: boolean;
   onToggle?: (value: boolean) => void;
 }

@@ -1,21 +1,31 @@
 import { 
   ImageBackground, 
   Text, 
-  StyleSheet, 
-  Dimensions, 
   View 
 } from 'react-native';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { useUser } from '@/contexts/UserContext';
+import { RF, RS } from "@/theme";
 
+/**
+ * Página de transição do login
+ *
+ * Responsável por:
+ * - Exibir uma tela de boas-vindas personalizada após o login, antes de redirecionar para a home
+ */
 export default function TransitionScreen() {
   const router = useRouter();
+
+  /** Contexto do usuário */
   const { user } = useUser();
 
+  /**
+   * Efeito para redirecionar automaticamente para a home após 2 segundos
+   */
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.push('/home')
+      router.push('/screens/home')
     }, 2000);
 
     return () => clearTimeout(timer);
@@ -25,32 +35,23 @@ export default function TransitionScreen() {
     <ImageBackground 
       source={require('@/assets/images/transition-background.png')} 
       resizeMode="cover" 
-      style={styles.container}
+      className='flex-1 justify-center'
+      style={{ paddingLeft: RS(24) }}
       >
-        <View style={{ marginTop: height * 0.05 }}>
-          <Text style={styles.text}>Bem Vindo (a),</Text>
-          <Text style={styles.nameText}>{user?.name}</Text>
+        <View style={{ marginTop: RS(16) }}>
+          <Text 
+            className="text-white font-montserratRegular"
+            style={{ fontSize: RF(30) }}
+          >
+            Bem Vindo (a),
+          </Text>
+          <Text 
+            className="text-white font-montserratBold"
+            style={{ fontSize: RF(36) }}
+          >
+            {user?.name}
+          </Text>
         </View>
       </ImageBackground>
   );
 }
-
-const { width, height } = Dimensions.get('window');
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingLeft: width * 0.08,
-  },
-  text: {
-    fontSize: width * 0.08,
-    color: '#fff',
-    fontFamily: 'Montserrat_400Regular'
-  },
-  nameText: {
-    color: '#fff',
-    fontSize: width * 0.12,
-    fontFamily: 'Montserrat_700Bold'
-  },
-});

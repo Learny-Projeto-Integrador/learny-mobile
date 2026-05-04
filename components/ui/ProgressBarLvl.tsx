@@ -1,106 +1,68 @@
-import {
-  View,
-  Text,
-  Animated,
-  Image,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
-import React, { useState, useEffect } from "react";
+import { View, Text, Animated } from "react-native";
+import { useState, useEffect } from "react";
 import { LinearGradient } from "expo-linear-gradient";
+import { RF, RH, RW } from "@/theme";
 
-type Props = {
-  pontos: string;
-  progresso: number;
+interface Props {
+  points: string;
+  progress: number;
 }
 
-const ProgressBarLvl = ({ pontos, progresso }: Props) => {
+export default function ProgressBarLvl({ points, progress }: Props) {
   const [widthAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
     Animated.timing(widthAnim, {
-      toValue: progresso,
-      duration: 500, // Duração da animação
+      toValue: progress,
+      duration: 500,
       useNativeDriver: false,
     }).start();
-  }, [progresso]);
+  }, [progress]);
 
   return (
     <LinearGradient
-        colors={['#b25563', '#669bbb']}
-        style={styles.container}
+      colors={["#b25563", "#669bbb"]}
+      className="w-full flex-row items-center bg-white overflow-hidden"
+      style={{ height: RH(46), borderRadius: 10 }}
+    >
+      <View
+        className="h-full items-center justify-center bg-[#4c4c4c]"
+        style={{ width: RW(70), borderRadius: 5 }}
       >
-      <View style={styles.containerNumProgresso}>
-        <Text style={styles.txtProgresso}>exp: {pontos}</Text>
+        <Text
+          className="font-montserratBold text-white"
+          style={{ fontSize: RF(18) }}
+        >
+          exp: {points}
+        </Text>
       </View>
-      <View style={styles.outerBar}>
+      <View
+        className="w-full overflow-hidden justify-center bg-white"
+        style={{
+          height: RH(35),
+          marginRight: RW(5),
+          borderTopRightRadius: 5,
+          borderBottomRightRadius: 5,
+        }}
+      >
         <Animated.View
-          style={[
-            styles.innerBar,
-            {
-              width: widthAnim.interpolate({
-                inputRange: [0, 100],
-                outputRange: ["0%", "100%"],
-              }),
-            },
-          ]}
+          className="h-full items-center justify-center"
+          style={{
+            width: widthAnim.interpolate({
+              inputRange: [0, 100],
+              outputRange: ["0%", "100%"],
+            }),
+            borderRadius: 10,
+          }}
         >
           <LinearGradient
-            colors={['#b25563', '#669bbb']}
+            colors={["#b25563", "#669bbb"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={styles.gradientImage}
+            style={{ width: "100%", height: RH(20) }}
           />
         </Animated.View>
       </View>
     </LinearGradient>
   );
-};
-
-const { width, height } = Dimensions.get('window');
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#fff",
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    height: height * 0.045,
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  containerNumProgresso: {
-    width: width * 0.16, 
-    height: "100%",
-    backgroundColor: "#4C4C4C",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 5,
-  },
-  txtProgresso: {
-    color: "#fff",
-    fontSize: width * 0.025,
-    fontFamily: 'Montserrat_700Bold',
-  },
-  outerBar: {
-    backgroundColor: "#fff",
-    width: width * 0.67,
-    height: height * 0.035,
-    overflow: "hidden",
-    justifyContent: "center",
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
-  },
-  innerBar: {
-    height: "100%",
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  gradientImage: {
-    width: "100%",
-    height: height * 0.028,
-  },
-});
-
-export default ProgressBarLvl;
+}

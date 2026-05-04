@@ -1,5 +1,5 @@
 import { View, Image, TouchableOpacity, Text } from "react-native";
-import { fontSizes, RH, RW } from "@/theme";
+import { RW, RH, RF } from "@/theme";
 import { Phase } from "@/types";
 import PhaseCircle from "./PhaseCircle";
 import { useRouter } from "expo-router";
@@ -11,7 +11,7 @@ interface Props {
   illustration: any;
   bossIcon: any;
   colorTheme?: string;
-  variant?: "right" | "left"; // 🔥 NOVO
+  variant?: "right" | "left";
 }
 
 const phasesScreens = [
@@ -63,7 +63,7 @@ export default function ModuleTrail({
   // 🔹 margens (fake arco)
   const getMarginHorizontal = (index: number) => {
     const marginsLeft = [RW(80), RW(40), RW(80), 30];
-    const marginsRight = [RW(70), RW(30), RW(70), 0];
+    const marginsRight = [RW(80), RW(30), RW(80), 0];
 
     if (isLeft) {
       return { marginLeft: marginsLeft[index] || 0 };
@@ -112,8 +112,8 @@ export default function ModuleTrail({
                   <Image
                     source={bossImage}
                     style={{
-                      width: RW(90),
-                      height: RW(90),
+                      width: RW(80),
+                      height: RW(80),
                       opacity: 1,
                     }}
                     resizeMode="contain"
@@ -167,7 +167,7 @@ export default function ModuleTrail({
             style={{
               color: "#fff",
               fontFamily: "Montserrat-Bold",
-              fontSize: fontSizes.md,
+              fontSize: RF(16),
               fontWeight: "bold",
             }}
           >

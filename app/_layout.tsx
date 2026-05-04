@@ -45,14 +45,14 @@ export default function RootLayout() {
   if (!loaded) return null;
 
   return (
-    <UserProvider>
-      <ProgressProvider>
-        <AlertProvider>
-          <LoadingProvider>
-            <Stack screenOptions={{ headerShown: false }} />
-          </LoadingProvider>
-        </AlertProvider>
-      </ProgressProvider>
-    </UserProvider>
+    <LoadingProvider>
+      <AlertProvider>
+        <UserProvider>
+          <ProgressProvider>
+              <Stack screenOptions={{ headerShown: false }} />
+          </ProgressProvider>
+        </UserProvider>
+      </AlertProvider>
+    </LoadingProvider>
   );
 }

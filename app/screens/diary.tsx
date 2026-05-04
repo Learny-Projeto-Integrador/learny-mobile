@@ -1,95 +1,53 @@
-import {
-  Image,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Dimensions,
-  ScrollView,
-} from "react-native";
-import NavigationBar from "@/components/ui/Children/NavigationBar";
-import ContainerMissoes from "@/components/ui/Children/Menu/ContainerMissoes";
-import ContainerMedalhas from "@/components/ui/Children/ContainerMedalhas";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import GradientText from "@/components/ui/GradientText";
 import { useRouter } from "expo-router";
+import Container from "@/components/ui/Container";
+import { RF, RH, RS, RW } from "@/theme";
 
 export default function DiaryScreen() {
   const router = useRouter();
 
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        <View style={{flexDirection: "row"}}>
-          <Image
-            source={require("@/assets/images/top-gradient.png")}
-          style={styles.fundoGradiente}/>
+    <Container
+      topImage={require("@/assets/images/top-gradient.png")}
+      hasHeader={false}
+    >
+      <View style={{ paddingHorizontal: RS(40), gap: RS(30) }}>
+        {/* Título e botão de fechar */}
+        <View 
+          className="flex-row items-center justify-center"
+          style={{ marginHorizontal: RW(20) }}
+        >
+          <Text
+            className="font-montserratBold"
+            style={{ color:"#4C4C4C", fontSize: RF(30)}}
+          >
+            Diário
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={{ position: "absolute", right: 0 }}
+          >
+            <Image
+              source={require("@/assets/icons/back.png")}
+              style={{ width: RW(30), height: RW(30) }}
+            />
+          </TouchableOpacity>
         </View>
-        <View style={styles.containerDados}>
-            <View style={styles.containerTitle}>
-                <Text style={styles.title}>Diário</Text>
-                <TouchableOpacity onPress={() => router.back()} style={{flexDirection: "row"}}>
-                  <Image
-                      source={require("@/assets/icons/back.png")}
-                      style={styles.iconFechar}
-                      />
-                </TouchableOpacity>
-            </View>
-            <ContainerMissoes />
-            <ContainerMedalhas />
-            <GradientText color1="#946274" color2="#5c94b3" style={styles.txtMissoesConcluidas}>Missões Concluídas</GradientText>
-            <View style={{width: "100%", height: 100}}/>
-        </View>
-      </ScrollView>
-      <View style={styles.navigationBarWrapper}>
-        <NavigationBar />
+
+        {/* <GradientText
+          color1="#946274"
+          color2="#5c94b3"
+          style={{
+            fontFamily: "Montserrat_700Bold",
+            fontSize: RF(30),
+            textAlign: "center",
+          }}
+        >
+          Missões Concluídas
+        </GradientText> */}
       </View>
-    </View>
+    </Container>
   );
 }
-
-const { width, height } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff", // fundo cinza
-  },
-  fundoGradiente: {
-    width: "100%",
-    aspectRatio: 390/124
-  },
-  containerDados: {
-    width: "100%",
-    height: "100%",
-    paddingHorizontal: width * 0.08,
-    gap: height * 0.04,
-  },
-  navigationBarWrapper: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: height * 0.07,
-    backgroundColor: "transparent",
-  },
-  containerTitle: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: width * 0.12,
-    paddingLeft: width * 0.28,
-  },
-  title: {
-    color: "#4C4C4C",
-    fontFamily: "Montserrat_700Bold",
-    fontSize: width * 0.07,
-  },
-  iconFechar: {
-    width: width * 0.07,
-    aspectRatio: 1 / 1
-  },
-  txtMissoesConcluidas: {
-    fontFamily: "Montserrat_700Bold",
-    fontSize: width * 0.055,
-    textAlign: "center",
-  }
-});

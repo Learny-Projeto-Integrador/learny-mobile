@@ -19,22 +19,35 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCustomAlert } from "@/contexts/AlertContext";
 import { useUser } from "@/contexts/UserContext";
 import { jwtDecode } from "jwt-decode";
-import { fontSizes, RH, RW, spacing } from "@/theme";
+import { RW, RH, RF, RS } from "@/theme";
 import { useProgress } from "@/contexts/ProgressContext";
 import { useRouter } from "expo-router";
 
+/**
+ * Página inicial da aplicação (Login)
+ *
+ * Responsável por:
+ * - Login do usuário
+ */
 export default function LoginScreen() {
   const router = useRouter();
 
-  const { setUser } = useUser();
-  const { setProgress } = useProgress();
+  /** Hook de comunicação com a API */
   const { loading, request } = useApi();
+
+  /** Contextos */
+  const { setUser } = useUser();
+  const { getProgress } = useProgress();
   const { showAlert } = useCustomAlert();
 
+  /** Estados */
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const getChildData = async () => {
+  /**
+   * Busca dados completos da criança para armazenar no contexto
+   */
+  const getUserData = async () => {
     const result = await request({
       endpoint: "/child",
       method: "GET",
@@ -58,31 +71,9 @@ export default function LoginScreen() {
     }
   };
 
-  const getProgressData = async () => {
-    const result = await request({
-      endpoint: "/child/progress",
-      method: "GET",
-    });
-
-    if (result && !result.error) { 
-      setProgress({
-        points: result.points,
-        completedPhases: result.completedPhases,
-        ranking: result.ranking,
-        selectedMedal: result.selectedMedal,
-        worlds: result.worlds,
-        dailyMissions: result.dailyMissions,
-        medals: result.medals
-      });
-    } else {
-      showAlert({
-        icon: require("@/assets/icons/custom-alert/alert.png"),
-        title: "Erro ao carregar progresso!",
-        message: result.message || "Erro ao carregar informações de progresso do usuário",
-      });
-    }
-  };
-
+  /**
+   * Envia requisição de login para a API
+   */
   const handleLogin = async () => {
     const result = await request({
       endpoint: "/auth/login",
@@ -95,8 +86,8 @@ export default function LoginScreen() {
 
       if (decoded.user.type === "child") {
         await AsyncStorage.setItem("token", result.access_token);
-        getChildData();
-        getProgressData();
+        getUserData();
+        getProgress();
         router.push("/screens/transition");
       } else {
         showAlert({
@@ -131,8 +122,8 @@ export default function LoginScreen() {
           <ScrollView
             contentContainerClassName="flex-1 items-center justify-center"
             contentContainerStyle={{
-              paddingHorizontal: spacing.lg,
-              gap: spacing.lg,
+              paddingHorizontal: RS(24),
+              gap: RS(24),
             }}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
@@ -140,8 +131,8 @@ export default function LoginScreen() {
             {/* Logo */}
             <Image
               style={{
-                width: RW(120),
-                height: RW(120),
+                width: RW(110),
+                height: RW(110),
               }}
               source={require("@/assets/images/logo.png")}
               resizeMode="contain"
@@ -151,13 +142,13 @@ export default function LoginScreen() {
             <View className="w-5/6 items-center gap-4">
               <Text 
                 className="text-white font-montserratBold text-center"
-                style={{ fontSize: fontSizes.xl }}
+                style={{ fontSize: RF(22) }}
               >
                 Entre em sua conta Learny
               </Text>
               <Text 
                 className="text-white font-montserratRegular text-center"
-                style={{ fontSize: fontSizes.lg }}
+                style={{ fontSize: RF(20) }}
               >
                 Faça login com suas informações de cadastro
               </Text>
@@ -188,7 +179,7 @@ export default function LoginScreen() {
                 ) : (
                   <Text 
                     className="text-[#547d98] font-montserratBold"
-                    style={{ fontSize: fontSizes.md }}
+                    style={{ fontSize: RF(18) }}
                   >
                     Entrar
                   </Text>

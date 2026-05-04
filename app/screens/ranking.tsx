@@ -2,220 +2,167 @@ import {
   ImageBackground,
   Image,
   Text,
-  StyleSheet,
   TouchableOpacity,
   View,
-  Dimensions,
-  ScrollView,
 } from "react-native";
 import { useState, useCallback } from "react";
-import Header from "@/components/ui/Children/Header";
-import NavigationBar from "@/components/ui/Children/NavigationBar";
-import PodiumCard from "@/components/ui/Children/Ranking/PodiumCard";
-import OtherRanking from "@/components/ui/Children/Ranking/OtherRanking";
+import PodiumCard from "@/components/ui/Ranking/PodiumCard";
+import OtherRanking from "@/components/ui/Ranking/OtherRanking";
 import { useFocusEffect } from "@react-navigation/native";
-import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
-import { useLoading } from "@/contexts/LoadingContext";
 import { useApi } from "@/hooks/useApi";
-import { useUser } from "@/contexts/UserContext";
 import { useCustomAlert } from "@/contexts/AlertContext";
-import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
 import { useRouter } from "expo-router";
+import Container from "@/components/ui/Container";
+import { RF, RH, RS, RW } from "@/theme";
+import ModalInfo from "@/components/ui/ModalInfo";
 
 export default function RankingScreen() {
   const router = useRouter();
-  const { user } = useUser();
+
+  /** Hook de comunicação com a API */
   const { request } = useApi();
+
+  /** Contexto de alertas */
   const { showAlert } = useCustomAlert();
-  const { showLoadingModal, hideLoadingModal } = useLoading();
+
+  /** Estados */
   const [ranking, setRanking] = useState([{}]);
   const [infoVisible, setInfoVisible] = useState(false);
 
+  
+  /**
+   * Carrega o ranking das crianças
+   */
   const loadRanking = async () => {
-    showLoadingModal();
-
     const result = await request({
-      endpoint: "/criancas/ranking"
+      endpoint: "/children/ranking",
     });
 
     if (result && !result.error) {
       setRanking(result);
     } else {
-      if (result.status != 401) {
-        showAlert({
-          icon: require("@/assets/icons/custom-alert/alert.png"),
-          title: "Erro ao buscar ranking!",
-          message: result.message,
-          dualAction: true,
-          closeLabel: "OK",
-          redirectLabel: "Tentar Novamente",
-          onRedirect: () => loadRanking()
-        });
-        hideLoadingModal();
-        return null;
-      }
+      showAlert({
+        icon: require("@/assets/icons/custom-alert/alert.png"),
+        title: "Erro ao buscar ranking!",
+        message: result.message,
+        dualAction: true,
+        closeLabel: "OK",
+        redirectLabel: "Tentar Novamente",
+        onRedirect: () => loadRanking(),
+      });
     }
-    
-    hideLoadingModal();
   };
 
+  /**
+   * Efeito para carregar o ranking toda vez que a tela for focada
+   */
   useFocusEffect(
     useCallback(() => {
       loadRanking();
-    }, [])
+    }, []),
   );
 
+  /** Processa items do ranking e divide entre pódio e outros utilizando slice */
   const podiumItems = [...ranking.slice(0, 3)];
+  const otherItems = [...ranking.slice(3, 7)];
+
   while (podiumItems.length < 3) {
     podiumItems.push({});
   }
-
-  const otherItems= [...ranking.slice(3, 7)];
   while (otherItems.length < 4) {
     otherItems.push({});
   }
 
   return (
-    <View style={styles.container}>
-      <ContainerInfo
-        message={
-          "Esse é o ranking. Aqui você entrontra as crianças com a melhor pontuação do 1° ao 7° colocados. Os integrantes do pódios tem um cardespecias, mostrando a foto. Se você ainda não está aqui não fique triste, uma hora você consegue!"
-        }
+    <Container
+      topImage={require("@/assets/images/top-blue.png")}
+      spaceBottom={false}
+    >
+      {/* Modal de Informações */}
+      <ModalInfo
         visible={infoVisible}
         onClose={() => setInfoVisible(false)}
+        title="Informações"
+        message="Veja a classificação dos participantes com base nos pontos acumulados. Fique atento para subir na classificação e conquistar prêmios incríveis!"
       />
-      <ScrollView>
-        <View style={{ flexDirection: "row" }}>
-          <Image
-            source={require("@/assets/images/top-blue.png")}
-            style={styles.fundoAzul}
-          />
-        </View>
-        <View style={styles.containerDados}>
-          {/* <Header
-            pontos={0}
-            medalhas={0}
-            ranking={0}
-          /> */}
-          <View style={styles.containerTitle}>
-            <TouchableOpacity
-              style={{ flexDirection: "row" }}
-              onPress={() => setInfoVisible(true)}
-            >
-              <Image
-                source={require("@/assets/icons/phases/info.png")}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-            <Text style={styles.title}>Ranking</Text>
-            <TouchableOpacity
-              style={{ flexDirection: "row" }}
-              onPress={() => router.back()}
-            >
-              <Image
-                source={require("@/assets/icons/back.png")}
-                style={[styles.icon, { width: scale(24) }]}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={{ gap: verticalScale(26) }}>
-            {podiumItems.map((item: any, index: any) => (
-              <PodiumCard
-                key={item?.id || `empty-${index}`}
-                image={item?.foto?.toString() || ""}
-                name={item?.nome?.toString() || ""}
-                rank={index + 1}
-                points={item?.pontos !== undefined ? item.pontos.toString() : ""}
-              />
-            ))}
-          </View>
 
-          <ImageBackground
-            source={require("@/assets/images/ranking/planet.png")}
-            style={{
-              width: "100%",
-              height: height * 0.5,
-              alignItems: "center",
-              marginBottom: -height * 0.035,
-            }}
+      <View
+        className="relative items-center"
+        style={{ gap: RS(30), paddingHorizontal: RW(60), marginTop: -RS(10) }}
+      >
+        {/* Título da tela, botão de informações e voltar */}
+        <View className="flex-row w-full items-center justify-between">
+          <TouchableOpacity onPress={() => setInfoVisible(true)}>
+            <Image
+              source={require("@/assets/icons/phases/info.png")}
+              style={{ width: RW(20), height: RW(20) }}
+            />
+          </TouchableOpacity>
+
+          <Text
+            className="font-montserratBold"
+            style={{ color: "#4C4C4C", fontSize: RF(26) }}
           >
-            <View
-              style={{
-                backgroundColor: "rgba(0,0,0,0.35)",
-                width: width * 0.74,
-                marginTop: height * 0.02,
-                borderRadius: scale(20),
-                alignItems: "center",
-                justifyContent: "center",
-                gap: scale(10),
-                paddingVertical: height * 0.04,
-              }}
-            >
-              {otherItems.map((item: any, index: any) => (
-                <OtherRanking
-                  key={item?.id || `empty-other-${index}`}
-                  name={item?.nome?.toString() || ""}
-                  rank={(index + 4).toString()}
-                  points={item?.pontos !== undefined ? item.pontos.toString() : ""}
-                />
-              ))}
-            </View>
-          </ImageBackground>
+            Ranking
+          </Text>
+
+          <TouchableOpacity
+            style={{ flexDirection: "row" }}
+            onPress={() => router.back()}
+          >
+            <Image
+              source={require("@/assets/icons/back.png")}
+              style={{ width: RW(24), height: RW(24) }}
+            />
+          </TouchableOpacity>
         </View>
-      </ScrollView>
-      <View style={styles.navigationBarWrapper}>
-        <NavigationBar />
+
+        {/* Cards do pódio */}
+        <View style={{ gap: RS(20) }}>
+          {podiumItems.map((item: any, index: any) => (
+            <PodiumCard
+              key={item?.id || `empty-${index}`}
+              image={item?.profilePicture?.toString() || ""}
+              name={item?.name?.toString() || ""}
+              rank={index + 1}
+              points={item?.points !== undefined ? item.points.toString() : ""}
+            />
+          ))}
+        </View>
+
+        {/* Outros colocados do ranking */}
+        <View
+          className="items-center justify-center"
+          style={{
+            backgroundColor: "rgba(0,0,0,0.35)",
+            width: RW(300),
+            borderRadius: 20,
+            gap: RS(10),
+            paddingVertical: RS(20),
+            marginBottom: RH(90),
+          }}
+        >
+          {otherItems.map((item: any, index: any) => (
+            <OtherRanking
+              key={item?.id || `empty-other-${index}`}
+              name={item?.name?.toString() || ""}
+              rank={(index + 4).toString()}
+              points={item?.points !== undefined ? item.points.toString() : ""}
+            />
+          ))}
+        </View>
+
+        {/* Fundo decorativo do ranking (planeta) */}
+        <ImageBackground
+          source={require("@/assets/images/ranking/planet.png")}
+          className="absolute bottom-0"
+          style={{
+            width: RW(400),
+            height: RH(300),
+            zIndex: -1,
+          }}
+        />
       </View>
-    </View>
+    </Container>
   );
 }
-
-const { width, height } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff", // fundo cinza
-  },
-  fundoAzul: {
-    width: "100%",
-    aspectRatio: 390 / 124,
-  },
-  containerDados: {
-    width: "100%",
-    height: "100%",
-    alignItems: "center",
-    top: -height * 0.08,
-    gap: height * 0.04,
-  },
-  containerTitle: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: width * 0.12,
-    paddingLeft: width * 0.05,
-  },
-  title: {
-    color: "#4C4C4C",
-    fontFamily: "Montserrat_700Bold",
-    fontSize: width * 0.06,
-  },
-  icon: {
-    width: width * 0.06,
-    aspectRatio: 1 / 1,
-  },
-  navigationBarWrapper: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: height * 0.07,
-    backgroundColor: "transparent",
-  },
-  fundoMedalha: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    width: width * 0.17,
-    aspectRatio: 1 / 1,
-  },
-});

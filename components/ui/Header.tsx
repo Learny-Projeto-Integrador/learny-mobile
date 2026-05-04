@@ -1,7 +1,7 @@
 import { ImageBackground, Image, Text, View } from "react-native";
-import { fontSizes, spacing, RW } from "@/theme";
+import { RW, RF, RS } from "@/theme";
 
-type Props = {
+interface Props {
   points: number;
   medals: number;
   ranking: number | string;
@@ -17,12 +17,12 @@ export default function Header({ points, medals, ranking }: Props) {
     {
       icon: require("@/assets/icons/header/coins.png"),
       value: medals,
-      aspect: 43 / 49,
+      aspect: 39 / 36,
     },
     {
       icon: require("@/assets/icons/header/points.png"),
       value: ranking,
-      aspect: 38 / 38,
+      aspect: 38 / 37,
     },
   ]
 
@@ -30,7 +30,7 @@ export default function Header({ points, medals, ranking }: Props) {
     <View className="flex-row">
       <View
         className="flex-row items-center justify-center"
-        style={{ marginLeft: RW(-5), gap: spacing.md }}
+        style={{ marginLeft: RW(-5), gap: RS(16) }}
       >
         {/* ITEM */}
         {sectionsHeader.map((item, index) => (
@@ -62,7 +62,8 @@ export default function Header({ points, medals, ranking }: Props) {
               <Text
                 className="font-montserratBold text-center"
                 style={{
-                  fontSize: fontSizes.lg,
+                  color: "#4C4C4C",
+                  fontSize: RF(18),
                   marginLeft: RW(6),
                 }}
               >

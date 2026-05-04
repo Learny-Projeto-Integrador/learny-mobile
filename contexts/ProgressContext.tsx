@@ -1,16 +1,47 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { Progress } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useApi } from "@/hooks/useApi";
+import { useCustomAlert } from "./AlertContext";
 
 type ProgressContextType = {
   progress: Progress | null;
   setProgress: React.Dispatch<React.SetStateAction<Progress | null>>;
+  getProgress: () => void;
 };
 
 const ProgressContext = createContext<ProgressContextType | undefined>(undefined);
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
+  const { request } = useApi();
+  const { showAlert } = useCustomAlert();
   const [progress, setProgress] = useState<Progress | null>(null);
+
+  const getProgress = async () => {
+    const result = await request({
+      endpoint: `/child/progress`,
+      method: "GET",
+    });
+
+    if (result && !result.error) {
+      setProgress({
+        points: result.points,
+        completedPhases: result.completedPhases,
+        ranking: result.ranking,
+        selectedMedal: result.selectedMedal,
+        worlds: result.worlds,
+        dailyMissions: result.dailyMissions,
+        medals: result.medals
+      });
+    } else {
+      if (result.status === 404) return;
+      showAlert({
+        icon: "/icons/erro.png",
+        title: "Erro ao buscar filho!",
+        message: result.message || "Erro desconhecido ao carregar filho",
+      });
+    }
+  }
 
   // 🔁 Recupera usuário salvo ao iniciar
   useEffect(() => {
@@ -46,7 +77,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   }, [progress]);
 
   return (
-    <ProgressContext.Provider value={{ progress, setProgress }}>
+    <ProgressContext.Provider value={{ progress, setProgress, getProgress }}>
       {children}
     </ProgressContext.Provider>
   );
