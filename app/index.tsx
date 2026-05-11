@@ -139,7 +139,10 @@ export default function LoginScreen() {
             />
 
             {/* Títulos */}
-            <View className="w-5/6 items-center gap-4">
+            <View
+              style={{ marginHorizontal: RW(10) }} 
+              className="items-center gap-4"
+            >
               <Text 
                 className="text-white font-montserratBold text-center"
                 style={{ fontSize: RF(22) }}
