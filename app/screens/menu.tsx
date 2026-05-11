@@ -30,9 +30,9 @@ export default function MenuScreen() {
   ]
 
   return (
-    <Container 
-      topImage={require("@/assets/images/top-gradient.png")}
-      hasHeader={false}
+    <Container
+      mode="customTop"
+      colors={["#973e4a", "#4b85a1"]}
     >
       <View style={{ paddingHorizontal: RS(40), gap: RS(50) }}>
         {/* Título e botão de fechar */}

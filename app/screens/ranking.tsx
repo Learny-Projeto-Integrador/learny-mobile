@@ -29,7 +29,6 @@ export default function RankingScreen() {
   const [ranking, setRanking] = useState([{}]);
   const [infoVisible, setInfoVisible] = useState(false);
 
-  
   /**
    * Carrega o ranking das crianças
    */
@@ -75,7 +74,8 @@ export default function RankingScreen() {
 
   return (
     <Container
-      topImage={require("@/assets/images/top-blue.png")}
+      mode="customTop"
+      colors={["#6CD2FF", "#6CD2FF"]}
       spaceBottom={false}
     >
       {/* Modal de Informações */}
@@ -88,7 +88,7 @@ export default function RankingScreen() {
 
       <View
         className="relative items-center"
-        style={{ gap: RS(30), paddingHorizontal: RW(60), marginTop: -RS(10) }}
+        style={{ gap: RS(30), paddingHorizontal: RW(60) }}
       >
         {/* Título da tela, botão de informações e voltar */}
         <View className="flex-row w-full items-center justify-between">

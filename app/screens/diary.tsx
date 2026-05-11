@@ -9,8 +9,8 @@ export default function DiaryScreen() {
 
   return (
     <Container
-      topImage={require("@/assets/images/top-gradient.png")}
-      hasHeader={false}
+      mode="customTop"
+      colors={["#973e4a", "#4b85a1"]}
     >
       <View style={{ paddingHorizontal: RS(40), gap: RS(30) }}>
         {/* Título e botão de fechar */}

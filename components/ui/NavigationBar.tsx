@@ -1,5 +1,5 @@
 import { Image, TouchableOpacity, View } from "react-native";
-import { RH, RW } from "@/theme";
+import { RH, RS, RW } from "@/theme";
 import { useRouter } from "expo-router";
 
 export default function NavigationBar() {
@@ -22,13 +22,13 @@ export default function NavigationBar() {
         }}
       >
         {/* Perfil */}
-        <TouchableOpacity onPress={() => router.push("/screens/profile")}>
+        <TouchableOpacity onPress={() => router.push("/screens/store")}>
           <Image
             source={require("@/assets/icons/navbar/store.png")}
             style={{
               width: RW(46),
               height: RW(46),
-              marginTop: -RH(36),
+              marginTop: -RS(36),
             }}
             resizeMode="contain"
           />
@@ -41,7 +41,7 @@ export default function NavigationBar() {
             style={{
               width: RW(56),
               height: RW(56),
-              marginTop: -RH(36),
+              marginTop: -RS(36),
             }}
             resizeMode="contain"
           />
@@ -54,7 +54,7 @@ export default function NavigationBar() {
             style={{
               width: RW(46),
               height: RW(46),
-              marginTop: -RH(36),
+              marginTop: -RS(36),
             }}
             resizeMode="contain"
           />

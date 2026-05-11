@@ -54,7 +54,7 @@ export default function WorldScreen() {
     if (!worldData) return [];
 
     const currentWorldProgress = progress?.worlds?.find(
-      (w) => w.worldCode === worldCode
+      (w) => w.worldCode === worldCode,
     );
 
     const completedSet = new Set(currentWorldProgress?.completedPhases || []);
@@ -80,10 +80,8 @@ export default function WorldScreen() {
   }, [worldCode]);
 
   return (
-    <Container topImage={require("@/assets/images/top-green.png")}>
-      <WorldTrail 
-        modules={modulesWithProgress}
-      />
+    <Container mode="customTop" colors={["#80D25B", "#80D25B"]}>
+      <WorldTrail modules={modulesWithProgress} />
     </Container>
   );
 }
