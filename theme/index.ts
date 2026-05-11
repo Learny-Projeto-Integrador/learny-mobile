@@ -2,12 +2,33 @@ import { Dimensions } from "react-native";
 
 const { width, height } = Dimensions.get("window");
 
-const baseWidth = 375;
-const baseHeight = 812;
+const getSize = (size: number) => {
+  if (width < 360) return size * 0.95;
+  if (width < 400) return size;
+  if (width < 500) return size * 1.15;
+  return size * 1.6;
+};
 
-const scale = (size: number) => (width / baseWidth) * size;
-const verticalScale = (size: number) => (height / baseHeight) * size;
-const moderateScale = (size: number, factor = 0.5) => size + (scale(size) - size) * factor;
+const getFontSize = (size: number) => {
+  if (width < 360) return size * 0.85;
+  if (width < 400) return size * 0.9;
+  if (width < 500) return size * 0.95;
+  return size * 1.25;
+};
+
+const getHeight = (size: number) => {
+  if (height < 700) return size * 0.9;
+  if (height < 800) return size;
+  if (height < 1000) return size * 1.1;
+  return size * 1.35;
+};
+
+const getSpacing = (size: number) => {
+  if (width < 360) return size * 0.85;
+  if (width < 400) return size * 0.9;
+  if (width < 500) return size * 0.95;
+  return size * 1.1;
+};
 
 export const colors = {
   blue: "#6CD2FF",
@@ -16,8 +37,8 @@ export const colors = {
   yellow: "#FFFC58",
 };
 
-// helpers padrão
-export const RW = scale;
-export const RH = verticalScale;
-export const RF = moderateScale;
-export const RS = moderateScale;
+// HELPERS FINAIS
+export const RW = getSize;     // largura / componentes
+export const RH = getHeight;   // altura controlada
+export const RS = getSpacing;  // espaçamento suave
+export const RF = getFontSize; // fonte
