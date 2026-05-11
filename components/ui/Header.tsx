@@ -2,26 +2,26 @@ import { ImageBackground, Image, Text, View } from "react-native";
 import { RW, RF, RS } from "@/theme";
 
 interface Props {
-  points: number;
-  medals: number;
-  ranking: number | string;
+  streak: number;
+  coins: number;
+  stellarPoints: number | string;
 };
 
-export default function Header({ points, medals, ranking }: Props) {
+export default function Header({ streak, coins, stellarPoints }: Props) {
   const sectionsHeader = [
     {
       icon: require("@/assets/icons/header/fire.png"),
-      value: points,
+      value: streak,
       aspect: 41 / 48,
     },
     {
       icon: require("@/assets/icons/header/coins.png"),
-      value: medals,
+      value: coins,
       aspect: 39 / 36,
     },
     {
       icon: require("@/assets/icons/header/points.png"),
-      value: ranking,
+      value: stellarPoints,
       aspect: 38 / 37,
     },
   ]
