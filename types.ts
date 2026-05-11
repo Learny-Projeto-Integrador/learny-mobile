@@ -1,34 +1,32 @@
+export interface User {
+  _id?: string;
+  profilePicture: string | null;
+  username: string;
+  name: string;
+  audioActive: boolean;
+  rankingActive: boolean;
+};
+
+export interface Progress {
+  _id?: string;
+  points: number;
+  stellarPoints: number;
+  coins: number;
+  streak: number;
+  completedPhases: number;
+  ranking: number;
+  selectedCharacter: string;
+  worlds: Array<ProgressWorld>;
+  dailyMissions: Array<MissionProgress>;
+  characters: Array<CharacterUnlocked>;
+}
+
 export interface TokenPayload {
   user: {
     username: string;
     name: string;
     type: "parent" | "child";
   }
-};
-
-export interface User {
-  _id?: string;
-  profilePicture: string | null;
-  username: string;
-  name: string;
-  points: number;
-  audioActive: boolean;
-  rankingActive: boolean;
-};
-
-export type Phase = {
-  code: string;
-  name: string;
-  order: number;
-  type: string;
-  completed: boolean;
-};
-
-export type Module = {
-  code: string;
-  name: string;
-  order: number;
-  phases: Phase[];
 };
 
 export type World = {
@@ -59,28 +57,40 @@ export interface WorldWithProgress extends WorldInfoCatalog {
   completedPhases: Array<string>;
 }
 
-export interface MedalUnlocked {
-  medalId: string;
-  unlockedAt: string;
-  selected: boolean;
+export type Module = {
+  code: string;
+  name: string;
+  order: number;
+  phases: Phase[];
 };
 
+export type Phase = {
+  code: string;
+  name: string;
+  order: number;
+  type: string;
+  completed: boolean;
+};
+
+export interface Character {
+  code: string;
+  name: string;
+  description: string;
+  pointsRequired: number;
+  image: string;
+}
+
+export interface CharacterUnlocked {
+  characterCode: string;
+  unlockedAt: string;
+  level: number;
+  characterPoints: number;
+};
 
 export interface MissionProgress {
     missionId: string;
     completed: boolean;
     assignedAt: string;
-}
-
-export interface Progress {
-  _id?: string;
-  points: number;
-  completedPhases: number;
-  ranking: number;
-  selectedMedal: string;
-  worlds: Array<ProgressWorld>;
-  dailyMissions: Array<MissionProgress>;
-  medals: Array<MedalUnlocked>;
 }
 
 export type CardInfo = {
@@ -114,6 +124,6 @@ export type SoundItem = {
 };
 
 export type Score = {
-  pontos: number;
+  stellarPoints: number;
   tempo: number;
 };
