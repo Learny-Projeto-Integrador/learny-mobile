@@ -108,7 +108,6 @@ export default function AcessibilityScreen() {
           </Text>
           <CustomSwitch value={true} />
         </View>
-
       </View>
     </View>
   );

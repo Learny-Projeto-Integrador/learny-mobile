@@ -23,6 +23,7 @@ import HeaderPhase from "@/components/ui/Phases/HeaderPhase";
 import { Placement, Word } from "@/types/phases";
 import SecretFeedback from "@/components/ui/Phases/Feedbacks/SecretFeedback";
 import { phrase } from "@/constants/phases/train";
+import { useAudio } from "@/contexts/AudioContext";
 
 export default function AtvSecretScreen() {
   const router = useRouter();
@@ -48,17 +49,7 @@ export default function AtvSecretScreen() {
 
   const [placements, setPlacements] = useState<Placement>([null, null, null]);
 
-  const playAudio = (audio: any) => {
-    if (!audio) return;
-
-    try {
-      player.replace(audio);
-      player.seekTo(0);
-      player.play();
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const { playAudio } = useAudio();
 
   /*
    * ---------------------------------------
@@ -281,10 +272,7 @@ export default function AtvSecretScreen() {
                 activeOpacity={0.9}
                 onPress={() => {
                   setSelectedWord(word);
-
-                  if (user?.audioActive) {
-                    playAudio(word.audio);
-                  }
+                  playAudio(word.audio);
                 }}
               >
                 <View

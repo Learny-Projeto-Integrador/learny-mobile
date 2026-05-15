@@ -3,33 +3,20 @@ import {
   View,
   Text,
 } from "react-native";
-import { useAudioPlayer } from "expo-audio";
 import { RF, RH, RW } from "@/theme";
 
 type Props = {
-  audio: any;
   text: string;
   color: string;
   onPress?: () => void;
 };
 
-export default function FeelingCard({ audio, text, color, onPress }: Props) {
-  const sound = useAudioPlayer(audio);
-
-  const playSound = async () => {
-    sound.seekTo(0);
-    sound.play();
-  };
-
-  const press = () => {
-    playSound();
-    onPress ? onPress() : null;
-  };
+export default function FeelingCard({ text, color, onPress }: Props) {
 
   return (
     <TouchableOpacity
       style={{ flexDirection: "row" }}
-      onPress={press}
+      onPress={onPress}
       activeOpacity={1}
     >
       <View

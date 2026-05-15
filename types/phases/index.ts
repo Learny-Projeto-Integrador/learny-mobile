@@ -1,4 +1,23 @@
+import { ReactNode } from "react";
 import { ImageSourcePropType } from "react-native";
+
+export type PhaseStats = {
+  points: number;
+  coins: number;
+  correctAnswers: number;
+  wrongAnswers: number;
+};
+
+export type BossPhaseStats = PhaseStats & {
+  hintsUsed: number;
+  time: string;
+}
+
+export type Feedback = {
+  label: string;
+  content: ReactNode;
+  stats: Partial<PhaseStats>;
+};
 
 export type EmotionOption = {
   id: string;
@@ -6,15 +25,9 @@ export type EmotionOption = {
   bigImage: ImageSourcePropType;
   audio: string;
   emotion: string;
+  color?: string;
 };
 
-export type FeelingOption = EmotionOption & {
-  color: string;
-};
-
-export type ConnectOption = EmotionOption & {
-  color: string;
-};
 
 export type ConnectionCard = EmotionOption & {
   uniqueId: string;
@@ -23,8 +36,6 @@ export type ConnectionCard = EmotionOption & {
   y: number;
 
   column: "left" | "right";
-
-  color: string;
 };
 
 export type Connection = {

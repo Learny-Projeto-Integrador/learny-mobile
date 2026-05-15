@@ -19,14 +19,8 @@ export default function ErrorFeedbackScreen() {
       className="flex-1 bg-white"
       style={{ gap: RS(30), paddingHorizontal: RS(50) }}
     >
-      <View className="flex-row">
-        <Image
-          source={require("@/assets/images/phases/completion-images/confetti.png")}
-          className="w-full"
-        />
-      </View>
 
-      <View style={{ marginTop: -RS(120) }}>
+      <View style={{ marginTop: RS(70) }}>
         <GradientText
           color1="#EF5B6A"
           color2="#6CD2FF"
@@ -87,6 +81,17 @@ export default function ErrorFeedbackScreen() {
       </View>
 
       {feedback?.content}
+
+      <Text
+        className="font-montserratSemiBold text-center"
+        style={{
+          fontSize: RF(22),
+          marginTop: RS(30),
+          color: "#4c4c4c",
+        }}
+      >
+        Você está indo bem, continue e tente novamente
+      </Text>
 
       <View
         className="w-full"

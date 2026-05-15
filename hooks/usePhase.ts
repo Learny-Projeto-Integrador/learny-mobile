@@ -5,6 +5,7 @@ import { useCustomAlert } from "@/contexts/AlertContext";
 import { useApi } from "@/hooks/useApi";
 import { useUser } from "@/contexts/UserContext";
 import { useTrailContext } from "@/contexts/TrailContext";
+import { PhaseStats } from "@/types/phases";
 
 function formatSecondsToMMSS(seconds: number): string {
   const mins = Math.floor(seconds / 60);
@@ -12,13 +13,6 @@ function formatSecondsToMMSS(seconds: number): string {
 
   return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }
-
-type PhaseStats = {
-  points: number;
-  coins: number;
-  correctAnswers: number;
-  wrongAnswers: number;
-};
 
 export function usePhase() {
   const { showAlert } = useCustomAlert();

@@ -22,6 +22,7 @@ import { LoadingProvider } from "@/contexts/LoadingContext";
 import { TrailProvider } from "@/contexts/TrailContext";
 import { FeedbackProvider } from "@/contexts/FeedbackContext";
 import { PhaseProvider } from "@/contexts/PhaseContext";
+import { AudioProvider } from "@/contexts/AudioContext";
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -54,9 +55,11 @@ export default function RootLayout() {
           <ProgressProvider>
             <TrailProvider>
               <PhaseProvider>
-                <FeedbackProvider>
-                  <Stack screenOptions={{ headerShown: false }} />
-                </FeedbackProvider>
+                <AudioProvider>
+                  <FeedbackProvider>
+                    <Stack screenOptions={{ headerShown: false }} />
+                  </FeedbackProvider>
+                </AudioProvider>
               </PhaseProvider>
             </TrailProvider>
           </ProgressProvider>

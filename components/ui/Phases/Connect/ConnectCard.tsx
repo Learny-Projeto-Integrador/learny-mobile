@@ -1,3 +1,4 @@
+import { useAudio } from "@/contexts/AudioContext";
 import { RW } from "@/theme";
 import { useAudioPlayer } from "expo-audio";
 import {
@@ -9,7 +10,6 @@ import {
 
 interface Props {
   image: ImageSourcePropType;
-  audio: any;
   overlay?: boolean;
   onPress: () => void;
   onLayout: (event: any) => void;
@@ -17,25 +17,12 @@ interface Props {
 
 export default function ConnectCard({
   image,
-  audio,
   overlay,
   onPress,
   onLayout,
 }: Props) {
-  const sound = useAudioPlayer(audio);
-
-  const playSound = async () => {
-    sound.seekTo(0);
-    await sound.play();
-  };
-
-  const handlePress = () => {
-    if (audio != null) playSound();
-    onPress();
-  };
-
   return (
-    <TouchableOpacity onPress={handlePress} onLayout={onLayout}>
+    <TouchableOpacity onPress={onPress} onLayout={onLayout}>
       <Image
         source={image}
         style={{

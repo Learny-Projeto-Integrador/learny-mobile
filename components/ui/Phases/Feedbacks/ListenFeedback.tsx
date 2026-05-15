@@ -1,34 +1,15 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 
-import { FeelingOption } from "@/types/phases";
-
 import { RH, RS, RW } from "@/theme";
-import { useUser } from "@/contexts/UserContext";
-import { useAudioPlayer } from "expo-audio";
+import { useAudio } from "@/contexts/AudioContext";
+import { EmotionOption } from "@/types/phases";
 
 type Props = {
-  order: FeelingOption[];
+  order: EmotionOption[];
 };
 
 export default function ListenOrderFeedback({ order }: Props) {
-  const { user } = useUser();
-  const player = useAudioPlayer();
-
-  const playAudio = (audio: any) => {
-    if (!audio) return;
-
-    if (!user?.audioActive) return;
-
-    try {
-      player.replace(audio);
-
-      player.seekTo(0);
-
-      player.play();
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const { playAudio } = useAudio();
 
   return (
     <View

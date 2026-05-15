@@ -360,7 +360,7 @@ export default function AtvBossScreen() {
           <BalloonLetter
             letter={item.letter}
             color={item.color}
-            audio={user?.audioActive ? item.audio : undefined}
+            audio={item.audio}
             onPlayAudio={playLetterAudio}
             onPress={() => handlePress(item)}
           />

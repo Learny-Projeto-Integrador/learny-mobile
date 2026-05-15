@@ -2,6 +2,7 @@ import { Image, TouchableOpacity, View, Text } from "react-native";
 import { useState } from "react";
 import { useAudioPlayer } from "expo-audio";
 import { RF, RH, RW } from "@/theme";
+import { useAudio } from "@/contexts/AudioContext";
 
 type Props = {
   audio: any;
@@ -11,17 +12,12 @@ type Props = {
 };
 
 export default function TutorialCard({ audio, image, label, color }: Props) {
-  const sound = useAudioPlayer(audio);
+  const { playAudio } = useAudio();
 
   const [active, setActive] = useState(false);
 
-  const playSound = async () => {
-    sound.seekTo(0);
-    sound.play();
-  };
-
   const handlePress = () => {
-    playSound();
+    playAudio(audio);
     setActive((prev) => !prev);
   };
 
