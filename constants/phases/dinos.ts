@@ -1,0 +1,88 @@
+import { EmotionOption } from "@/types/phases";
+
+export const dinosEmotions: EmotionOption[] = [
+  {
+    id: "dino-sad",
+    image: require("@/assets/images/phases/dinos-images/sad/base.png"),
+    bigImage: require("@/assets/images/phases/dinos-images/sad/big.png"),
+    audio: require("@/assets/audios/emotions/sad.m4a"),
+    emotion: "Sad",
+  },
+  {
+    id: "dino-angry",
+    image: require("@/assets/images/phases/dinos-images/angry/base.png"),
+    bigImage: require("@/assets/images/phases/dinos-images/angry/big.png"),
+    audio: require("@/assets/audios/emotions/angry.m4a"),
+    emotion: "Angry",
+  },
+  {
+    id: "dino-happy",
+    image: require("@/assets/images/phases/dinos-images/happy/base.png"),
+    bigImage: require("@/assets/images/phases/dinos-images/happy/big.png"),
+    audio: require("@/assets/audios/emotions/happy.m4a"),
+    emotion: "Happy",
+  },
+  {
+    id: "dino-afraid",
+    image: require("@/assets/images/phases/dinos-images/afraid/base.png"),
+    bigImage: require("@/assets/images/phases/dinos-images/afraid/big.png"),
+    audio: require("@/assets/audios/emotions/afraid.m4a"),
+    emotion: "Afraid",
+  },
+  {
+    id: "dino-calm",
+    image: require("@/assets/images/phases/dinos-images/calm/base.png"),
+    bigImage: require("@/assets/images/phases/dinos-images/calm/big.png"),
+    audio: require("@/assets/audios/emotions/calm.m4a"),
+    emotion: "Calm",
+  },
+  {
+    id: "dino-confused",
+    image: require("@/assets/images/phases/dinos-images/confused/base.png"),
+    bigImage: require("@/assets/images/phases/dinos-images/confused/big.png"),
+    audio: require("@/assets/audios/emotions/confused.m4a"),
+    emotion: "Confused",
+  },
+  {
+    id: "dino-great",
+    image: require("@/assets/images/phases/dinos-images/great/base.png"),
+    bigImage: require("@/assets/images/phases/dinos-images/great/big.png"),
+    audio: require("@/assets/audios/emotions/great.m4a"),
+    emotion: "Great",
+  },
+  {
+    id: "dino-hungry",
+    image: require("@/assets/images/phases/dinos-images/hungry/base.png"),
+    bigImage: require("@/assets/images/phases/dinos-images/hungry/big.png"),
+    audio: require("@/assets/audios/emotions/hungry.m4a"),
+    emotion: "Hungry",
+  },
+  {
+    id: "dino-shy",
+    image: require("@/assets/images/phases/dinos-images/shy/base.png"),
+    bigImage: require("@/assets/images/phases/dinos-images/shy/big.png"),
+    audio: require("@/assets/audios/emotions/shy.m4a"),
+    emotion: "Shy",
+  },
+  {
+    id: "dino-sick",
+    image: require("@/assets/images/phases/dinos-images/sick/base.png"),
+    bigImage: require("@/assets/images/phases/dinos-images/sick/big.png"),
+    audio: require("@/assets/audios/emotions/sick.m4a"),
+    emotion: "Sick",
+  },
+  {
+    id: "dino-sleepy",
+    image: require("@/assets/images/phases/dinos-images/sleepy/base.png"),
+    bigImage: require("@/assets/images/phases/dinos-images/sleepy/big.png"),
+    audio: require("@/assets/audios/emotions/sleepy.m4a"),
+    emotion: "Sleepy",
+  },
+  {
+    id: "dino-surprised",
+    image: require("@/assets/images/phases/dinos-images/surprised/base.png"),
+    bigImage: require("@/assets/images/phases/dinos-images/surprised/big.png"),
+    audio: require("@/assets/audios/emotions/surprised.m4a"),
+    emotion: "Surprised",
+  },
+];

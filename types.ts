@@ -59,6 +59,7 @@ export interface WorldWithProgress extends WorldInfoCatalog {
 
 export type Module = {
   code: string;
+  worldCode: string;
   name: string;
   order: number;
   phases: Phase[];
@@ -93,34 +94,11 @@ export interface MissionProgress {
     assignedAt: string;
 }
 
-export type CardInfo = {
-  id: string;
-  type: string;
-  x: number;
-  y: number;
-  column: "left" | "right";
-};
-
-export type Connection = {
-  from: CardInfo;
-  to: CardInfo;
-  isCorrect: boolean;
-  color: string;
-};
-
 export type MemoryCardType = {
   text: string;
   icon: string;
   iconText: string;
   audio: string;
-};
-
-export type SoundItem = {
-  id: string;
-  audio: any;
-  image: any;
-  icon: any;
-  expectedLabel: string;
 };
 
 export type Score = {

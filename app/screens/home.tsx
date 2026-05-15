@@ -8,6 +8,7 @@ import WorldBanner from "@/components/ui/Home/WorldBanner";
 import ExtraModeBanner from "@/components/ui/Home/ExtraModeBanner";
 import { ProgressWorld, World, WorldWithProgress } from "@/types";
 import Container from "@/components/ui/Container";
+import { useRouter } from "expo-router";
 
 /**
  * Página home
@@ -16,6 +17,8 @@ import Container from "@/components/ui/Container";
  * - Exibição dos mundos e modos extras de jogo
  */
 export default function HomeScreen() {
+  const router = useRouter();
+  
   /** Hook de comunicação com a API */
   const { request } = useApi();
 
@@ -127,12 +130,14 @@ export default function HomeScreen() {
       <ExtraModeBanner
         name={"Time Attack"}
         image="https://pi-learny.s3.us-east-1.amazonaws.com/worlds/banners/time-attack.png"
+        onPress={() => console.log("Time Attack!")}
       />
 
       {/* Pop Party Banner */}
       <ExtraModeBanner
         name={"Pop party"}
         image="https://pi-learny.s3.us-east-1.amazonaws.com/worlds/banners/pop-party.png"
+        onPress={() => router.push("/screens/phases/extras/balloon")}
       />
     </Container>
   );

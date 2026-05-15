@@ -3,9 +3,13 @@ import { RW, RH, RF } from "@/theme";
 import { Phase } from "@/types";
 import PhaseCircle from "./PhaseCircle";
 import { useRouter } from "expo-router";
+import { useTrailContext } from "@/contexts/TrailContext";
 
 interface Props {
   phases: Phase[];
+  moduleCode: string;
+  worldCode: string;
+
   initialPhase?: number;
   moduleNumber: number;
   illustration: any;
@@ -15,7 +19,7 @@ interface Props {
 }
 
 const phasesScreens = [
-  "/screens/phases/atvConnect",
+  "/screens/phases/atvFeeling",
   "/screens/phases/atvMemory",
   "/screens/phases/atvFeeling",
   "/screens/phases/atvBoss",
@@ -23,6 +27,8 @@ const phasesScreens = [
 
 export default function ModuleTrail({
   phases,
+  moduleCode,
+  worldCode,
   initialPhase = 1,
   moduleNumber,
   illustration,
@@ -31,6 +37,8 @@ export default function ModuleTrail({
   variant = "right", // padrão
 }: Props) {
   const router = useRouter();
+
+  const { setTrailData } = useTrailContext();
 
   const bossImage = bossIcon || require("@/assets/images/trail/bosses/boss.png");
 
@@ -48,6 +56,14 @@ export default function ModuleTrail({
 
     const route = phasesScreens[index];
     if (!route) return;
+
+    const phase = sortedPhases[index];
+
+    setTrailData({
+      worldCode,
+      moduleCode,
+      phaseCode: phase.code,
+    });
 
     router.push(route);
   };

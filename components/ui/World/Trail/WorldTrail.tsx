@@ -23,13 +23,15 @@ export default function WorldTrail({ modules }: Props) {
       {/* Modulos */}
       {modules.map((module, index) => (
         <ModuleTrail
-            key={module.code}
-            moduleNumber={index + 1}
-            phases={module.phases}
-            illustration={require("@/assets/images/trail/ilustrations/egg.png")}
-            bossIcon={require("@/assets/images/trail/bosses/boss.png")}
-            colorTheme="#EF5B6A"
-        />
+          key={module.code}
+          moduleCode={module.code}
+          worldCode={module.worldCode}
+          moduleNumber={index + 1}
+          phases={module.phases}
+          illustration={require("@/assets/images/trail/ilustrations/egg.png")}
+          bossIcon={require("@/assets/images/trail/bosses/boss.png")}
+          colorTheme="#EF5B6A"
+      />
       ))}
 
       {/* Seção "Em Desenvolvimento..." */}

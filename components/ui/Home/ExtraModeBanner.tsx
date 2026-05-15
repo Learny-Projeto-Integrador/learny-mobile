@@ -1,14 +1,18 @@
-import { ImageBackground, Text, View } from "react-native";
+import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { RW, RF, RS } from "@/theme";
 
 interface Props {
   name: string;
   image: string;
+  onPress: () => void;
 };
 
-export default function ExtraModeBanner({ name, image }: Props) {
+export default function ExtraModeBanner({ name, image, onPress }: Props) {
   return (
-    <View className="items-start">
+    <TouchableOpacity 
+      className="items-start"
+      onPress={onPress}
+    >
       <ImageBackground
         source={{ uri: image }}
         style={{
@@ -42,6 +46,6 @@ export default function ExtraModeBanner({ name, image }: Props) {
           </Text>
         </View>
       </ImageBackground>
-    </View>
+    </TouchableOpacity>
   );
 }

@@ -1,289 +1,499 @@
-import React, { useState } from "react";
-import {
-  View,
-  ScrollView,
-  Text,
-  Dimensions,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
-import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
-import SoundCard from "@/components/ui/Children/Phases/SoundCard";
-import { useScreenDuration } from "@/hooks/useScreenDuration";
-import { useSubmitMission } from "@/hooks/useSubmitMission";
-import { SoundItem } from "@/types";
-import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
-import { useCheckHint } from "@/hooks/useCheckHint";
-import { useLoading } from "@/contexts/LoadingContext";
-import { useUser } from "@/contexts/UserContext";
+import { View, Text, Image, TouchableOpacity } from "react-native";
+import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 
-const { width, height } = Dimensions.get("window");
+import TutorialCard from "@/components/ui/Phases/TutorialCard";
+import PhaseBase from "@/components/ui/Phases/PhaseBase";
 
-const sounds: SoundItem[] = [
-  {
-    id: "1",
-    audio: require("@/assets/audios/animals/cow.wav"),
-    image: require("@/assets/images/phases/listen/speakers/red.png"),
-    icon: require("@/assets/images/phases/listen/dinos/dino1.png"),
-    expectedLabel: "Cow",
-  },
-  {
-    id: "2",
-    audio: require("@/assets/audios/animals/bird.wav"),
-    image: require("@/assets/images/phases/listen/speakers/yellow.png"),
-    icon: require("@/assets/images/phases/listen/dinos/dino2.png"),
-    expectedLabel: "Bird",
-  },
-  {
-    id: "3",
-    audio: require("@/assets/audios/animals/dog.wav"),
-    image: require("@/assets/images/phases/listen/speakers/blue.png"),
-    icon: require("@/assets/images/phases/listen/dinos/dino3.png"),
-    expectedLabel: "Dog",
-  },
-];
+import { useLoading } from "@/contexts/LoadingContext";
+import { useUser } from "@/contexts/UserContext";
+import { useFeedbackContext } from "@/contexts/FeedbackContext";
 
-const colors = ["#EF5B6A", "#FFB300", "#6CD2FF"];
+import { RF, RH, RS, RW } from "@/theme";
+import { usePhaseContext } from "@/contexts/PhaseContext";
+import { FeelingOption } from "@/types/phases";
 
-export default function AtvListeningScreen() {
+import { dinosEmotions } from "@/constants/phases/dinos";
+import { colors } from "@/constants/colors";
+
+import { useAudioPlayer } from "expo-audio";
+
+import ListenFeedback from "@/components/ui/Phases/Feedbacks/ListenFeedback";
+
+export default function AtvListenScreen() {
   const router = useRouter();
-  const [assignments, setAssignments] = useState<{ [soundId: string]: string }>({});
-  const [infoVisible, setInfoVisible] = useState<boolean>(false);
+
+  const [correctOption, setCorrectOption] = useState<FeelingOption | null>(
+    null,
+  );
+
+  const [phaseOptions, setPhaseOptions] = useState<FeelingOption[]>([]);
+
+  // ordem dos speakers
+  const [audioOptions, setAudioOptions] = useState<FeelingOption[]>([]);
+
+  // ordem das imagens (embaralhada separadamente)
+  const [imageOptions, setImageOptions] = useState<FeelingOption[]>([]);
 
   const { showLoadingModal, hideLoadingModal } = useLoading();
-  const { getDuration } = useScreenDuration();
-  const { submitMission } = useSubmitMission();
-  const { user } = useUser();
-  const { setHintUsed, checkHint } = useCheckHint();
 
-  const handleAssign = (soundId: string, label: string) => {
-    setAssignments((prev) => ({ ...prev, [soundId]: label }));
+  const { user } = useUser();
+
+  const { setFeedback } = useFeedbackContext();
+
+  const {
+    started,
+
+    start,
+    finish,
+    restart,
+
+    incrementStats,
+
+    useHint,
+  } = usePhaseContext();
+
+  const player = useAudioPlayer();
+
+  /*
+   * ---------------------------------------
+   * AUDIO
+   * ---------------------------------------
+   */
+
+  const playAudio = (audio: any) => {
+    if (!audio) return;
+
+    if (!user?.audioActive) return;
+
+    try {
+      player.replace(audio);
+
+      player.seekTo(0);
+
+      player.play();
+    } catch (e) {
+      console.log(e);
+    }
   };
+
+  /*
+   * ---------------------------------------
+   * HELPERS
+   * ---------------------------------------
+   */
+
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    return [...array].sort(() => Math.random() - 0.5);
+  };
+
+  const generateFeelingOptions = (amount: number = 4): FeelingOption[] => {
+    const shuffledEmotions = shuffleArray(dinosEmotions);
+
+    const shuffledColors = shuffleArray(colors);
+
+    return shuffledEmotions.slice(0, amount).map((emotion, index) => ({
+      ...emotion,
+      color: shuffledColors[index],
+    }));
+  };
+
+  /*
+   * ---------------------------------------
+   * INITIALIZATION
+   * ---------------------------------------
+   */
+
+  const initializePhase = () => {
+    const generatedOptions = generateFeelingOptions(4);
+
+    setPhaseOptions(generatedOptions);
+
+    const randomCorrect =
+      generatedOptions[Math.floor(Math.random() * generatedOptions.length)];
+
+    const incorrectOptions = generatedOptions.filter(
+      (option) => option.id !== randomCorrect.id,
+    );
+
+    const randomIncorrect = shuffleArray(incorrectOptions).slice(0, 2);
+
+    // ordem correta baseada nos speakers
+    const finalAudioOptions = shuffleArray([
+      randomCorrect,
+      ...randomIncorrect,
+    ]);
+
+    // embaralha imagens separadamente
+    let finalImageOptions = shuffleArray(finalAudioOptions);
+
+    // garante que não fique alinhado verticalmente
+    while (
+      finalImageOptions.some(
+        (item, index) => item.id === finalAudioOptions[index]?.id,
+      )
+    ) {
+      finalImageOptions = shuffleArray(finalAudioOptions);
+    }
+
+    setCorrectOption(randomCorrect);
+
+    setAudioOptions(finalAudioOptions);
+
+    setImageOptions(finalImageOptions);
+  };
+
+  /*
+   * ---------------------------------------
+   * ANSWERS
+   * ---------------------------------------
+   */
+
+  const handleSuccess = async () => {
+    showLoadingModal();
+
+    incrementStats({
+      points: 10,
+      coins: 1,
+      correctAnswers: 1,
+    });
+
+    await finish();
+
+    hideLoadingModal();
+
+    router.push("/screens/phases/score");
+  };
+
+  const handleError = () => {
+    incrementStats({
+      wrongAnswers: 1,
+    });
+
+    setFeedback({
+      label: "Essa era a ordem correta dos sons:",
+      content: <ListenFeedback order={audioOptions} />,
+    });
+
+    router.push("/screens/phases/errorFeedback");
+  };
+
+  /*
+   * ---------------------------------------
+   * HINT
+   * ---------------------------------------
+   */
 
   const handleHint = async () => {
     showLoadingModal();
-    const canUse = await checkHint();
+
+    const canUseHint = await useHint();
+
     hideLoadingModal();
 
-    if (!canUse) return;
+    if (!canUseHint) return;
 
-    for (const sound of sounds) {
-      const isAssigned = assignments[sound.id];
-      if (!isAssigned) {
-        setAssignments((prev) => ({
-          ...prev,
-          [sound.id]: sound.expectedLabel,
-        }));
-        break; // Aplica a dica a apenas um item
-      }
+    if (!correctOption || imageOptions.length <= 2) {
+      return;
     }
 
-    setHintUsed(true); // marca que a dica foi usada
+    const incorrectOptions = imageOptions.filter(
+      (option) => option.id !== correctOption.id,
+    );
+
+    const optionToRemove =
+      incorrectOptions[Math.floor(Math.random() * incorrectOptions.length)];
+
+    setImageOptions((prev) =>
+      prev.filter((option) => option.id !== optionToRemove.id),
+    );
+  };
+
+  /*
+   * ---------------------------------------
+   * PLACEMENT
+   * ---------------------------------------
+   */
+
+  const [selectedOption, setSelectedOption] =
+    useState<FeelingOption | null>(null);
+
+  const [placements, setPlacements] = useState<(FeelingOption | null)[]>([
+    null,
+    null,
+    null,
+  ]);
+
+  const handlePlace = (targetIndex: number) => {
+    if (!selectedOption) return;
+
+    const updated = [...placements];
+
+    const existingIndex = updated.findIndex(
+      (item) => item?.id === selectedOption.id,
+    );
+
+    if (existingIndex !== -1) {
+      updated[existingIndex] = null;
+    }
+
+    updated[targetIndex] = selectedOption;
+
+    setPlacements(updated);
+
+    setSelectedOption(null);
+  };
+
+  const handleReset = () => {
+    setPlacements([null, null, null]);
+
+    setSelectedOption(null);
   };
 
   const handleConfirm = async () => {
-    showLoadingModal();
-    const { durationFormatted } = getDuration();
-
-    let correct = 0;
-    sounds.forEach((sound) => {
-      if (assignments[sound.id] === sound.expectedLabel) correct++;
-    });
-    let pontos = (correct / sounds.length) * 100;
-    let porcentagem = parseFloat(((correct / sounds.length) * 100).toFixed(0)); // arredondado
-
-    // Arredonda pontos depois dos bônus/multiplicadores
-    pontos = parseFloat(pontos.toFixed(0));
-
-    const response = await submitMission({
-      pontos: pontos, 
-      tipoFase: "listening"
+    const isCorrect = placements.every((item, index) => {
+      return item?.id === audioOptions[index]?.id;
     });
 
-    if (response.success) {
-      let pontosAtualizados = response.pontosAtualizados ?? pontos;
-      const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
-      router.push({
-        pathname: '/screens/phasesscore',
-        params: { score: JSON.stringify(score) },
-      });
+    if (isCorrect) {
+      await handleSuccess();
+    } else {
+      handleError();
     }
-    hideLoadingModal();
   };
 
-  return (
-    <ScrollView style={styles.container}>
-      <ContainerInfo
-        message={
-          "Essa é a fase listening. Para concluir ela você deve reconhecer quais são as posições corretas dos animais e ordenar eles corretamente."
-        }
-        visible={infoVisible}
-        onClose={() => setInfoVisible(false)}
-      />
-      <HeaderFase
-        image={require("@/assets/images/phases/listen/intro.png")}
-        title="Listen & Answer"
-        description="Ouça o nome e encontre ele escrito"
-        color="#EF5B6A"
-        onPressInfo={() => setInfoVisible(true)}
-      />
+  /*
+   * ---------------------------------------
+   * EFFECTS
+   * ---------------------------------------
+   */
 
-      <View style={styles.containerSounds}>
-        {sounds.map((sound) =>
-          user?.audioActive ? (
-            <SoundCard
-              key={sound.id}
-              id={sound.id}
-              image={sound.image}
-              audio={sound.audio}
-            />
-          ) : (
-            <View
-              key={sound.id}
+  useEffect(() => {
+    initializePhase();
+  }, []);
+
+  /*
+   * ---------------------------------------
+   * RENDER
+   * ---------------------------------------
+   */
+
+  return (
+    <PhaseBase
+      title="Listen & Answer"
+      description="Ouça o nome e encontre ele escrito"
+      color="#94ECA5"
+      headerImage={require("@/assets/images/phases/listen/intro.png")}
+      tutorialTitle="Como Jogar"
+      tutorialMessage={`
+        Essa é a fase listen. A primeira parte é um reconhecimento,
+        para você descobrir quais são as emoções e seus respectivos dinos.
+        Na segunda etapa você deve relacionar as emoções corretas com os sons 
+        emitidos pelas caixas.
+      `}
+      started={started}
+      onStart={start}
+      onBack={() => {
+        if (started) {
+          restart();
+        } else {
+          router.back();
+        }
+      }}
+      tutorialContent={
+        <View
+          className="flex-row flex-wrap items-center justify-center"
+          style={{ gap: RS(20) }}
+        >
+          {phaseOptions.map((dino, index) => {
+            return (
+              <TutorialCard
+                key={index}
+                image={dino.image}
+                audio={dino.audio}
+                label={dino.emotion}
+                color={dino.color}
+              />
+            );
+          })}
+        </View>
+      }
+    >
+      <View
+        className="items-center"
+        style={{
+          gap: RS(30),
+          marginTop: RS(5),
+        }}
+      >
+        {/* SPEAKERS */}
+        <View className="flex-row" style={{ gap: RS(20) }}>
+          {audioOptions.map((option, key) => (
+            <TouchableOpacity
+              key={key}
+              onPress={() => playAudio(option.audio)}
+              className="items-center justify-center"
               style={{
-                //@ts-ignore
-                backgroundColor: colors[sound.id - 1],
-                flexDirection: "row",
-                padding: width * 0.039,
+                backgroundColor: option.color,
+                width: RW(95),
+                height: RH(115),
                 borderRadius: 30,
               }}
             >
-              <Image
-                source={sound.icon}
+              <View
+                className="bg-white items-center justify-center"
                 style={{
-                  width: width * 0.16,
-                  height: width * 0.16,
+                  width: RW(64),
+                  height: RW(64),
+                  borderRadius: 100,
                 }}
-                resizeMode="contain"
-              />
-            </View>
-          )
-        )}
-      </View>
-
-      <View style={styles.viewQuadrados}>
-        {sounds.map((sound, index) => {
-          const borderColors = ["#EF5B6A", "#FFB300", "#6CD2FF"]; // vermelho, amarelo, azul
-          return (
-            <View
-              key={sound.id}
-              style={[
-                styles.quadradoColocar,
-                { borderColor: borderColors[index] || "#ccc" },
-              ]}
-            >
-              <Text style={styles.txtAnimal}>
-                {assignments[sound.id] || "?"}
-              </Text>
-            </View>
-          );
-        })}
-      </View>
-
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          gap: height * 0.02,
-          marginTop: height * 0.02,
-        }}
-      >
-        <Text style={styles.txtPergunta}>Selecione a ordem correta</Text>
-        <View style={{ flexDirection: "row", gap: width * 0.05 }}>
-          {["Dog", "Cow", "Bird"].map((label) => (
-            <TouchableOpacity
-              key={label}
-              onPress={() => {
-                // Simula mover para a primeira posição vazia (para fins de teste)
-                const firstEmpty = sounds.find((s) => !assignments[s.id]);
-                if (firstEmpty) handleAssign(firstEmpty.id, label);
-              }}
-              style={styles.quadradoAnimal}
-            >
-              <Text style={styles.txtAnimal}>{label}</Text>
+              >
+                <Image
+                  source={require("@/assets/images/phases/listen/speaker.png")}
+                  style={{
+                    width: RW(30),
+                    height: RW(30),
+                    aspectRatio: 43 / 35,
+                    tintColor: option.color,
+                  }}
+                />
+              </View>
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* TARGETS */}
+        <View className="flex-row" style={{ gap: RS(20) }}>
+          {audioOptions.map((option, key) => {
+            const placedItem = placements[key];
+
+            return (
+              <TouchableOpacity
+                key={key}
+                activeOpacity={0.9}
+                onPress={() => handlePlace(key)}
+              >
+                {placedItem ? (
+                  <Image
+                    source={placedItem.image}
+                    style={{
+                      backgroundColor: placedItem.color,
+                      width: RW(95),
+                      height: RH(115),
+                      borderRadius: 30,
+                    }}
+                  />
+                ) : (
+                  <View
+                    className="items-center justify-center"
+                    style={{
+                      borderWidth: 6,
+                      borderColor: option.color,
+                      width: RW(95),
+                      height: RH(115),
+                      borderRadius: 30,
+                      backgroundColor: "#FFFFFF",
+                    }}
+                  />
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* IMAGENS */}
+        <View className="flex-row" style={{ gap: RS(20) }}>
+          {imageOptions.map((option, key) => {
+            const isSelected = selectedOption?.id === option.id;
+
+            const isPlaced = placements.some(
+              (item) => item?.id === option.id,
+            );
+
+            if (isPlaced) {
+              return (
+                <View
+                  key={key}
+                  style={{
+                    width: RW(100),
+                    height: RH(120),
+                  }}
+                />
+              );
+            }
+
+            return (
+              <TouchableOpacity
+                key={key}
+                activeOpacity={0.9}
+                onPress={() => {
+                  setSelectedOption(option);
+
+                  playAudio(option.audio);
+                }}
+              >
+                <Image
+                  source={option.image}
+                  style={{
+                    width: isSelected ? RW(105) : RW(95),
+                    height: isSelected ? RW(105) : RW(100),
+                    borderRadius: 30,
+                    borderWidth: isSelected ? 6 : 0,
+                    borderColor:
+                      audioOptions.findIndex(
+                        (item) => item.id === option.id,
+                      ) !== -1
+                        ? audioOptions[
+                            audioOptions.findIndex(
+                              (item) => item.id === option.id,
+                            )
+                          ]?.color
+                        : "#6CD2FF",
+                  }}
+                />
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
 
-      <View style={styles.viewButtons}>
-        <TouchableOpacity onPress={handleHint} style={{ flexDirection: "row" }}>
+      <View
+        className="flex-row justify-center items-center"
+        style={{
+          marginTop: RS(20),
+          gap: RS(20),
+        }}
+      >
+        <TouchableOpacity onPress={handleHint}>
           <Image
             source={require("@/assets/icons/phases/hint.png")}
-            style={styles.icon}
+            style={{
+              width: RW(40),
+              aspectRatio: 49 / 67,
+            }}
           />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={{ flexDirection: "row" }}
-          onPress={handleConfirm}
-        >
+
+        <TouchableOpacity onPress={handleConfirm}>
           <Image
             source={require("@/assets/icons/phases/confirm-red.png")}
-            style={styles.icon}
+            style={{
+              width: RW(46),
+              aspectRatio: 1 / 1,
+            }}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleReset}>
+          <Image
+            source={require("@/assets/icons/phases/clear.png")}
+            style={{
+              width: RW(40),
+              aspectRatio: 1 / 1,
+            }}
           />
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </PhaseBase>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#fff",
-    flex: 1,
-    paddingHorizontal: width * 0.08,
-    gap: width * 0.5,
-  },
-  containerSounds: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: width * 0.05,
-    marginVertical: height * 0.02,
-  },
-  viewQuadrados: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: width * 0.06,
-  },
-  quadradoColocar: {
-    borderWidth: 5,
-    borderColor: "#4c4c4c",
-    width: width * 0.23,
-    height: width * 0.23,
-    borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  txtPergunta: {
-    color: "#4c4c4c",
-    textAlign: "center",
-    fontSize: width * 0.05,
-    fontFamily: "Montserrat_700Bold",
-  },
-  quadradoAnimal: {
-    borderWidth: 5,
-    borderColor: "#4c4c4c",
-    width: width * 0.23,
-    height: width * 0.23,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 30,
-  },
-  txtAnimal: {
-    color: "#4c4c4c",
-    fontSize: width * 0.05,
-    fontFamily: "Montserrat_700Bold",
-  },
-  viewButtons: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: height * 0.03,
-    gap: width * 0.02,
-  },
-  icon: {
-    width: width * 0.1,
-    aspectRatio: 1 / 1,
-  },
-});

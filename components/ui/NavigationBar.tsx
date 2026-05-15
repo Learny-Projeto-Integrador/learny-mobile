@@ -22,7 +22,7 @@ export default function NavigationBar() {
         }}
       >
         {/* Perfil */}
-        <TouchableOpacity onPress={() => router.push("/screens/store")}>
+        <TouchableOpacity onPress={() => router.push("/screens/phases/score")}>
           <Image
             source={require("@/assets/icons/navbar/store.png")}
             style={{

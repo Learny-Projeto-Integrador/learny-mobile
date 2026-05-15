@@ -1,377 +1,342 @@
 import {
-  ScrollView,
   View,
-  Text,
-  Dimensions,
-  ImageBackground,
-  Alert,
+  Image,
   TouchableOpacity,
+  Text,
+  ImageBackground,
 } from "react-native";
-import { useEffect, useState } from "react";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  runOnJS,
-} from "react-native-reanimated";
-import ContainerInfo from "@/components/ui/Children/Phases/ContainerInfo";
-import HeaderFase from "@/components/ui/Children/Phases/HeaderFase";
-import { useLoading } from "@/contexts/LoadingContext";
-import { useScreenDuration } from "@/hooks/useScreenDuration";
-import { useSubmitMission } from "@/hooks/useSubmitMission";
-import { Audio } from "expo-av";
-import { useUser } from "@/contexts/UserContext";
-import { useCustomAlert } from "@/contexts/AlertContext";
-import { ScaledSheet, scale, verticalScale } from "react-native-size-matters";
+import { useState } from "react";
 import { useRouter } from "expo-router";
 
-const { width, height } = Dimensions.get("window");
+import PhaseBase from "@/components/ui/Phases/PhaseBase";
 
-const PHRASE = ["I", "SEE", "A TRAIN"];
-const IMAGE_PATHS = [
-  require("@/assets/images/phases/secret/train/i.png"),
-  require("@/assets/images/phases/secret/train/see.png"),
-  require("@/assets/images/phases/secret/train/a-train.png"),
-];
+import { useLoading } from "@/contexts/LoadingContext";
+import { useUser } from "@/contexts/UserContext";
+import { useFeedbackContext } from "@/contexts/FeedbackContext";
 
-const COLORS = ["#EF5B6A", "#6CD2FF", "#80D25B"];
-
-const TARGETS = [
-  { x: width * 0.15, y: height * 0.25, radius: 90 },
-  { x: width * 0.43, y: height * 0.25, radius: 90 },
-  { x: width * 0.71, y: height * 0.25, radius: 90 },
-];
-
-const START_POSITIONS = [
-  { x: width * 0.15, y: height * 0.65 },
-  { x: width * 0.43, y: height * 0.65 },
-  { x: width * 0.71, y: height * 0.65 },
-];
+import { RF, RH, RS, RW } from "@/theme";
+import { usePhaseContext } from "@/contexts/PhaseContext";
+import { Shadow } from "react-native-shadow-2";
+import { useAudioPlayer } from "expo-audio";
+import ModalInfo from "@/components/ui/ModalInfo";
+import HeaderPhase from "@/components/ui/Phases/HeaderPhase";
+import { Placement, Word } from "@/types/phases";
+import SecretFeedback from "@/components/ui/Phases/Feedbacks/SecretFeedback";
+import { phrase } from "@/constants/phases/train";
 
 export default function AtvSecretScreen() {
-  const [infoVisible, setInfoVisible] = useState(false);
   const router = useRouter();
 
-  const { user } = useUser();
-  const { showAlert } = useCustomAlert();
   const { showLoadingModal, hideLoadingModal } = useLoading();
-  const { reset, getDuration } = useScreenDuration();
-  const { submitMission } = useSubmitMission();
+  const { user } = useUser();
+  const { setFeedback } = useFeedbackContext();
 
-  // controla quais alvos já foram preenchidos
-  const [placed, setPlaced] = useState<boolean[]>(
-    Array(PHRASE.length).fill(false)
-  );
-  // qual imagem está no target i (ou undefined)
-  const [placedImage, setPlacedImage] = useState<
-    (any | undefined)[]
-  >(Array(PHRASE.length).fill(undefined));
-  // quem colocou (index do drag) no target i (ou undefined)
-  const [placedBy, setPlacedBy] = useState<(number | undefined)[]>(
-    Array(PHRASE.length).fill(undefined)
-  );
-  // total de encaixes feitos
-  const [hits, setHits] = useState(0);
+  const {
+    started,
 
-  const tx = PHRASE.map(() => useSharedValue(0));
-  const ty = PHRASE.map(() => useSharedValue(0));
-  const locked = PHRASE.map(() => useSharedValue(false)); // impede mover após encaixar
+    start,
+    finish,
+    restart,
 
-  // chamado quando um drag foi encaixado num target (targetIndex pode != dragIndex)
-  const onPlaceJS = (targetIndex: number, dragIndex: number) => {
-    // marcar target como preenchido com imagem do drag
-    setPlaced((prev) => {
-      const next = [...prev];
-      next[targetIndex] = true;
-      return next;
-    });
-    setPlacedImage((prev) => {
-      const next = [...prev];
-      next[targetIndex] = IMAGE_PATHS[dragIndex];
-      return next;
-    });
-    setPlacedBy((prev) => {
-      const next = [...prev];
-      next[targetIndex] = dragIndex;
-      return next;
-    });
-    setHits((prev) => {
-      const newHits = prev + 1;
-      return newHits;
-    });
+    incrementStats,
+  } = usePhaseContext();
+
+  const player = useAudioPlayer();
+
+  const [infoVisible, setInfoVisible] = useState(false);
+  const [selectedWord, setSelectedWord] = useState<Word | null>(null);
+
+  const [placements, setPlacements] = useState<Placement>([null, null, null]);
+
+  const playAudio = (audio: any) => {
+    if (!audio) return;
+
+    try {
+      player.replace(audio);
+      player.seekTo(0);
+      player.play();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  const gerarPontuacao = async() => {
+  /*
+   * ---------------------------------------
+   * ANSWERS
+   * ---------------------------------------
+   */
+
+  const handleSuccess = async () => {
     showLoadingModal();
-    const { durationFormatted } = getDuration();
-    let porcentagem = 100;
-    const response = await submitMission({
-      pontos: 150, 
-      tipoFase: "secret"
+
+    incrementStats({
+      points: 10,
+      coins: 1,
+      correctAnswers: 1,
     });
-    if (response.success) {
-      let pontosAtualizados = response.pontosAtualizados ?? 150;
-      const score = { pontosAtualizados, porcentagem, tempo: durationFormatted };
-      router.push({
-        pathname: '/screens/phasesscore',
-        params: { score: JSON.stringify(score) },
-      });
-    }
+
+    await finish();
+
     hideLoadingModal();
-  }
 
-  // quando todos colocados — verifica se todos corretos (target i foi preenchido pelo drag i)
-  useEffect(() => {
-    const allPlaced = placedBy.every((v) => v !== undefined);
-    if (allPlaced) {
-      const allCorrect = placedBy.every((by, idx) => by === idx);
-      if (allCorrect) {
-        gerarPontuacao();
-      } else {
-        showAlert({
-          icon: require("@/assets/icons/custom-alert/alert.png"),
-          title: "Ops...",
-          message: "Algumas combinações estão incorretas. Deseja ver a resposta correta?",
-          dualAction: true,
-          closeLabel: "Não",
-          redirectLabel: "Ver resposta",
-          onRedirect: () => Alert.alert("Resposta correta:", PHRASE.join(" "))
-        });
-
-      }
-    }
-  }, [placedBy]);
-
-  const createGesture = (dragIndex: number) =>
-    Gesture.Pan()
-      .onUpdate((e) => {
-        if (locked[dragIndex].value) return;
-        tx[dragIndex].value = e.translationX;
-        ty[dragIndex].value = e.translationY;
-      })
-      .onEnd(() => {
-        if (locked[dragIndex].value) return;
-
-        // posição final do centro do drag
-        const itemX = START_POSITIONS[dragIndex].x + tx[dragIndex].value;
-        const itemY = START_POSITIONS[dragIndex].y + ty[dragIndex].value;
-
-        // procurar o target mais próximo dentro do raio
-        let nearestIndex = -1;
-        let nearestDist = Number.POSITIVE_INFINITY;
-        TARGETS.forEach((t, i) => {
-          const d = Math.hypot(itemX - t.x, itemY - t.y);
-          if (d < nearestDist) {
-            nearestDist = d;
-            nearestIndex = i;
-          }
-        });
-
-        // se encontrou um target e dentro do raio
-        if (nearestIndex !== -1 && nearestDist <= TARGETS[nearestIndex].radius) {
-          // se target já ocupado -> voltar ao início (ou trocar se preferir)
-          if (placed[nearestIndex]) {
-            tx[dragIndex].value = withSpring(0);
-            ty[dragIndex].value = withSpring(0);
-            return;
-          }
-
-          // encaixa o drag naquele target (mesmo se for incorreto)
-          locked[dragIndex].value = true;
-          const finalTx =
-            TARGETS[nearestIndex].x - START_POSITIONS[dragIndex].x;
-          const finalTy =
-            TARGETS[nearestIndex].y - START_POSITIONS[dragIndex].y;
-          tx[dragIndex].value = withSpring(finalTx);
-          ty[dragIndex].value = withSpring(finalTy);
-
-          // informar ao JS que um dragIndex foi colocado no target nearestIndex
-          runOnJS(onPlaceJS)(nearestIndex, dragIndex);
-        } else {
-          // não caiu em nenhum alvo -> volta para posição inicial
-          tx[dragIndex].value = withSpring(0);
-          ty[dragIndex].value = withSpring(0);
-        }
-      });
-
-  const animatedStyles = PHRASE.map((_, i) =>
-    useAnimatedStyle(() => ({
-      transform: [{ translateX: tx[i].value }, { translateY: ty[i].value }],
-    }))
-  );
-
-  const playAudio = async (word: string) => {
-    const audioMap: Record<string, any> = {
-      "I": require("@/assets/audios/train-phase/i.m4a"),
-      "SEE": require("@/assets/audios/train-phase/see.m4a"),
-      "A TRAIN": require("@/assets/audios/train-phase/a-train.m4a"),
-    };
-
-    const { sound } = await Audio.Sound.createAsync(audioMap[word]);
-      await sound.playAsync();
-  
-      sound.setOnPlaybackStatusUpdate((status) => {
-        if (!status.isLoaded) return;
-  
-        if (status.didJustFinish) {
-          sound.unloadAsync();
-        }
-      });
+    router.push("/screens/phases/score");
   };
+
+  const handleError = () => {
+    incrementStats({
+      wrongAnswers: 1,
+    });
+
+    setFeedback({
+      label: `Veja a sequência correta`,
+
+      content: <SecretFeedback phrase="I SEE A TRAIN" correctOrder={phrase} />,
+    });
+
+    router.push("/screens/phases/errorFeedback");
+  };
+
+  const handlePlace = (targetIndex: number) => {
+    if (!selectedWord) return;
+
+    const updated = [...placements];
+
+    const existingIndex = updated.findIndex(
+      (item) => item?.id === selectedWord.id,
+    );
+
+    if (existingIndex !== -1) {
+      updated[existingIndex] = null;
+    }
+
+    updated[targetIndex] = selectedWord;
+
+    setPlacements(updated);
+    setSelectedWord(null);
+  };
+
+  const handleReset = () => {
+    setPlacements([null, null, null]);
+    setSelectedWord(null);
+  };
+
+  const handleConfirm = async () => {
+    const isCorrect = placements.every(
+      (item, index) => item?.id === phrase[index].id,
+    );
+
+    if (isCorrect) {
+      handleSuccess();
+    } else {
+      handleError();
+    }
+  };
+
+  /*
+   * ---------------------------------------
+   * RENDER
+   * ---------------------------------------
+   */
 
   return (
-    <ScrollView style={styles.container}>
-      <ContainerInfo
-        message="Essa é a fase secreta. Arraste as palavras para formar a frase corretamente."
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "#fff",
+        paddingHorizontal: RS(50),
+      }}
+    >
+      <ModalInfo
+        title={"Secret Stage"}
+        message={"Junte as peças e faça as fases"}
         visible={infoVisible}
         onClose={() => setInfoVisible(false)}
       />
 
-      <HeaderFase
+      <HeaderPhase
         image={require("@/assets/images/phases/secret/intro.png")}
-        title="Secret Stage"
-        description="Junte as peças e faça Frases"
-        color="#6CD2FF"
+        title={"Secret Stage"}
+        description={"Junte as peças e faça as fases"}
+        color={"#6CD2FF"}
         onPressInfo={() => setInfoVisible(true)}
-        secret
+        onBack={() => router.back()}
       />
-      {/* ALVOS */}
-      <View style={styles.viewItems}>
-        {TARGETS.map((_, i) => (
-          <ImageBackground
-            key={i}
-            source={
-              placed[i]
-                ? placedImage[i] // imagem do drag que foi colocado ali
-                : require("@/assets/images/shadow-rectangles/phase-train/option-container.png")
-            }
-            style={styles.target}
-            resizeMode="contain"
-          />
-        ))}
-      </View>
 
-      {/* FRASE COLORIDA */}
-      <ImageBackground
-        source={require("@/assets/images/shadow-rectangles/phase-train/phrase-container.png")}
-        style={styles.viewFrase}
-        resizeMode="contain"
-      >
-        {PHRASE.map((word, i) => (
-          <Text key={i} style={[styles.text, { color: COLORS[i] }]}>
-            {word}
-          </Text>
-        ))}
-      </ImageBackground>
-
-      {/* ITENS ARRASTÁVEIS */}
-      <View style={styles.dragZone}>
-        {PHRASE.map((word, i) => (
-          <GestureDetector key={i} gesture={createGesture(i)}>
-            <Animated.View
-              style={[
-                styles.drag,
-                {
-                  left: START_POSITIONS[i].x - width * 0.12,
-                  top: START_POSITIONS[i].y - height * 0.12,
-                  opacity: placedBy.some((p) => p === i) ? 0 : 1, // esconde se já usado em algum target
-                },
-                animatedStyles[i],
-              ]}
-            >
-              <TouchableOpacity 
-                activeOpacity={1} 
-                onPress={() => user?.audioActive ? playAudio(word) : null}
-                style={{width: "100%", height: "100%"}}
-                >
-                <ImageBackground
-                  source={IMAGE_PATHS[i]}
-                  style={styles.dragImage}
-                  resizeMode="contain"
-                />
-                </TouchableOpacity>
-            </Animated.View>
-          </GestureDetector>
-        ))}
-      </View>
-
-      <TouchableOpacity 
-        onPress={() => {
-          //@ts-ignore
-          navigation.replace(navigation.getState().routes.at(-1)?.name as string)
-          reset();
-        }} 
+      <View
         style={{
-            backgroundColor: "#4c4c4c",
-            borderRadius: scale(10),
-            width: width * 0.3,
-            position: "absolute",
-            bottom: -height * 0.29,
-            left: width * 0.29,
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-            <Text style={{
-              fontSize: width * 0.04,
-              fontFamily: "Montserrat_700Bold",
-              padding: width * 0.02,
-              color: "#fff"
-            }}>
-              Reiniciar
-            </Text>
-      </TouchableOpacity>
-    </ScrollView>
+          gap: RS(30),
+          marginTop: RS(20),
+        }}
+      >
+        {/* TARGETS */}
+        <View
+          className="flex-row justify-between"
+          style={{
+            gap: RS(20),
+            marginBottom: RS(10),
+          }}
+        >
+          {placements.map((item, i) => {
+            const isActive = !!selectedWord;
+
+            return (
+              <TouchableOpacity
+                key={i}
+                activeOpacity={0.9}
+                onPress={() => handlePlace(i)}
+              >
+                {item ? (
+                  <ImageBackground
+                    source={item.image}
+                    style={{
+                      width: RW(90),
+                      height: RW(110),
+                      aspectRatio: 114 / 137,
+                    }}
+                  />
+                ) : (
+                  <Shadow
+                    distance={10}
+                    startColor={
+                      isActive ? "rgba(108,210,255,0.45)" : "rgba(0,0,0,0.20)"
+                    }
+                    offset={[0, 0]}
+                    style={{
+                      borderRadius: 30,
+                    }}
+                  >
+                    <View
+                      className="items-center justify-center bg-white"
+                      style={{
+                        width: RW(90),
+                        height: RH(140),
+                        padding: RS(16),
+                        borderRadius: 30,
+                        borderWidth: isActive ? 3 : 0,
+                        borderColor: "#6CD2FF",
+                      }}
+                    />
+                  </Shadow>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* FRASE */}
+        <Shadow
+          distance={8}
+          startColor="rgba(0,0,0,0.25)"
+          offset={[0, 0]}
+          style={{
+            alignSelf: "stretch",
+          }}
+        >
+          <View
+            className="flex-row items-center justify-center bg-white"
+            style={{
+              padding: RS(16),
+              gap: RS(10),
+              borderRadius: 20,
+              flexWrap: "wrap",
+            }}
+          >
+            {phrase.map((word, i) => (
+              <Text
+                key={i}
+                className="font-montserratSemiBold"
+                style={{
+                  fontSize: RF(24),
+                  color: word.color,
+                }}
+              >
+                {word.label}
+              </Text>
+            ))}
+          </View>
+        </Shadow>
+
+        {/* ITENS */}
+        <View className="flex-row justify-between">
+          {phrase.map((word, i) => {
+            const isSelected = selectedWord?.id === word.id;
+
+            const isPlaced = placements.some((item) => item?.id === word.id);
+
+            if (isPlaced) {
+              return (
+                <View
+                  key={i}
+                  style={{
+                    width: RW(90),
+                    height: RW(110),
+                  }}
+                />
+              );
+            }
+
+            return (
+              <TouchableOpacity
+                key={i}
+                activeOpacity={0.9}
+                onPress={() => {
+                  setSelectedWord(word);
+
+                  if (user?.audioActive) {
+                    playAudio(word.audio);
+                  }
+                }}
+              >
+                <View
+                  className="bg-white items-center justify-center"
+                  style={{
+                    padding: RS(4),
+                    borderRadius: 24,
+                    borderColor: "#6CD2FF",
+                  }}
+                >
+                  <ImageBackground
+                    source={word.image}
+                    style={{
+                      width: isSelected ? RW(100) : RW(90),
+                      height: isSelected ? RW(120) : RW(110),
+                      aspectRatio: 114 / 137,
+                    }}
+                  />
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* ACTIONS */}
+        <View
+          className="flex-row justify-center items-center"
+          style={{
+            gap: RS(20),
+          }}
+        >
+          <TouchableOpacity onPress={handleConfirm}>
+            <Image
+              source={require("@/assets/icons/phases/confirm-red.png")}
+              style={{
+                width: RW(46),
+                aspectRatio: 1 / 1,
+              }}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={handleReset}>
+            <Image
+              source={require("@/assets/icons/phases/clear.png")}
+              style={{
+                width: RW(40),
+                aspectRatio: 1 / 1,
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
   );
 }
-
-const styles = ScaledSheet.create({
-  container: {
-    backgroundColor: "#fff",
-    flex: 1,
-    paddingHorizontal: width * 0.08,
-  },
-  viewItems: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: height * 0.02,
-  },
-  target: {
-    width: width * 0.23,
-    aspectRatio: 108 / 153,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  viewFrase: {
-    flexDirection: "row",
-    width: width * 0.85,
-    gap: width * 0.02,
-    aspectRatio: 342 / 70,
-    marginTop: height * 0.03,
-    marginBottom: height * 0.05,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  text: {
-    fontSize: scale(18),
-    fontFamily: "Montserrat_700Bold",
-  },
-  dragZone: {
-    position: "absolute",
-    width: width,
-    height: height * 0.5,
-    bottom: scale(20),
-  },
-  drag: {
-    position: "absolute",
-    width: width * 0.25,
-    aspectRatio: 108 / 153,
-    marginTop: -height * 0.01,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  dragImage: {
-    width: "100%",
-    height: "100%",
-  },
-});

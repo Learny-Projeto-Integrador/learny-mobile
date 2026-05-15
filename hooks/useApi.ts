@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useGetToken } from "./useGetToken";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "@/contexts/UserContext";
@@ -24,12 +23,21 @@ type UseApiReturn<T> = {
   request: (params: RequestParams) => Promise<T | ApiError>;
 };
 
+
 export function useApi<T = any>(
   baseUrl = process.env.EXPO_PUBLIC_API_URL
 ): UseApiReturn<T> {
   const [loading, setLoading] = useState(false);
-  const { getToken } = useGetToken();
   const { setUser } = useUser();
+
+  const getToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      return token;
+    } catch (e) {
+      console.error("Erro ao buscar o token", e);
+    }
+  };
 
   const handleLogout = async () => {
     try {
