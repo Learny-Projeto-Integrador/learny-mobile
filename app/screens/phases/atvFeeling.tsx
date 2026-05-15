@@ -21,7 +21,9 @@ import { colors } from "@/constants/colors";
 export default function AtvFeelingScreen() {
   const router = useRouter();
 
-  const [correctOption, setCorrectOption] = useState<FeelingOption | null>(null);
+  const [correctOption, setCorrectOption] = useState<FeelingOption | null>(
+    null,
+  );
   const [phaseOptions, setPhaseOptions] = useState<FeelingOption[]>([]);
   const [shuffledOptions, setShuffledOptions] = useState<FeelingOption[]>([]);
 
@@ -36,6 +38,7 @@ export default function AtvFeelingScreen() {
     finish,
     restart,
 
+    stats,
     incrementStats,
 
     useHint,
@@ -101,13 +104,13 @@ export default function AtvFeelingScreen() {
   const handleSuccess = async () => {
     showLoadingModal();
 
-    incrementStats({
+    const updatedStats = incrementStats({
       points: 10,
       coins: 1,
       correctAnswers: 1,
     });
 
-    await finish();
+    await finish(updatedStats);
 
     hideLoadingModal();
 
@@ -201,7 +204,9 @@ export default function AtvFeelingScreen() {
   return (
     <PhaseBase
       title="Watch & Listen"
-      description={started ? "Veja a imagem e ligue à emoção correta" : "How are you?"}
+      description={
+        started ? "Veja a imagem e ligue à emoção correta" : "How are you?"
+      }
       question={started ? "The dinousaur is" : "I am"}
       color="#94ECA5"
       headerImage={require("@/assets/images/phases/feeling/intro.png")}

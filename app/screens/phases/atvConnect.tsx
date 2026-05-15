@@ -102,13 +102,13 @@ export default function AtvConnectScreen() {
   const handleSuccess = async () => {
     showLoadingModal();
 
-    incrementStats({
+    const updatedStats = incrementStats({
       points: 10,
       coins: 1,
       correctAnswers: 1,
     });
 
-    await finish();
+    await finish(updatedStats);
 
     hideLoadingModal();
 

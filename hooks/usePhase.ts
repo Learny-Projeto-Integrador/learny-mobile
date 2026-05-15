@@ -50,15 +50,19 @@ export function usePhase() {
       : Math.round((stats.correctAnswers / totalAnswers) * 100);
 
   const incrementStats = (values: Partial<PhaseStats>) => {
-    setStats((prev) => ({
-      points: prev.points + (values.points ?? 0),
+    const nextStats = {
+      points: stats.points + (values.points ?? 0),
 
-      coins: prev.coins + (values.coins ?? 0),
+      coins: stats.coins + (values.coins ?? 0),
 
-      correctAnswers: prev.correctAnswers + (values.correctAnswers ?? 0),
+      correctAnswers: stats.correctAnswers + (values.correctAnswers ?? 0),
 
-      wrongAnswers: prev.wrongAnswers + (values.wrongAnswers ?? 0),
-    }));
+      wrongAnswers: stats.wrongAnswers + (values.wrongAnswers ?? 0),
+    };
+
+    setStats(nextStats);
+
+    return nextStats;
   };
 
   const [hintUsed, setHintUsed] = useState(false);
@@ -140,15 +144,27 @@ export function usePhase() {
    * ---------------------------------------
    */
 
-  const finish = async () => {
+  const finish = async (customStats?: PhaseStats) => {
+    const duration = getDuration();
+
+    const finalStats = customStats ?? stats;
+
+    const totalAnswers = finalStats.correctAnswers + finalStats.wrongAnswers;
+
+    const finalPercentage =
+      totalAnswers === 0
+        ? 0
+        : Math.round((finalStats.correctAnswers / totalAnswers) * 100);
+
     try {
       const result = await request({
         endpoint: "/child/progress/complete-phase",
         method: "PUT",
         body: {
-          points: stats.points,
-          coins: stats.coins,
-          percentage,
+          points: finalStats.points,
+          coins: finalStats.coins,
+          time: duration.durationFormatted,
+          percentage: finalPercentage,
           worldCode,
           moduleCode,
           phaseCode,
@@ -207,7 +223,7 @@ export function usePhase() {
       points: 0,
       coins: 0,
       correctAnswers: 0,
-      wrongAnswers: 0
+      wrongAnswers: 0,
     });
 
     setHintUsed(false);

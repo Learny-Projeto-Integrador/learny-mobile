@@ -20,8 +20,8 @@ interface Props {
 
 const phasesScreens = [
   "/screens/phases/atvFeeling",
-  "/screens/phases/atvMemory",
-  "/screens/phases/atvFeeling",
+  "/screens/phases/atvConnect",
+  "/screens/phases/atvListening",
   "/screens/phases/atvBoss",
 ];
 
@@ -138,7 +138,7 @@ export default function ModuleTrail({
                   <PhaseCircle
                     number={String(initial).padStart(2, "0")}
                     completed={phase.completed}
-                    locked={!unlocked}
+                    unlocked={unlocked && !phase.completed}
                   />
                 )}
               </TouchableOpacity>

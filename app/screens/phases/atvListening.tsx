@@ -119,10 +119,7 @@ export default function AtvListenScreen() {
     const randomIncorrect = shuffleArray(incorrectOptions).slice(0, 2);
 
     // ordem correta baseada nos speakers
-    const finalAudioOptions = shuffleArray([
-      randomCorrect,
-      ...randomIncorrect,
-    ]);
+    const finalAudioOptions = shuffleArray([randomCorrect, ...randomIncorrect]);
 
     // embaralha imagens separadamente
     let finalImageOptions = shuffleArray(finalAudioOptions);
@@ -152,13 +149,13 @@ export default function AtvListenScreen() {
   const handleSuccess = async () => {
     showLoadingModal();
 
-    incrementStats({
+    const updatedStats = incrementStats({
       points: 10,
       coins: 1,
       correctAnswers: 1,
     });
 
-    await finish();
+    await finish(updatedStats);
 
     hideLoadingModal();
 
@@ -215,8 +212,9 @@ export default function AtvListenScreen() {
    * ---------------------------------------
    */
 
-  const [selectedOption, setSelectedOption] =
-    useState<FeelingOption | null>(null);
+  const [selectedOption, setSelectedOption] = useState<FeelingOption | null>(
+    null,
+  );
 
   const [placements, setPlacements] = useState<(FeelingOption | null)[]>([
     null,
@@ -281,7 +279,9 @@ export default function AtvListenScreen() {
   return (
     <PhaseBase
       title="Listen & Answer"
-      description={started ? "Ouça o nome e encontre ele escrito" : "How are you?"}
+      description={
+        started ? "Ouça o nome e encontre ele escrito" : "How are you?"
+      }
       question={started ? "The dinousaur is" : "I am"}
       color="#94ECA5"
       headerImage={require("@/assets/images/phases/listen/intro.png")}
@@ -407,9 +407,7 @@ export default function AtvListenScreen() {
           {imageOptions.map((option, key) => {
             const isSelected = selectedOption?.id === option.id;
 
-            const isPlaced = placements.some(
-              (item) => item?.id === option.id,
-            );
+            const isPlaced = placements.some((item) => item?.id === option.id);
 
             if (isPlaced) {
               return (

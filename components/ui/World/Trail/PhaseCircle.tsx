@@ -3,14 +3,20 @@ import { RW, RS } from "@/theme";
 
 interface Props {
   number: string;
-  completed: boolean;
-  locked?: boolean;
+  completed?: boolean;
+  unlocked?: boolean;
 }
 
-export default function PhaseCircle({ number, completed, locked }: Props) {
+export default function PhaseCircle({
+  number,
+  completed,
+  unlocked,
+}: Props) {
   const backgroundImage = completed
     ? require("@/assets/images/trail/phases-backgrounds/unlocked.png")
-    : require("@/assets/images/trail/phases-backgrounds/locked.png");
+    : unlocked
+      ? require("@/assets/images/trail/phases-backgrounds/unlocked.png")
+      : require("@/assets/images/trail/phases-backgrounds/locked.png");
 
   return (
     <ImageBackground

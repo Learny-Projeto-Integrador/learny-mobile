@@ -46,7 +46,7 @@ export default function FeelingCard({ audio, text, color, onPress }: Props) {
         <Text
           style={{
             color: "#fff",
-            fontSize: RF(26),
+            fontSize: RF(22),
             fontFamily: "Montserrat_700Bold",
             textAlign: "center",
           }}

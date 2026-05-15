@@ -57,7 +57,11 @@ export default function WorldScreen() {
       (w) => w.worldCode === worldCode,
     );
 
-    const completedSet = new Set(currentWorldProgress?.completedPhases || []);
+    const completedSet = new Set(
+      (currentWorldProgress?.completedPhases || [])
+        .filter((phase) => phase.completed)
+        .map((phase) => phase.phaseCode),
+    );
 
     return worldData.modules
       .filter((module) => module.phases.length > 0)

@@ -88,7 +88,7 @@ export default function HeaderPhase({
           }}
         >
           <Text
-            className="font-montserratBold text-white"
+            className="font-montserratBold text-white text-center"
             style={{ fontSize: RF(20) }}
           >
             {description}
