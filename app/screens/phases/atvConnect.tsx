@@ -297,7 +297,7 @@ export default function AtvConnectScreen() {
   return (
     <PhaseBase
       title="Watch & match"
-      description="Emoções"
+      description={started ? "Ligue as emoções" : "How are you?"}
       color="#6CD2FF"
       headerImage={require("@/assets/images/phases/connect/intro.png")}
       tutorialTitle="Como Jogar"

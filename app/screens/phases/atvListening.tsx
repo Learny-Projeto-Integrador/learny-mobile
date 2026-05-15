@@ -281,7 +281,8 @@ export default function AtvListenScreen() {
   return (
     <PhaseBase
       title="Listen & Answer"
-      description="Ouça o nome e encontre ele escrito"
+      description={started ? "Ouça o nome e encontre ele escrito" : "How are you?"}
+      question={started ? "The dinousaur is" : "I am"}
       color="#94ECA5"
       headerImage={require("@/assets/images/phases/listen/intro.png")}
       tutorialTitle="Como Jogar"

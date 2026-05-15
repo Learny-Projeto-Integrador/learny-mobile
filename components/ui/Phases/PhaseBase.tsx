@@ -8,7 +8,7 @@ import { RS, RW } from "@/theme";
 interface Props {
   title: string;
   description: string;
-  question: string;
+  question?: string;
   color: string;
   headerImage: any;
 
@@ -64,7 +64,7 @@ export default function PhaseBase({
         image={headerImage}
         title={title}
         description={description}
-        question={question}
+        question={question ? question : undefined}
         color={color}
         onPressInfo={() => setInfoVisible(true)}
         onBack={onBack}

@@ -7,7 +7,7 @@ type Props = {
   image: any;
   title: string;
   description: string;
-  question: string;
+  question?: string;
   color: string;
   onPressInfo?: () => void;
   onBack?: () => void;
@@ -95,22 +95,25 @@ export default function HeaderPhase({
           </Text>
         </View>
       </Shadow>
-      <View
-        className="items-center justify-center bg-[#80D25B]"
-        style={{
-          marginHorizontal: RS(80),
-          padding: RS(10),
-          borderBottomLeftRadius: 20,
-          borderBottomRightRadius: 20,
-        }}
-      >
-        <Text
-          className="font-montserratBold text-white"
-          style={{ fontSize: RF(20) }}
+
+      {question && (
+        <View
+          className="items-center justify-center bg-[#80D25B]"
+          style={{
+            marginHorizontal: RS(80),
+            padding: RS(10),
+            borderBottomLeftRadius: 20,
+            borderBottomRightRadius: 20,
+          }}
         >
-          {question.toUpperCase()}
-        </Text>
-      </View>
+          <Text
+            className="font-montserratBold text-white"
+            style={{ fontSize: RF(20) }}
+          >
+            {question.toUpperCase()}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
