@@ -74,6 +74,15 @@ export default function LoginScreen() {
    * Envia requisição de login para a API
    */
   const handleLogin = async () => {
+    if (username == "" || password == "") {
+      showAlert({
+        icon: require("@/assets/icons/custom-alert/alert.png"),
+        title: "Erro ao logar!",
+        message: "Preencha todos os campos!",
+      });
+      return;
+    }
+    
     const result = await request({
       endpoint: "/auth/login",
       method: "POST",
