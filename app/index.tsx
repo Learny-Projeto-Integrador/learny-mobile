@@ -53,13 +53,12 @@ export default function LoginScreen() {
       method: "GET",
     });
 
-    if (result && !result.error) { 
+    if (result && !result.error) {
       setUser({
         username: result.username,
         name: result.name,
         rankingActive: result.rankingActive,
         audioActive: result.audioActive,
-        points: result.points,
         profilePicture: result.profilePicture,
       });
     } else {
@@ -114,84 +113,85 @@ export default function LoginScreen() {
       end={{ x: 1, y: 1 }}
       style={{ flex: 1 }}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          className="flex-1"
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingHorizontal: RS(24),
+            paddingVertical: RS(24),
+            gap: RS(24),
+          }}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
         >
-          <ScrollView
-            contentContainerClassName="flex-1 items-center justify-center"
-            contentContainerStyle={{
-              paddingHorizontal: RS(24),
-              gap: RS(24),
+          {/* Logo */}
+          <Image
+            style={{
+              width: RW(110),
+              height: RW(110),
             }}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
+            source={require("@/assets/images/logo.png")}
+            resizeMode="contain"
+          />
+
+          {/* Títulos */}
+          <View
+            style={{ marginHorizontal: RW(10) }}
+            className="items-center gap-4"
           >
-            {/* Logo */}
-            <Image
-              style={{
-                width: RW(110),
-                height: RW(110),
-              }}
-              source={require("@/assets/images/logo.png")}
-              resizeMode="contain"
+            <Text
+              className="text-white font-montserratBold text-center"
+              style={{ fontSize: RF(22) }}
+            >
+              Entre em sua conta Learny
+            </Text>
+            <Text
+              className="text-white font-montserratRegular text-center"
+              style={{ fontSize: RF(20) }}
+            >
+              Faça login com suas informações de cadastro
+            </Text>
+          </View>
+
+          {/* Inputs */}
+          <View className="w-[90%] gap-4 items-center">
+            <LoginInput
+              field="Usuário"
+              value={username}
+              onChange={setUsername}
+            />
+            <LoginInput
+              field="Senha"
+              value={password}
+              onChange={setPassword}
+              isPassword
             />
 
-            {/* Títulos */}
-            <View
-              style={{ marginHorizontal: RW(10) }} 
-              className="items-center gap-4"
+            {/* Botão */}
+            <TouchableOpacity
+              className="w-full bg-gray-100 rounded-2xl items-center justify-center"
+              style={{ height: RH(56) }}
+              onPress={handleLogin}
             >
-              <Text 
-                className="text-white font-montserratBold text-center"
-                style={{ fontSize: RF(22) }}
-              >
-                Entre em sua conta Learny
-              </Text>
-              <Text 
-                className="text-white font-montserratRegular text-center"
-                style={{ fontSize: RF(20) }}
-              >
-                Faça login com suas informações de cadastro
-              </Text>
-            </View>
-
-            {/* Inputs */}
-            <View className="w-[90%] gap-4 items-center">
-              <LoginInput
-                field="Usuário"
-                value={username}
-                onChange={setUsername}
-              />
-              <LoginInput
-                field="Senha"
-                value={password}
-                onChange={setPassword}
-                isPassword
-              />
-
-              {/* Botão */}
-              <TouchableOpacity
-                className="w-full bg-gray-100 rounded-2xl items-center justify-center"
-                style={{ height: RH(56) }}
-                onPress={handleLogin}
-              >
-                {loading ? (
-                  <ActivityIndicator size="large" color="#547d98" />
-                ) : (
-                  <Text 
-                    className="text-[#547d98] font-montserratBold"
-                    style={{ fontSize: RF(18) }}
-                  >
-                    Entrar
-                  </Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
+              {loading ? (
+                <ActivityIndicator size="large" color="#547d98" />
+              ) : (
+                <Text
+                  className="text-[#547d98] font-montserratBold"
+                  style={{ fontSize: RF(18) }}
+                >
+                  Entrar
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 }

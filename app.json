@@ -20,7 +20,8 @@
       "permissions": [
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
-      "package": "com.joaokirimis.learnymobile"
+      "package": "com.joaokirimis.learnymobile",
+      "softwareKeyboardLayoutMode": "resize"
     },
     "web": {
       "bundler": "metro",
