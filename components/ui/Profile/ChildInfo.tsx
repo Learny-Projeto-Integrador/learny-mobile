@@ -8,72 +8,59 @@ interface Props {
   name: string;
   profilePicture: string | null;
   level: number;
-  progressLevel: number;
 }
 
-export default function ChildInfo({
-  name,
-  profilePicture,
-  level,
-  progressLevel,
-}: Props) {
+export default function ChildInfo({ name, profilePicture, level }: Props) {
   const router = useRouter();
 
   return (
-    <View style={{ gap: RS(20) }}>
-      <View className="flex-row" style={{ gap: RS(20) }}>
-        <Image
-          style={{
-            width: RW(120),
-            height: RW(120),
-            borderRadius: 30,
-          }}
-          source={
-            profilePicture
-              ? { uri: profilePicture }
-              : require("@/assets/images/logo.png")
-          }
-        />
+    <View className="flex-row justify-between" style={{ gap: RS(20) }}>
+      <Image
+        style={{
+          width: RW(120),
+          height: RW(120),
+          borderRadius: 20,
+        }}
+        source={
+          profilePicture
+            ? { uri: profilePicture }
+            : require("@/assets/images/logo.png")
+        }
+      />
 
-        <View className="justify-center" style={{ width: RW(120) }}>
-          {name.split(" ").map((part: string, index: number) => (
-            <GradientText
-              color1="#EF5B6A"
-              color2="#6CD2FF"
-              key={index}
-              style={{ fontFamily: "Montserrat_700Bold", fontSize: RF(34) }}
-            >
-              {part}
-            </GradientText>
-          ))}
-
-          <Text
-            className="font-montserratExtraBold"
-            style={{ color: "#4c4c4c", fontSize: RF(20) }}
+      <View className="justify-center" style={{ width: RW(120) }}>
+        {name.split(" ").map((part: string, index: number) => (
+          <GradientText
+            color1="#EF5B6A"
+            color2="#6CD2FF"
+            key={index}
+            style={{ fontFamily: "Montserrat_700Bold", fontSize: RF(34) }}
           >
-            lvl{" "}
-            <Text className="font-montserratBold" style={{ fontSize: RF(24) }}>
-              {level}
-            </Text>
-          </Text>
-        </View>
+            {part}
+          </GradientText>
+        ))}
 
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="items-center"
-          style={{ paddingTop: RS(20) }}
+        <Text
+          className="font-montserratExtraBold"
+          style={{ color: "#4c4c4c", fontSize: RF(20) }}
         >
-          <Image
-            style={{ width: RW(30), height: RW(30) }}
-            source={require("@/assets/icons/back.png")}
-          />
-        </TouchableOpacity>
+          lvl{" "}
+          <Text className="font-montserratBold" style={{ fontSize: RF(24) }}>
+            {level}
+          </Text>
+        </Text>
       </View>
 
-      <ProgressBarLvl
-        points={progressLevel?.toString() || "0"}
-        progress={progressLevel || 0}
-      />
+      <TouchableOpacity
+        onPress={() => router.back()}
+        className="items-center"
+        style={{ paddingTop: RS(20) }}
+      >
+        <Image
+          style={{ width: RW(30), height: RW(30) }}
+          source={require("@/assets/icons/back.png")}
+        />
+      </TouchableOpacity>
     </View>
   );
 }

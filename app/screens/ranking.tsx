@@ -16,6 +16,12 @@ import Container from "@/components/ui/Container";
 import { RF, RH, RS, RW } from "@/theme";
 import ModalInfo from "@/components/ui/ModalInfo";
 
+type RankingInfo = {
+  profilePicture: string;
+  name: string;
+  points: string;
+};
+
 export default function RankingScreen() {
   const router = useRouter();
 
@@ -26,8 +32,14 @@ export default function RankingScreen() {
   const { showAlert } = useCustomAlert();
 
   /** Estados */
-  const [ranking, setRanking] = useState([{}]);
+  const [ranking, setRanking] = useState<RankingInfo[]>([]);
   const [infoVisible, setInfoVisible] = useState(false);
+
+  const emptyRankingItem: RankingInfo = {
+    profilePicture: "",
+    name: "",
+    points: "",
+  };
 
   /**
    * Carrega o ranking das crianças
@@ -62,14 +74,16 @@ export default function RankingScreen() {
   );
 
   /** Processa items do ranking e divide entre pódio e outros utilizando slice */
-  const podiumItems = [...ranking.slice(0, 3)];
-  const otherItems = [...ranking.slice(3, 7)];
+  const podiumItems: RankingInfo[] = [...ranking.slice(0, 3)];
+
+  const otherItems: RankingInfo[] = [...ranking.slice(3, 7)];
 
   while (podiumItems.length < 3) {
-    podiumItems.push({});
+    podiumItems.push({ ...emptyRankingItem });
   }
+
   while (otherItems.length < 4) {
-    otherItems.push({});
+    otherItems.push({ ...emptyRankingItem });
   }
 
   return (
@@ -91,7 +105,10 @@ export default function RankingScreen() {
         style={{ gap: RS(30), paddingHorizontal: RW(60) }}
       >
         {/* Título da tela, botão de informações e voltar */}
-        <View className="flex-row w-full items-center justify-between">
+        <View
+          className="flex-row w-full items-center justify-between"
+          style={{ marginBottom: RS(20) }}
+        >
           <TouchableOpacity onPress={() => setInfoVisible(true)}>
             <Image
               source={require("@/assets/icons/phases/info.png")}
@@ -101,7 +118,7 @@ export default function RankingScreen() {
 
           <Text
             className="font-montserratBold"
-            style={{ color: "#4C4C4C", fontSize: RF(26) }}
+            style={{ color: "#4C4C4C", fontSize: RF(26), marginLeft: RS(16) }}
           >
             Ranking
           </Text>
@@ -119,13 +136,13 @@ export default function RankingScreen() {
 
         {/* Cards do pódio */}
         <View style={{ gap: RS(20) }}>
-          {podiumItems.map((item: any, index: any) => (
+          {podiumItems.map((item, index) => (
             <PodiumCard
-              key={item?.id || `empty-${index}`}
-              image={item?.profilePicture?.toString() || ""}
-              name={item?.name?.toString() || ""}
+              key={`podium-${index}`}
+              image={item.profilePicture}
+              name={item.name}
               rank={index + 1}
-              points={item?.points !== undefined ? item.points.toString() : ""}
+              points={item.points}
             />
           ))}
         </View>
@@ -140,14 +157,15 @@ export default function RankingScreen() {
             gap: RS(10),
             paddingVertical: RS(20),
             marginBottom: RH(90),
+            zIndex: 1,
           }}
         >
-          {otherItems.map((item: any, index: any) => (
+          {otherItems.map((item, index) => (
             <OtherRanking
-              key={item?.id || `empty-other-${index}`}
-              name={item?.name?.toString() || ""}
-              rank={(index + 4).toString()}
-              points={item?.points !== undefined ? item.points.toString() : ""}
+              key={`other-${index}`}
+              name={item.name}
+              rank={index + 4}
+              points={item.points}
             />
           ))}
         </View>
@@ -159,7 +177,7 @@ export default function RankingScreen() {
           style={{
             width: RW(400),
             height: RH(300),
-            zIndex: -1,
+            zIndex: 0,
           }}
         />
       </View>

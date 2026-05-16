@@ -4,8 +4,9 @@ import { useCustomAlert } from "@/contexts/AlertContext";
 import { useApi } from "@/hooks/useApi";
 import { useLocalSearchParams } from "expo-router";
 import Container from "@/components/ui/Container";
-import { World } from "@/types";
+import { World } from "@/types/worlds";
 import WorldTrail from "@/components/ui/World/Trail/WorldTrail";
+import { useCharacters } from "@/hooks/useCharacters";
 
 /**
  * Página world
@@ -23,6 +24,7 @@ export default function WorldScreen() {
   /** Contextos */
   const { progress } = useProgress();
   const { showAlert } = useCustomAlert();
+  const { selectedCharacter, getCharacters } = useCharacters();
 
   const [worldData, setWorldData] = useState<World | null>(null);
 
@@ -80,12 +82,16 @@ export default function WorldScreen() {
   useEffect(() => {
     if (worldCode) {
       getWorldData();
+      getCharacters();
     }
   }, [worldCode]);
 
   return (
     <Container mode="customTop" colors={["#80D25B", "#80D25B"]}>
-      <WorldTrail modules={modulesWithProgress} />
+      <WorldTrail 
+        selectedCharacter={selectedCharacter} 
+        modules={modulesWithProgress} 
+      />
     </Container>
   );
 }

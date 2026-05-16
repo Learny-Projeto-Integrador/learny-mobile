@@ -6,7 +6,7 @@ import { useApi } from "@/hooks/useApi";
 import { useCustomAlert } from "@/contexts/AlertContext";
 import WorldBanner from "@/components/ui/Home/WorldBanner";
 import ExtraModeBanner from "@/components/ui/Home/ExtraModeBanner";
-import { ProgressWorld, World, WorldWithProgress } from "@/types";
+import { ProgressWorld, World, WorldWithProgress } from "@/types/worlds";
 import Container from "@/components/ui/Container";
 import { useRouter } from "expo-router";
 
@@ -59,7 +59,7 @@ export default function HomeScreen() {
 
     return {
       ...world,
-      progress: worldProgress?.percentage ?? 0,
+      percentage: worldProgress?.percentage ?? 0,
       unlocked: worldProgress?.unlocked ?? false,
       completedPhases: worldProgress?.completedPhases ?? [],
     };
@@ -107,10 +107,10 @@ export default function HomeScreen() {
             name={world.name}
             description={world.description}
             num={index + 1}
-            progress={world.progress}
+            percentage={world.percentage}
             color={world.color}
             worldCode={world.code}
-            // unlocked={world.unlocked}
+            unlocked={world.unlocked}
           />
         );
       })}

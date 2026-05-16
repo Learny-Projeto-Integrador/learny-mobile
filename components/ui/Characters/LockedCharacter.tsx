@@ -1,36 +1,22 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image } from "react-native";
 import { RW, RH, RF, RS } from "@/theme";
-import ProgressBarCharacter from "./ProgressBarCharacter";
 
 interface Props {
-  name: string;
   image: string;
-  level: number;
-  characterPoints: number; // %
-  effect: string;
+  description: string;
   tags: string[];
-  onPress?: () => void;
 }
 
-export default function SelectedCharacter({
-  name,
-  image,
-  level,
-  characterPoints,
-  effect,
-  tags,
-  onPress,
-}: Props) {
+export default function LockedCharacter({ image, description, tags }: Props) {
   return (
-    <TouchableOpacity
-      onPress={onPress}
+    <View
       className="flex-row bg-white items-center"
       style={{
         paddingVertical: RS(16),
         paddingRight: RS(30),
         gap: RS(8),
         borderWidth: 2,
-        borderColor: "#E5E7EB",
+        borderColor: "#4c4c4c",
         borderRadius: RW(20),
       }}
     >
@@ -41,51 +27,19 @@ export default function SelectedCharacter({
         style={{
           width: RW(120),
           height: RW(100),
+          tintColor: "rgba(0,0,0,0.5)"
         }}
       />
 
       <View style={{ gap: RS(12), flex: 1 }}>
         {/* HEADER */}
         <View className="flex-row justify-between items-end">
-          <View>
-            <Text
-              className="font-montserratMedium text-gray-400"
-              style={{ fontSize: RF(14) }}
-            >
-              Selected
-            </Text>
-            <Text
-              className="font-montserratBold text-gray-700"
-              style={{ fontSize: RF(18) }}
-            >
-              {name}
-            </Text>
-          </View>
-
           <Text
-            className="font-montserratMedium text-yellow-500"
-            style={{ fontSize: RF(20) }}
+            className="font-montserratBold text-gray-700"
+            style={{ fontSize: RF(18) }}
           >
-            Lv.
-            <Text
-              className="font-montserratExtraBold"
-              style={{ fontSize: RF(26) }}
-            >
-              {level.toString().padStart(2, "0")}
-            </Text>
+            ????
           </Text>
-        </View>
-
-        {/* CONTENT */}
-        <View className="flex-row items-center" style={{ gap: RS(12) }}>
-          {/* INFO */}
-          <View style={{ flex: 1, gap: RS(6) }}>
-            {/* PROGRESS BAR */}
-            <ProgressBarCharacter
-              label={`${characterPoints}%`}
-              progress={characterPoints}
-            />
-          </View>
         </View>
 
         <View className="items-center justify-center" style={{ gap: RS(12) }}>
@@ -94,7 +48,7 @@ export default function SelectedCharacter({
             className="font-montserratSemiBold text-gray-500 text-center"
             style={{ fontSize: RF(12) }}
           >
-            {effect}
+            {description}
           </Text>
           {/* TAGS */}
           <View className="flex-row" style={{ gap: RS(8) }}>
@@ -119,6 +73,6 @@ export default function SelectedCharacter({
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 }

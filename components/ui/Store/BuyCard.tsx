@@ -1,27 +1,33 @@
+import { useState } from "react";
+
+import { useProgress } from "@/contexts/ProgressContext";
+import { useCustomAlert } from "@/contexts/AlertContext";
+
+import { useApi } from "@/hooks/useApi";
+
 import { RF, RH, RS, RW } from "@/theme";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 
 interface Props {
   image: any;
   stellarPoints: number;
+  userCoins: number;
   cost: number;
+
   confirming?: boolean;
-  onBuy: () => void;
+
   onOpen: () => void;
   onClose: () => void;
 }
 
-function ClosedCard({
-  image,
-  stellarPoints,
-  cost,
-  onOpen,
-}: {
-  image: any;
-  stellarPoints: number;
-  cost: number;
-  onOpen: () => void;
-}) {
+function ClosedCard({ image, stellarPoints, cost, onOpen }: Props) {
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -60,17 +66,18 @@ function ClosedCard({
           minWidth: RW(70),
           borderRadius: RW(10),
           paddingHorizontal: RS(12),
-          gap: RS(10)
+          gap: RS(10),
         }}
       >
         <Image
-              source={require("@/assets/icons/header/coins.png")}
-              resizeMode="contain"
-              style={{
-                width: RW(18),
-                height: RW(18),
-              }}
-            />
+          source={require("@/assets/icons/header/coins.png")}
+          resizeMode="contain"
+          style={{
+            width: RW(18),
+            height: RW(18),
+          }}
+        />
+
         <Text
           className="font-montserratBold text-[#4C4C4C]"
           style={{
@@ -84,19 +91,74 @@ function ClosedCard({
   );
 }
 
-function OpenCard({
-  image,
-  stellarPoints,
-  cost,
-  onBuy,
-  onClose,
-}: {
-  image: any;
-  stellarPoints: number;
-  cost: number;
-  onBuy: () => void;
-  onClose: () => void;
-}) {
+function OpenCard({ image, stellarPoints, userCoins, cost, onClose }: Props) {
+  const [loading, setLoading] = useState(false);
+
+  const { request } = useApi();
+
+  const { setProgress } = useProgress();
+
+  const { showAlert } = useCustomAlert();
+
+  const handleBuy = async () => {
+    if (loading) return;
+
+    if (userCoins < cost) {
+      showAlert({
+        icon: require("@/assets/icons/custom-alert/alert.png"),
+        title: "Coins insuficientes!",
+        message: "Você não possui coins suficientes.",
+      });
+
+      return;
+    }
+
+    setLoading(true);
+
+    const result = await request({
+      endpoint: "/child/progress",
+      method: "PUT",
+      body: {
+        stellarPoints,
+        coins: -cost,
+      },
+    });
+
+    setLoading(false);
+
+    if (result && !result.error) {
+      showAlert({
+        icon: require("@/assets/icons/custom-alert/check-gradient.png"),
+        title: "Compra realizada com sucesso!",
+        message: `Sua compra de ${stellarPoints} SP foi realizada com sucesso.`,
+      });
+
+      setProgress((prev) => {
+        if (!prev) return prev;
+
+        return {
+          ...prev,
+
+          stellarPoints: (prev.stellarPoints || 0) + stellarPoints,
+
+          coins: (prev.coins || 0) - cost,
+        };
+      });
+
+      onClose();
+
+      return;
+    }
+
+    if (result?.status !== 401) {
+      showAlert({
+        icon: require("@/assets/icons/custom-alert/alert.png"),
+        title: "Erro ao realizar compra!",
+        message: result?.message || "Tente novamente.",
+      });
+    }
+  };
+
   return (
     <View
       className="bg-[#4C4C4C] flex-row"
@@ -118,6 +180,7 @@ function OpenCard({
         >
           {stellarPoints}
         </Text>
+
         <Image
           source={image}
           resizeMode="contain"
@@ -136,16 +199,14 @@ function OpenCard({
           paddingHorizontal: RS(24),
         }}
       >
-        <View style={{ gap: RS(4) }}>
-          <Text
-            className="font-montserratMedium text-white"
-            style={{
-              fontSize: RF(17),
-            }}
-          >
-            {`Confirmar a compra de ${stellarPoints} SP por ${cost} coins?`}
-          </Text>
-        </View>
+        <Text
+          className="font-montserratMedium text-white"
+          style={{
+            fontSize: RF(17),
+          }}
+        >
+          {`Confirmar a compra de ${stellarPoints} SP por ${cost} coins?`}
+        </Text>
 
         {/* BOTÕES */}
         <View
@@ -174,31 +235,40 @@ function OpenCard({
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={onBuy}
+            disabled={loading}
+            onPress={handleBuy}
             className="bg-white flex-row items-center justify-center"
             style={{
               height: RW(38),
               borderRadius: RW(10),
               paddingHorizontal: RS(18),
               gap: RS(10),
+              opacity: loading ? 0.6 : 1,
             }}
           >
-            <Image
-              source={require("@/assets/icons/header/coins.png")}
-              resizeMode="contain"
-              style={{
-                width: RW(24),
-                height: RW(24),
-              }}
-            />
-            <Text
-              className="font-montserratBold text-[#4C4C4C]"
-              style={{
-                fontSize: RF(18),
-              }}
-            >
-              {cost}
-            </Text>
+            {loading ? (
+              <ActivityIndicator />
+            ) : (
+              <>
+                <Image
+                  source={require("@/assets/icons/header/coins.png")}
+                  resizeMode="contain"
+                  style={{
+                    width: RW(24),
+                    height: RW(24),
+                  }}
+                />
+
+                <Text
+                  className="font-montserratBold text-[#4C4C4C]"
+                  style={{
+                    fontSize: RF(18),
+                  }}
+                >
+                  {cost}
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
       </View>

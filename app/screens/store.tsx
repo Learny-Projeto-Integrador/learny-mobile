@@ -5,12 +5,18 @@ import { RW, RH, RF, RS } from "@/theme";
 import { useRouter } from "expo-router";
 import DiscountBanner from "@/components/ui/Store/DiscountBanner";
 import BuyCard from "@/components/ui/Store/BuyCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BuyCardContainer from "@/components/ui/Store/BuyCardContainer";
+import { useProgress } from "@/contexts/ProgressContext";
 
 export default function Store() {
   const router = useRouter();
+  const { progress, getProgress } = useProgress();
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
+
+  useEffect(() => {
+    getProgress();
+  }, [])
   
   return (
     <Container mode="customTop" colors={["#FFCC4D", "#FFCC4D"]}>
@@ -61,39 +67,39 @@ export default function Store() {
                 <BuyCardContainer>
                   <BuyCard
                     image={{uri: "https://pi-learny.s3.us-east-1.amazonaws.com/store/sp-small.png"}}
-                    stellarPoints={100}
-                    cost={100}
+                    stellarPoints={2}
+                    cost={2}
+                    userCoins={progress?.coins || 0}
                     confirming={selectedCard === 0}
                     onOpen={() => setSelectedCard(0)}
                     onClose={() => setSelectedCard(null)}
-                    onBuy={() => console.log("comprou")}
                   />
                   <BuyCard
                     image={{uri: "https://pi-learny.s3.us-east-1.amazonaws.com/store/sp-small.png"}}
                     stellarPoints={100}
                     cost={100}
+                    userCoins={progress?.coins || 0}
                     confirming={selectedCard === 1}
                     onOpen={() => setSelectedCard(1)}
                     onClose={() => setSelectedCard(null)}
-                    onBuy={() => console.log("comprou")}
                   />
                   <BuyCard
                     image={{uri: "https://pi-learny.s3.us-east-1.amazonaws.com/store/sp-small.png"}}
                     stellarPoints={100}
                     cost={100}
+                    userCoins={progress?.coins || 0}
                     confirming={selectedCard === 2}
                     onOpen={() => setSelectedCard(2)}
                     onClose={() => setSelectedCard(null)}
-                    onBuy={() => console.log("comprou")}
                   />
                   <BuyCard
                     image={{uri: "https://pi-learny.s3.us-east-1.amazonaws.com/store/sp-small.png"}}
                     stellarPoints={100}
                     cost={100}
+                    userCoins={progress?.coins || 0}
                     confirming={selectedCard === 3}
                     onOpen={() => setSelectedCard(3)}
                     onClose={() => setSelectedCard(null)}
-                    onBuy={() => console.log("comprou")}
                   />
                 </BuyCardContainer>
             </View>

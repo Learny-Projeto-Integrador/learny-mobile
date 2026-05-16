@@ -2,9 +2,9 @@ import { RF, RS, RW } from '@/theme';
 import { View, Text, Image } from 'react-native';
 
 interface Props {
-  rank: string;
   name: string;
-  points: number;
+  rank: number;
+  points: string;
 }
 
 export default function OtherRanking ({ rank, name, points }: Props) {

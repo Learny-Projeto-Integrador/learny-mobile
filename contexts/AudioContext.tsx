@@ -4,11 +4,11 @@ import {
   useContext,
 } from "react";
 
-import { useAudioPlayer } from "expo-audio";
+import { AudioSource, useAudioPlayer } from "expo-audio";
 import { useUser } from "./UserContext";
 
 interface AudioContextData {
-  playAudio: (audio: any) => void;
+  playAudio: (audio: AudioSource) => void;
   stopAudio: () => void;
 }
 

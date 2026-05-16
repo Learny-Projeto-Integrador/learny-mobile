@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import type { Progress } from "@/types";
+import type { Progress } from "@/types/progress";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useApi } from "@/hooks/useApi";
 import { useCustomAlert } from "./AlertContext";
@@ -26,12 +26,14 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     if (result && !result.error) {
       setProgress({
         points: result.points,
+        coins: result.coins,
+        stellarPoints: result.stellarPoints,
+        streak: result.streak,
+        selectedCharacter: result.selectedCharacter,
         completedPhases: result.completedPhases,
-        ranking: result.ranking,
-        selectedMedal: result.selectedMedal,
         worlds: result.worlds,
         dailyMissions: result.dailyMissions,
-        medals: result.medals
+        characters: result.characters,
       });
     } else {
       if (result.status === 404) return;

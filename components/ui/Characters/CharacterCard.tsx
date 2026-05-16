@@ -73,7 +73,7 @@ export default function CharacterCard({ image, name, level, characterPoints, mod
       >
         {/* Personagem */}
         <Image
-          source={image}
+          source={{uri: image}}
           resizeMode="contain"
           style={{
             width: RW(140),

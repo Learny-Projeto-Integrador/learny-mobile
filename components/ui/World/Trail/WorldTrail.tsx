@@ -1,15 +1,32 @@
 import { Image, Text, View } from "react-native";
-import { RW, RH, RF } from "@/theme";
+import { RW, RH, RF, RS } from "@/theme";
 import ModuleTrail from "@/components/ui/World/Trail/ModuleTrail";
-import { Module } from "@/types";
+import { Module } from "@/types/worlds";
+import { CharacterWithProgress } from "@/types/characters";
+import TrailCharacterCard from "../../Characters/TrailCaracterCard";
+import { useRouter } from "expo-router";
 
 interface Props {
+  selectedCharacter: CharacterWithProgress | null;
   modules: Module[];
 }
 
-export default function WorldTrail({ modules }: Props) {
+export default function WorldTrail({ selectedCharacter, modules }: Props) {
+  const router = useRouter();
   return (
     <View className="w-full self-end">
+
+      
+      {selectedCharacter && (
+        <View style={{ paddingHorizontal: RS(40), marginBottom: RS(40) }}>
+          <TrailCharacterCard 
+            image={selectedCharacter.image}
+            name={selectedCharacter.name}
+            level={selectedCharacter.level}
+            onPress={() => router.push("/screens/characters")}
+          />
+        </View>
+       )}
 
       {/* Início (bandeira) */}
       <View style={{ alignItems: "center", marginRight: RW(50) }}>

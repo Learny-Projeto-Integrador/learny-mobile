@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { ImageSourcePropType } from "react-native";
+import { AudioSource } from "expo-audio";
 
 export type PhaseStats = {
   points: number;
@@ -23,7 +24,7 @@ export type EmotionOption = {
   id: string;
   image: ImageSourcePropType;
   bigImage: ImageSourcePropType;
-  audio: string;
+  audio: AudioSource;
   emotion: string;
   color?: string;
 };
@@ -47,8 +48,8 @@ export type Connection = {
 
 export type ListenItem = {
   id: string;
-  audio: any;
-  color: any;
+  audio: AudioSource;
+  color: string;
   expectedLabel: string;
 };
 
@@ -58,14 +59,14 @@ export type Balloon = {
   size: number;
   letter: string;
   color: string;
-  audio: any;
+  audio: AudioSource;
 }
 
 export type Word = {
   id: number;
   label: string;
-  audio: any;
-  image: any;
+  audio: AudioSource;
+  image: ImageSourcePropType;
   color: string;
 };
 

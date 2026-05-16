@@ -1,65 +1,106 @@
-import { View, Text, Animated } from "react-native";
-import { useState, useEffect } from "react";
+import { View, Text, Animated, Easing } from "react-native";
+import { useRef, useEffect } from "react";
+
 import { LinearGradient } from "expo-linear-gradient";
-import { RF, RH, RW } from "@/theme";
+
+import { RF, RH, RS, RW } from "@/theme";
 
 interface Props {
   points: string;
-  progress: number;
+  progress: number; // 0 -> 100
 }
 
-export default function ProgressBarLvl({ points, progress }: Props) {
-  const [widthAnim] = useState(new Animated.Value(0));
+export default function ProgressBarLvl({
+  points,
+  progress,
+}: Props) {
+  /*
+   * ---------------------------------------
+   * ANIMATION
+   * ---------------------------------------
+   */
+
+  const animatedWidth = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.timing(widthAnim, {
+    Animated.timing(animatedWidth, {
       toValue: progress,
-      duration: 500,
+      duration: 600,
+      easing: Easing.out(Easing.ease),
       useNativeDriver: false,
     }).start();
   }, [progress]);
 
+  /*
+   * ---------------------------------------
+   * INTERPOLATION
+   * ---------------------------------------
+   */
+
+  const widthInterpolation = animatedWidth.interpolate({
+    inputRange: [0, 100],
+    outputRange: ["0%", "100%"],
+  });
+
+  /*
+   * ---------------------------------------
+   * RENDER
+   * ---------------------------------------
+   */
+
   return (
     <LinearGradient
       colors={["#b25563", "#669bbb"]}
-      className="w-full flex-row items-center bg-white overflow-hidden"
-      style={{ height: RH(46), borderRadius: 10 }}
+      className="w-full flex-row items-center"
+      style={{
+        height: RH(46),
+        borderRadius: 10,
+        overflow: "hidden",
+      }}
     >
+      {/* EXP */}
       <View
         className="h-full items-center justify-center bg-[#4c4c4c]"
-        style={{ width: RW(70), borderRadius: 5 }}
+        style={{
+          width: RW(75),
+        }}
       >
         <Text
           className="font-montserratBold text-white"
-          style={{ fontSize: RF(18) }}
+          style={{
+            fontSize: RF(16),
+          }}
         >
           exp: {points}
         </Text>
       </View>
+
+      {/* BAR CONTAINER */}
       <View
-        className="w-full overflow-hidden justify-center bg-white"
+        className="flex-1 justify-center bg-white"
         style={{
-          height: RH(35),
-          marginRight: RW(5),
+          height: RH(36),
+          marginRight: RS(8),
           borderTopRightRadius: 5,
           borderBottomRightRadius: 5,
+          overflow: "hidden",
         }}
       >
+        {/* ANIMATED GRADIENT */}
         <Animated.View
-          className="h-full items-center justify-center"
           style={{
-            width: widthAnim.interpolate({
-              inputRange: [0, 100],
-              outputRange: ["0%", "100%"],
-            }),
-            borderRadius: 10,
+            width: widthInterpolation,
+            height: "100%",
+            paddingVertical: RS(5)
           }}
         >
           <LinearGradient
             colors={["#b25563", "#669bbb"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={{ width: "100%", height: RH(20) }}
+            style={{
+              flex: 1,
+            }}
           />
         </Animated.View>
       </View>

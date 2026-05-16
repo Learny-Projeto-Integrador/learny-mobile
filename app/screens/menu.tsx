@@ -7,8 +7,9 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import Container from "@/components/ui/Container";
-import { RF, RS, RW } from "@/theme";
+import { RF, RH, RS, RW } from "@/theme";
 import { LinearGradient } from "expo-linear-gradient";
+import { Shadow } from "react-native-shadow-2";
 
 export default function MenuScreen() {
   const router = useRouter();
@@ -17,32 +18,29 @@ export default function MenuScreen() {
   const buttons = [
     {
       route: "/screens/diary",
-      icon: require("@/assets/icons/menu/diary.png")
+      icon: require("@/assets/icons/menu/diary.png"),
     },
     {
       route: "/screens/profile",
-      icon: require("@/assets/icons/menu/profile.png")
+      icon: require("@/assets/icons/menu/profile.png"),
     },
     {
       route: "/screens/ranking",
-      icon: require("@/assets/icons/menu/ranking.png")
-    }
-  ]
+      icon: require("@/assets/icons/menu/ranking.png"),
+    },
+  ];
 
   return (
-    <Container
-      mode="customTop"
-      colors={["#973e4a", "#4b85a1"]}
-    >
+    <Container mode="customTop" colors={["#973e4a", "#4b85a1"]}>
       <View style={{ paddingHorizontal: RS(40), gap: RS(50) }}>
         {/* Título e botão de fechar */}
-        <View 
+        <View
           className="flex-row items-center justify-center"
           style={{ marginHorizontal: RW(20) }}
         >
           <Text
             className="font-montserratBold"
-            style={{ color:"#4C4C4C", fontSize: RF(30)}}
+            style={{ color: "#4C4C4C", fontSize: RF(30) }}
           >
             Atalhos
           </Text>
@@ -60,7 +58,7 @@ export default function MenuScreen() {
 
         {/* Botões do menu */}
         <LinearGradient
-          colors={['#b25563', '#669bbb']}
+          colors={["#b25563", "#669bbb"]}
           className="flex-row justify-between items-center w-full"
           style={{ padding: RS(30), borderRadius: 50 }}
         >
@@ -79,35 +77,43 @@ export default function MenuScreen() {
         </LinearGradient>
 
         {/* Quadro de missões Diárias */}
-        <ImageBackground
-            source={require("@/assets/images/shadow-rectangles/daily-missions.png")}
-            className="flex items-center"
+        <Shadow
+          distance={6}
+          startColor="rgba(0,0,0,0.15)"
+          offset={[0, 0]}
+          style={{
+            alignSelf: "stretch",
+          }}
+        >
+          <View
+            className="bg-white items-center"
             style={{
-              aspectRatio: 356 / 399,
-              paddingVertical: RS(40)
+              borderRadius: 30,
+              paddingHorizontal: RS(20),
+              paddingVertical: RS(40),
             }}
           >
-            <Text 
+            <Text
               className="font-montserratBold text-center"
               style={{
                 color: "#b5b5b5",
                 fontSize: RW(20),
               }}
             >
-                Missões Diárias
+              Missões Diárias
             </Text>
             <View style={{ flexDirection: "row", gap: 10 }}>
-              <Image 
-                source={require("@/assets/images/missions/daily/one-phase.png")} 
+              <Image
+                source={require("@/assets/images/missions/daily/one-phase.png")}
                 style={{
                   width: RW(250),
                   aspectRatio: 378 / 103,
                   marginTop: RS(20),
-                }} 
+                }}
               />
             </View>
-        </ImageBackground>
-
+          </View>
+        </Shadow>
       </View>
     </Container>
   );

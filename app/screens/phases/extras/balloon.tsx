@@ -20,7 +20,7 @@ import { balloonColors, wordList, alphabetAudioMap } from "@/constants/phases/ba
 import { RF, RH, RS, RW } from "@/theme";
 import ModalInfo from "@/components/ui/ModalInfo";
 
-import { useAudioPlayer } from "expo-audio";
+import { useAudio } from "@/contexts/AudioContext";
 
 export default function AtvBossScreen() {
   const router = useRouter();
@@ -37,8 +37,6 @@ export default function AtvBossScreen() {
     incrementStats,
   } = usePhaseContext();
 
-  const player = useAudioPlayer();
-
   const [items, setItems] = useState<Balloon[]>([]);
   const [selectedWord, setSelectedWord] = useState<string>("");
   const [revealedLetters, setRevealedLetters] = useState<string[]>([]);
@@ -52,6 +50,8 @@ export default function AtvBossScreen() {
   const lastLetterRef = useRef<string | null>(null);
 
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+  const { playAudio } = useAudio();
 
   /*
    * ---------------------------------------
@@ -166,18 +166,6 @@ export default function AtvBossScreen() {
     await finish();
 
     router.push("/screens/phases/score");
-  };
-
-  const playLetterAudio = (audio: any) => {
-    if (!audio) return;
-
-    try {
-      player.replace(audio);
-      player.seekTo(0);
-      player.play();
-    } catch (e) {
-      console.log(e);
-    }
   };
 
   const handlePress = async (item: Balloon) => {
@@ -361,7 +349,7 @@ export default function AtvBossScreen() {
             letter={item.letter}
             color={item.color}
             audio={item.audio}
-            onPlayAudio={playLetterAudio}
+            onPlayAudio={() => playAudio(item.audio)}
             onPress={() => handlePress(item)}
           />
         </MotiView>

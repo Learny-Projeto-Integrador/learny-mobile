@@ -72,9 +72,10 @@ interface WorldBannerProps {
   name: string;
   description: string;
   num: number;
-  progress: number;
+  percentage: number;
   color: string;
   worldCode: string;
+  unlocked: boolean;
 }
 
 export default function WorldBanner({
@@ -82,9 +83,10 @@ export default function WorldBanner({
   name,
   description,
   num,
-  progress,
+  percentage,
   color,
   worldCode,
+  unlocked,
 }: WorldBannerProps) {
   const router = useRouter();
 
@@ -141,7 +143,7 @@ export default function WorldBanner({
           </Text>
 
           {/* Progresso */}
-          <ProgressBar progress={progress} color={color} />
+          <ProgressBar progress={percentage} color={color} />
         </View>
       </ImageBackground>
     </TouchableOpacity>

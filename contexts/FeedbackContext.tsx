@@ -1,15 +1,15 @@
 import { createContext, useContext, useState } from "react";
 
-type FeedBack = {
+type Feedback = {
   label: string | null;
   content: React.ReactNode | null;
 };
 
 type FeedbackContextData = {
-  feedback: FeedBack | null;
+  feedback: Feedback | null;
 
   setFeedback: React.Dispatch<
-    React.SetStateAction<FeedBack | null>
+    React.SetStateAction<Feedback | null>
   >;
 };
 
@@ -18,7 +18,7 @@ const FeedbackContext =
 
 export function FeedbackProvider({ children }: any) {
   const [feedback, setFeedback] =
-    useState<FeedBack | null>(null);
+    useState<Feedback | null>(null);
 
   return (
     <FeedbackContext.Provider

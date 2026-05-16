@@ -1,9 +1,15 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import CustomAlert from "@/components/ui/CustomAlert";
-import type { AlertData } from "@/types";
+import type { CustomAlertType } from "@/types/alert";
 
 type AlertContextType = {
-  showAlert: (data: AlertData) => void;
+  showAlert: (data: CustomAlertType) => void;
 };
 
 const AlertContext = createContext<AlertContextType | undefined>(undefined);
@@ -17,12 +23,12 @@ export function useCustomAlert() {
 type Props = { children: ReactNode };
 
 export function AlertProvider({ children }: Props) {
-  const [queue, setQueue] = useState<AlertData[]>([]);
-  const [current, setCurrent] = useState<AlertData | null>(null);
+  const [queue, setQueue] = useState<CustomAlertType[]>([]);
+  const [current, setCurrent] = useState<CustomAlertType | null>(null);
   const [visible, setVisible] = useState(false);
 
-  const showAlert = (data: AlertData) => {
-    setQueue(prev => [...prev, data]);
+  const showAlert = (data: CustomAlertType) => {
+    setQueue((prev) => [...prev, data]);
   };
 
   // quando não há alerta atual e a fila tem itens, pega o próximo

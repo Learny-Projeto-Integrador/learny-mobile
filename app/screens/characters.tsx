@@ -5,39 +5,93 @@ import { RF, RH, RS, RW } from "@/theme";
 import CharacterCard from "@/components/ui/Characters/CharacterCard";
 import SelectedCharacter from "@/components/ui/Characters/SelectedCharacter";
 import ModalSelectCharacter from "@/components/ui/Characters/ModalSelectCharacter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FallbackCard from "@/components/ui/Characters/FallbackCard";
 import ModalUpgradeCharacter from "@/components/ui/Characters/ModalUpgradeCharacter";
+import { useCharacters } from "@/hooks/useCharacters";
+import LockedCharacter from "@/components/ui/Characters/LockedCharacter";
+import { CharacterWithProgress } from "@/types/characters";
+import { useApi } from "@/hooks/useApi";
+import { useProgress } from "@/contexts/ProgressContext";
+import { useCustomAlert } from "@/contexts/AlertContext";
 
 export default function CharactersScreen() {
   const router = useRouter();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [upgradeCharacter, setUpgradeCharacter] =
+    useState<CharacterWithProgress | null>(null);
+
+  const [previewCharacter, setPreviewCharacter] =
+    useState<CharacterWithProgress | null>(null);
+
+  const { request } = useApi();
+  const { progress, setProgress } = useProgress();
+  const { showAlert } = useCustomAlert();
+
+  const {
+    selectedCharacter,
+    unlockedCharacters,
+    lockedCharacters,
+    getCharacters,
+  } = useCharacters();
+
+  const handleChangeCharacter = async (code: string) => {
+    const result = await request({
+      endpoint: "/child/progress",
+      method: "PUT",
+      body: {
+        selectedCharacter: code,
+      },
+    });
+
+    if (result && !result.error) {
+      setProgress((prev) => {
+        if (!prev) return prev;
+        return { ...prev, selectedCharacter: code };
+      });
+      setPreviewCharacter(null);
+      getCharacters();
+    } else {
+      if (result.status != 401) {
+        showAlert({
+          icon: require("@/assets/icons/custom-alert/alert.png"),
+          title: "Erro ao atualizar o personagem selecionado!",
+          message: result.message,
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    getCharacters();
+  }, []);
 
   return (
-    <Container
-      mode="customTop"
-      colors={["#4C4C4C", "#4C4C4C"]}
-    >
-      {/* <ModalSelectCharacter
-        name="Johny Hero"
-        image="https://pi-learny.s3.us-east-1.amazonaws.com/characters/johny-hero.png"
-        level={5}
-        characterPoints={75}
-        effect="Increases damage by 20%"
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-      /> */}
+    <Container mode="customTop" colors={["#4C4C4C", "#4C4C4C"]}>
+      {previewCharacter && (
+        <ModalSelectCharacter
+          name={previewCharacter.name}
+          image={previewCharacter.image}
+          level={previewCharacter.level}
+          characterPoints={previewCharacter.characterPoints}
+          effect={previewCharacter.effect}
+          visible={!!previewCharacter}
+          onSelect={() => handleChangeCharacter(previewCharacter?.code)}
+          onClose={() => setPreviewCharacter(null)}
+        />
+      )}
 
-      <ModalUpgradeCharacter
-        name="Johny Hero"
-        image="https://pi-learny.s3.us-east-1.amazonaws.com/characters/johny-hero.png"
-        level={5}
-        characterPoints={100}
-        costUpgrade={50}
-        effect="Increases damage by 20%"
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-      />
+      {upgradeCharacter && (
+        <ModalUpgradeCharacter
+          level={upgradeCharacter.level}
+          characterPoints={upgradeCharacter.characterPoints}
+          name={upgradeCharacter.name}
+          image={upgradeCharacter.image}
+          effect={upgradeCharacter.effect}
+          costUpgrade={50}
+          visible={!!upgradeCharacter}
+          onClose={() => setUpgradeCharacter(null)}
+        />
+      )}
 
       <View style={{ paddingHorizontal: RS(40), gap: RS(30) }}>
         {/* Título e botão de fechar */}
@@ -61,56 +115,42 @@ export default function CharactersScreen() {
           </TouchableOpacity>
         </View>
 
-        <FallbackCard />
+        {unlockedCharacters.length === 0 && <FallbackCard />}
 
-        <SelectedCharacter
-          name="Johny Hero"
-          image="https://pi-learny.s3.us-east-1.amazonaws.com/characters/johny-hero.png"
-          level={5}
-          characterPoints={75}
-          effect="Increases damage by 20%"
-          tags={["Hero", "Warrior"]}
-        />
+        {selectedCharacter && (
+          <SelectedCharacter
+            level={selectedCharacter.level}
+            characterPoints={selectedCharacter.characterPoints}
+            name={selectedCharacter.name}
+            image={selectedCharacter.image}
+            effect={selectedCharacter.effect}
+            tags={selectedCharacter.tags}
+            onPress={() => setUpgradeCharacter(selectedCharacter)}
+          />
+        )}
 
         <View className="flex-row flex-wrap" style={{ gap: RS(20) }}>
-          <CharacterCard
-            image={{
-              uri: "https://pi-learny.s3.us-east-1.amazonaws.com/characters/johny-hero.png",
-            }}
-            name="Character 1"
-            level={5}
-            color="#FFFC58"
-          />
-          <CharacterCard
-            image={{
-              uri: "https://pi-learny.s3.us-east-1.amazonaws.com/characters/johny-hero.png",
-            }}
-            name="Character 1"
-            level={5}
-            color="#FFFC58"
-            onPress={() => setModalVisible(true)}
-          />
-          <CharacterCard
-            image={{
-              uri: "https://pi-learny.s3.us-east-1.amazonaws.com/characters/johny-hero.png",
-            }}
-            name="Character 1"
-            level={5}
-            color="#FFFC58"
-          />
+          {unlockedCharacters.map((character, index) => (
+            <CharacterCard
+              key={character.code}
+              image={character.image}
+              name={character.name}
+              level={character.level}
+              color="#FFFC58"
+              onPress={() => setPreviewCharacter(character)}
+            />
+          ))}
         </View>
 
-        <View className="flex-row flex-wrap" style={{ gap: RS(20) }}>
-          <CharacterCard
-            image={{
-              uri: "https://pi-learny.s3.us-east-1.amazonaws.com/characters/johny-hero.png",
-            }}
-            name="Character 1"
-            mode="upgrade"
-            characterPoints={75}
-            level={5}
-            color="#FFFC58"
-          />
+        <View style={{ gap: RS(20) }}>
+          {lockedCharacters.map((lockedCharacter, index) => (
+            <LockedCharacter
+              key={lockedCharacter.code}
+              image={lockedCharacter.image}
+              description={lockedCharacter.unlockDescription}
+              tags={lockedCharacter.tags}
+            />
+          ))}
         </View>
       </View>
     </Container>

@@ -7,12 +7,9 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
 } from "react-native";
 import { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import type { TokenPayload } from "@/types";
 import { useApi } from "@/hooks/useApi";
 import LoginInput from "@/components/ui/LoginInput";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,6 +19,7 @@ import { jwtDecode } from "jwt-decode";
 import { RW, RH, RF, RS } from "@/theme";
 import { useProgress } from "@/contexts/ProgressContext";
 import { useRouter } from "expo-router";
+import { TokenPayload } from "@/types/user";
 
 /**
  * Página inicial da aplicação (Login)

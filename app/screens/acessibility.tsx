@@ -6,6 +6,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useApi } from "@/hooks/useApi";
 import { RF, RS, RW } from "@/theme";
 import { useRouter } from "expo-router";
+import { Shadow } from "react-native-shadow-2";
 
 export default function AcessibilityScreen() {
   const router = useRouter();
@@ -24,14 +25,14 @@ export default function AcessibilityScreen() {
       endpoint: "/child",
       method: "PUT",
       body: {
-        audio: newValue,
+        audioActive: newValue,
       },
     });
 
     if (result && !result.error) {
       setUser((prev) => {
         if (!prev) return prev;
-        return { ...prev, audioAtivado: newValue };
+        return { ...prev, audioActive: newValue };
       });
     } else {
       if (result.status != 401) {
@@ -46,10 +47,11 @@ export default function AcessibilityScreen() {
 
   return (
     <View
+      className="bg-white flex-1"
       style={{
-        aspectRatio: 354 / 201,
         paddingHorizontal: RS(50),
-        paddingVertical: RS(40),
+        paddingVertical: RS(60),
+        gap: RS(40),
       }}
     >
       {/* Título e botão de voltar */}
@@ -80,35 +82,51 @@ export default function AcessibilityScreen() {
       </View>
 
       {/* Opções de acessibilidade */}
-      <View style={{ gap: RS(30), marginTop: RS(40) }}>
-        <View className="w-full flex-row items-center justify-between">
-          <Text
-            className="font-montserratMedium"
-            style={{
-              color: "#aeaeae",
-              fontSize: RF(20),
-            }}
-          >
-            Desligar Audio
-          </Text>
-          <CustomSwitch
-            value={user?.audioActive || false}
-            onToggle={toggleAudio}
-          />
+      <Shadow
+        distance={6}
+        startColor="rgba(0,0,0,0.1)"
+        offset={[0, 0]}
+        style={{
+          alignSelf: "stretch",
+        }}
+      >
+        <View
+          className="bg-white"
+          style={{
+            gap: RS(30),
+            padding: RS(30),
+            borderRadius: 20,
+          }}
+        >
+          <View className="w-full flex-row items-center justify-between">
+            <Text
+              className="font-montserratMedium"
+              style={{
+                color: "#aeaeae",
+                fontSize: RF(20),
+              }}
+            >
+              Desligar Audio
+            </Text>
+            <CustomSwitch
+              value={user?.audioActive || false}
+              onToggle={toggleAudio}
+            />
+          </View>
+          <View className="w-full flex-row items-center justify-between">
+            <Text
+              className="font-montserratMedium"
+              style={{
+                color: "#aeaeae",
+                fontSize: RF(20),
+              }}
+            >
+              Mudar Cores
+            </Text>
+            <CustomSwitch value={true} />
+          </View>
         </View>
-        <View className="w-full flex-row items-center justify-between">
-          <Text
-            className="font-montserratMedium"
-            style={{
-              color: "#aeaeae",
-              fontSize: RF(20),
-            }}
-          >
-            Mudar Cores
-          </Text>
-          <CustomSwitch value={true} />
-        </View>
-      </View>
+      </Shadow>
     </View>
   );
 }

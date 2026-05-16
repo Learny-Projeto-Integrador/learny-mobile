@@ -1,5 +1,12 @@
-import { View, Text, Image, ImageBackground, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ImageBackground,
+  TouchableOpacity,
+} from "react-native";
 import { RF, RS, RW } from "@/theme";
+import { Shadow } from "react-native-shadow-2";
 
 interface Props {
   title: string;
@@ -10,16 +17,24 @@ interface Props {
 export default function RedirectItem({ title, icon, onPress }: Props) {
   return (
     <TouchableOpacity onPress={onPress}>
-      <ImageBackground
-        source={require("@/assets/images/profile/navigation-option.png")}
-        className="justify-center"
+      <Shadow
+        distance={8}
+        startColor="rgba(0,0,0,0.15)"
+        offset={[0, 0]}
         style={{
-          width: RW(320),
-          aspectRatio: 354 / 87,
-          paddingHorizontal: RS(30),
+          alignSelf: "stretch",
         }}
       >
-        <View className="flex-row items-center" style={{ gap: RS(20) }}>
+        <View
+          className="flex-row items-center bg-white"
+          style={{
+            width: RW(300),
+            paddingHorizontal: RS(40),
+            paddingVertical: RS(24),
+            gap: RS(20),
+            borderRadius: 70,
+          }}
+        >
           <Image
             style={{
               width: RW(40),
@@ -37,7 +52,7 @@ export default function RedirectItem({ title, icon, onPress }: Props) {
             {title}
           </Text>
         </View>
-      </ImageBackground>
+      </Shadow>
     </TouchableOpacity>
   );
 }

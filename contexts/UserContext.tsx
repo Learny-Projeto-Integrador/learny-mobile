@@ -1,9 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import type { User } from "@/types";
+import type { User } from "@/types/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { useApi } from "@/hooks/useApi";
-import { useCustomAlert } from "./AlertContext";
 
 type UserContextType = {
   user: User | null;
