@@ -1,16 +1,61 @@
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { useRouter } from "expo-router";
 import Container from "@/components/ui/Container";
-import { RF, RH, RS, RW } from "@/theme";
+import { RF, RS, RW } from "@/theme";
 import NotificationCard from "@/components/ui/Notifications/NotificationCard";
+import { useApi } from "@/hooks/useApi";
+import { useEffect, useState } from "react";
+import { useCustomAlert } from "@/contexts/AlertContext";
+
+type Notification = {
+  _id: string;
+  type: string;
+  description: string;
+  parent: {
+    _id: string;
+    name: string;
+  };
+};
+
+const iconNotificationMap = {
+  positive: require("@/assets/icons/notifications/happy.png"),
+  love: require("@/assets/icons/notifications/heart.png"),
+  comment: require("@/assets/icons/notifications/comment.png"),
+};
 
 export default function NotificationsScreen() {
   const router = useRouter();
 
+  const { request } = useApi();
+  const { showAlert } = useCustomAlert();
+
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  const getNotifications = async () => {
+    const result = await request({
+      endpoint: "/child/notifications",
+      method: "GET",
+    });
+
+    if (result && !result.error) {
+      setNotifications(result);
+    } else {
+      showAlert({
+        icon: require("@/assets/icons/custom-alert/alert.png"),
+        title: "Erro ao carregar dados!",
+        message: result.message || "Erro ao carregar notificações",
+      });
+    }
+  };
+
+  useEffect(() => {
+    getNotifications();
+  }, []);
+
   return (
     <Container mode="customTop" colors={["#973e4a", "#4b85a1"]}>
       <View style={{ paddingHorizontal: RS(40), gap: RS(50) }}>
-        {/* Título e botão de fechar */}
+        {/* Título */}
         <View
           className="flex-row items-center justify-center"
           style={{ marginHorizontal: RW(20) }}
@@ -33,27 +78,21 @@ export default function NotificationsScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Lista */}
         <View style={{ gap: RS(26) }}>
-          <NotificationCard
-            icon={require("@/assets/icons/notifications/start.png")}
-            label="Inicio completo!"
-            description="Você fez seu primeiro Login, parabéns! Vamos começar a aprender se divertindo!"
-            isReaction={false}
-          />
-
-          <NotificationCard
-            icon={require("@/assets/icons/notifications/heart.png")}
-            label="Yummi"
-            description="Parabéns filho, continue assim. Amo você"
-            colors={["#EF5B6A", "#EF5B6A"]}
-          />
-
-          <NotificationCard
-            icon={require("@/assets/icons/notifications/character.png")}
-            label="Angryssaur"
-            description="Vamos construir nossa jornada e combater monstros juntos. Let’s rock!"
-            colors={["#946274", "#5c94b3"]}
-          />
+          {notifications.map((notification, index) => (
+            <NotificationCard
+              key={index}
+              icon={
+                iconNotificationMap[
+                  notification.type as keyof typeof iconNotificationMap
+                ] || require("@/assets/icons/notifications/start.png")
+              }
+              label={notification.parent?.name || "Responsável"}
+              description={notification?.description}
+              isReaction={notification?.type !== "comment"}
+            />
+          ))}
         </View>
       </View>
     </Container>
