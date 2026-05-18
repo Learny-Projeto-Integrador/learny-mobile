@@ -49,6 +49,9 @@ export default function PhaseBase({
         backgroundColor: "#fff",
       }}
       contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: "center",
+        alignItems: "center",
         paddingHorizontal: RS(50),
         paddingBottom: RS(50),
       }}

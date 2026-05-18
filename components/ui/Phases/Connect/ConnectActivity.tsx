@@ -103,8 +103,8 @@ export default function ConnectActivity({
 
     if (correctConnections.length === totalNeeded) {
       onSuccess({
-        points: 10,
-        coins: 1,
+        points: 100,
+        coins: 100,
         correctAnswers: 1,
       });
 
@@ -305,9 +305,9 @@ export default function ConnectActivity({
       </Svg>
 
       <View
-        className="flex-row justify-between"
+        className="w-full flex-row justify-between"
         style={{
-          paddingHorizontal: RS(30),
+          paddingHorizontal: RS(10),
         }}
       >
         <View style={{ gap: RS(20) }}>
@@ -362,7 +362,7 @@ export default function ConnectActivity({
                   updateCardPosition(
                     card.uniqueId,
                     "right",
-                    x + width / 2 + RW(220),
+                    x + width / 2 + RW(230),
                     y + height / 2,
                   );
                 }}

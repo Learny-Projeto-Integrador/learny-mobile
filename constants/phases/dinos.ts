@@ -86,3 +86,18 @@ export const dinosEmotions: EmotionOption[] = [
     emotion: "Surprised",
   },
 ];
+
+export const emotionTranslations: Record<string, string> = {
+  Sad: "triste",
+  Angry: "bravo",
+  Happy: "feliz",
+  Afraid: "com medo",
+  Calm: "calmo",
+  Confused: "confuso",
+  Great: "ótimo",
+  Hungry: "com fome",
+  Shy: "tímido",
+  Sick: "doente",
+  Sleepy: "com sono",
+  Surprised: "surpreso",
+};

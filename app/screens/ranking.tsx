@@ -102,12 +102,11 @@ export default function RankingScreen() {
 
       <View
         className="relative items-center"
-        style={{ gap: RS(30), paddingHorizontal: RW(60) }}
+        style={{ paddingHorizontal: RW(60) }}
       >
         {/* Título da tela, botão de informações e voltar */}
         <View
           className="flex-row w-full items-center justify-between"
-          style={{ marginBottom: RS(20) }}
         >
           <TouchableOpacity onPress={() => setInfoVisible(true)}>
             <Image
@@ -129,13 +128,13 @@ export default function RankingScreen() {
           >
             <Image
               source={require("@/assets/icons/back.png")}
-              style={{ width: RW(24), height: RW(24) }}
+              style={{ width: RW(28), height: RW(28) }}
             />
           </TouchableOpacity>
         </View>
 
         {/* Cards do pódio */}
-        <View style={{ gap: RS(20) }}>
+        <View style={{ gap: RS(20), marginVertical: RS(50) }}>
           {podiumItems.map((item, index) => (
             <PodiumCard
               key={`podium-${index}`}
@@ -153,10 +152,10 @@ export default function RankingScreen() {
           style={{
             backgroundColor: "rgba(0,0,0,0.35)",
             width: RW(300),
-            borderRadius: 20,
+            borderRadius: RW(20),
             gap: RS(10),
             paddingVertical: RS(20),
-            marginBottom: RH(90),
+            marginBottom: RH(120),
             zIndex: 1,
           }}
         >
@@ -178,6 +177,7 @@ export default function RankingScreen() {
             width: RW(400),
             height: RH(300),
             zIndex: 0,
+            marginBottom: -RS(30)
           }}
         />
       </View>

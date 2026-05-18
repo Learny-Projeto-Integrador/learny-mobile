@@ -145,7 +145,7 @@ export default function AtvBossScreen() {
       setTimeout(() => {
         setItems((prev) => prev.filter((item) => item.id !== newItem.id));
       }, 5000);
-    }, 2000);
+    }, 2500);
 
     return () => clearInterval(interval);
   }, [currentLettersSet, started]);
@@ -158,8 +158,8 @@ export default function AtvBossScreen() {
 
   const handleSuccess = async () => {
     incrementStats({
-      points,
-      coins: 5,
+      points: 100,
+      coins: 100,
       correctAnswers: selectedWord.length,
     });
 
@@ -235,8 +235,9 @@ export default function AtvBossScreen() {
         source={require("@/assets/images/phases/balloon/clouds-top.png")}
         className="absolute w-full"
         style={{
-          top: -RH(50),
+          top: -RH(70),
           aspectRatio: 390 / 227,
+          opacity: 0.25,
         }}
       />
 
@@ -249,8 +250,8 @@ export default function AtvBossScreen() {
           className="flex-row bg-[#4c4c4c] items-center"
           style={{
             width: RW(130),
-            borderTopEndRadius: 30,
-            borderBottomEndRadius: 30,
+            borderTopEndRadius: RW(30),
+            borderBottomEndRadius: RW(30),
             paddingVertical: RS(10),
             paddingLeft: RS(20),
             gap: RS(10),
@@ -294,7 +295,7 @@ export default function AtvBossScreen() {
       {started && (
         <View
           className="items-center justify-center"
-          style={{ marginTop: RS(20) }}
+          style={{ marginTop: RS(50) }}
         >
           <Text
             className="font-montserratBlack"
@@ -323,7 +324,7 @@ export default function AtvBossScreen() {
                     width: RW(35),
                     height: RH(3),
                     backgroundColor: "#4C4C4C",
-                    borderRadius: 8,
+                    borderRadius: RW(8),
                   }}
                 />
               </View>
@@ -337,7 +338,7 @@ export default function AtvBossScreen() {
         <MotiView
           key={item.id}
           from={{ translateY: 0, opacity: 1 }}
-          animate={{ translateY: -RH(360) }}
+          animate={{ translateY: -RH(420) }}
           transition={{ type: "timing", duration: 5000 }}
           style={{
             position: "absolute",
@@ -360,8 +361,9 @@ export default function AtvBossScreen() {
         source={require("@/assets/images/phases/balloon/clouds-bottom.png")}
         className="absolute w-full"
         style={{
-          bottom: -RH(20),
+          bottom: -RH(50),
           aspectRatio: 390 / 227,
+          opacity: 0.25,
         }}
       />
 
@@ -390,7 +392,7 @@ export default function AtvBossScreen() {
           }}
           className="bg-[#4c4c4c] items-center justify-center"
           style={{
-            borderRadius: 20,
+            borderRadius: RW(10),
             width: RW(100),
           }}
         >

@@ -16,8 +16,8 @@ export default function Store() {
 
   useEffect(() => {
     getProgress();
-  }, [])
-  
+  }, []);
+
   return (
     <Container mode="customTop" colors={["#FFCC4D", "#FFCC4D"]}>
       <View style={{ gap: RS(30) }}>
@@ -37,77 +37,94 @@ export default function Store() {
       </View>
 
       <View style={{ paddingHorizontal: RS(30) }}>
-
-        <View className="items-center" style={{ paddingTop: RS(40), gap: RS(20) }}>
-            <View style={{ gap: RS(10) }}>
-                <Text className="font-montserratMedium" style={{ fontSize: RF(20) }}>
-                    News
-                </Text>
-                <Image
-                source={require("@/assets/images/store/banner.png")}
-                style={{ width: RW(320), height: RW(140), aspectRatio: 355 / 146 }}
-                />
-            </View>
+        <View
+          className="items-center"
+          style={{ paddingTop: RS(40), gap: RS(20) }}
+        >
+          <View style={{ gap: RS(10) }}>
+            <Text
+              className="font-montserratMedium"
+              style={{ fontSize: RF(20) }}
+            >
+              News
+            </Text>
+            <Image
+              source={require("@/assets/images/store/banner.png")}
+              style={{
+                width: RW(320),
+                height: RW(140),
+                aspectRatio: 355 / 146,
+              }}
+            />
+          </View>
         </View>
 
         <View style={{ paddingTop: RS(40), gap: RS(20) }}>
-            <View style={{ gap: RS(10) }}>
-                <Text className="font-montserratMedium" style={{ fontSize: RF(20) }}>
-                    For Sale
-                </Text>
-                <DiscountBanner discount={50} characterImage={{ uri: "https://pi-learny.s3.us-east-1.amazonaws.com/characters/raycoon.png"}} />
-            </View>
+          <View style={{ gap: RS(10) }}>
+            <Text
+              className="font-montserratMedium"
+              style={{ fontSize: RF(20) }}
+            >
+              For Sale
+            </Text>
+            <DiscountBanner
+              discount={50}
+              characterImage={{
+                uri: "https://pi-learny.s3.us-east-1.amazonaws.com/characters/raycoon.png",
+              }}
+            />
+          </View>
         </View>
 
-        <View className="items-center" style={{ paddingTop: RS(40), gap: RS(20) }}>
-            <View style={{ gap: RS(10) }}>
-                <Text className="font-montserratMedium" style={{ fontSize: RF(20) }}>
-                    Stellar Points
-                </Text>
-                <BuyCardContainer>
-                  <BuyCard
-                    image={{uri: "https://pi-learny.s3.us-east-1.amazonaws.com/store/sp-small.png"}}
-                    stellarPoints={2}
-                    cost={2}
-                    userCoins={progress?.coins || 0}
-                    confirming={selectedCard === 0}
-                    onOpen={() => setSelectedCard(0)}
-                    onClose={() => setSelectedCard(null)}
-                  />
-                  <BuyCard
-                    image={{uri: "https://pi-learny.s3.us-east-1.amazonaws.com/store/sp-small.png"}}
-                    stellarPoints={100}
-                    cost={100}
-                    userCoins={progress?.coins || 0}
-                    confirming={selectedCard === 1}
-                    onOpen={() => setSelectedCard(1)}
-                    onClose={() => setSelectedCard(null)}
-                  />
-                  <BuyCard
-                    image={{uri: "https://pi-learny.s3.us-east-1.amazonaws.com/store/sp-small.png"}}
-                    stellarPoints={100}
-                    cost={100}
-                    userCoins={progress?.coins || 0}
-                    confirming={selectedCard === 2}
-                    onOpen={() => setSelectedCard(2)}
-                    onClose={() => setSelectedCard(null)}
-                  />
-                  <BuyCard
-                    image={{uri: "https://pi-learny.s3.us-east-1.amazonaws.com/store/sp-small.png"}}
-                    stellarPoints={100}
-                    cost={100}
-                    userCoins={progress?.coins || 0}
-                    confirming={selectedCard === 3}
-                    onOpen={() => setSelectedCard(3)}
-                    onClose={() => setSelectedCard(null)}
-                  />
-                </BuyCardContainer>
-            </View>
+        <View
+          className="items-center"
+          style={{ paddingTop: RS(40), gap: RS(20) }}
+        >
+          <View style={{ gap: RS(10) }}>
+            <Text
+              className="font-montserratMedium"
+              style={{ fontSize: RF(20) }}
+            >
+              Stellar Points
+            </Text>
+            <BuyCardContainer>
+              <BuyCard
+                image={{
+                  uri: "https://pi-learny.s3.us-east-1.amazonaws.com/store/sp-small.png",
+                }}
+                stellarPoints={100}
+                cost={100}
+                userCoins={progress?.coins || 0}
+                confirming={selectedCard === 0}
+                onOpen={() => setSelectedCard(0)}
+                onClose={() => setSelectedCard(null)}
+              />
+              <BuyCard
+                image={{
+                  uri: "https://pi-learny.s3.us-east-1.amazonaws.com/store/sp-medium.png",
+                }}
+                stellarPoints={250}
+                cost={200}
+                userCoins={progress?.coins || 0}
+                confirming={selectedCard === 1}
+                onOpen={() => setSelectedCard(1)}
+                onClose={() => setSelectedCard(null)}
+              />
+              <BuyCard
+                image={{
+                  uri: "https://pi-learny.s3.us-east-1.amazonaws.com/store/sp-large.png",
+                }}
+                stellarPoints={500}
+                cost={350}
+                userCoins={progress?.coins || 0}
+                confirming={selectedCard === 2}
+                onOpen={() => setSelectedCard(2)}
+                onClose={() => setSelectedCard(null)}
+              />
+            </BuyCardContainer>
+          </View>
         </View>
-
       </View>
-
-
     </Container>
   );
 }

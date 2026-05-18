@@ -64,7 +64,7 @@ export default function ErrorFeedbackScreen() {
             className="flex-row items-center justify-center bg-[#4c4c4c]"
             style={{
               padding: RS(16),
-              borderRadius: 30,
+              borderRadius: RW(30),
             }}
           >
             <Text
@@ -113,7 +113,7 @@ export default function ErrorFeedbackScreen() {
             className="flex-row items-center justify-center bg-white"
             style={{
               padding: RS(14),
-              borderRadius: 60,
+              borderRadius: RW(60),
             }}
           >
             <Text

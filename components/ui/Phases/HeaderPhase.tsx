@@ -29,20 +29,20 @@ export default function HeaderPhase({
         style={{ marginTop: RS(50), marginBottom: RS(20), gap: RS(34) }}
       >
         <Shadow
-          distance={8}
+          distance={4}
           startColor="rgba(0,0,0,0.25)"
-          offset={[1, 4]}
+          offset={[2, 3]}
           style={{
             alignSelf: "stretch",
           }}
         >
           <View
             className="bg-[#4c4c4c] items-center justify-center"
-            style={{ width: RW(110), height: RW(110), borderRadius: 30 }}
+            style={{ width: RW(110), height: RW(110), borderRadius: RW(30) }}
           >
             <Image
               source={image && image}
-              style={{ width: RW(28), height: RW(28) }}
+              style={{}}
             />
           </View>
         </Shadow>
@@ -75,16 +75,17 @@ export default function HeaderPhase({
       </View>
 
       <Shadow
-        distance={8}
+        distance={3}
         startColor="rgba(0,0,0,0.25)"
-        offset={[2, 4]}
+        offset={[1, 3]}
         style={{ alignSelf: "stretch" }}
       >
         <View
           className="w-full items-center justify-center bg-[#4c4c4c]"
           style={{
             paddingVertical: RS(30),
-            borderRadius: 26,
+            paddingHorizontal: RS(10),
+            borderRadius: RW(26),
           }}
         >
           <Text

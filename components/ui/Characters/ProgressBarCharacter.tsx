@@ -26,7 +26,7 @@ export default function ProgressBarCharacter({ label, progress }: Props) {
         height: RH(18),
         borderWidth: 2,
         borderColor: "#4C4C4C",
-        borderRadius: 20,
+        borderRadius: RW(20),
       }}
     >
       {/* LABEL */}
@@ -50,8 +50,8 @@ export default function ProgressBarCharacter({ label, progress }: Props) {
         style={{
           height: RH(10),
           marginRight: RW(5),
-          borderTopRightRadius: 5,
-          borderBottomRightRadius: 5,
+          borderTopRightRadius: RW(5),
+          borderBottomRightRadius: RW(5),
         }}
       >
         <Animated.View

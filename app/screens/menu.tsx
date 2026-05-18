@@ -17,7 +17,7 @@ export default function MenuScreen() {
   /** Listagem dos botões do menu */
   const buttons = [
     {
-      route: "/screens/diary",
+      route: "/screens/notifications",
       icon: require("@/assets/icons/menu/diary.png"),
     },
     {
@@ -60,7 +60,11 @@ export default function MenuScreen() {
         <LinearGradient
           colors={["#b25563", "#669bbb"]}
           className="flex-row justify-between items-center w-full"
-          style={{ padding: RS(30), borderRadius: 50 }}
+          style={{
+            paddingVertical: RS(30),
+            paddingHorizontal: RS(36),
+            borderRadius: 50,
+          }}
         >
           {buttons.map((button, index) => (
             <TouchableOpacity
@@ -70,7 +74,7 @@ export default function MenuScreen() {
             >
               <Image
                 source={button.icon}
-                style={{ width: RW(60), height: RW(60) }}
+                style={{ width: RW(64), height: RW(64) }}
               />
             </TouchableOpacity>
           ))}
@@ -88,7 +92,7 @@ export default function MenuScreen() {
           <View
             className="bg-white items-center"
             style={{
-              borderRadius: 30,
+              borderRadius: RW(30),
               paddingHorizontal: RS(20),
               paddingVertical: RS(40),
             }}
@@ -102,13 +106,34 @@ export default function MenuScreen() {
             >
               Missões Diárias
             </Text>
-            <View style={{ flexDirection: "row", gap: 10 }}>
+            <View
+              className="flex-col items-center justify-center"
+              style={{ gap: RS(20), marginTop: RS(30) }}
+            >
               <Image
                 source={require("@/assets/images/missions/daily/one-phase.png")}
+                resizeMode="contain"
                 style={{
-                  width: RW(250),
-                  aspectRatio: 378 / 103,
-                  marginTop: RS(20),
+                  width: RW(280),
+                  height: RW(70),
+                }}
+              />
+
+              <Image
+                source={require("@/assets/images/missions/daily/connect.png")}
+                resizeMode="contain"
+                style={{
+                  width: RW(280),
+                  height: RW(70),
+                }}
+              />
+
+              <Image
+                source={require("@/assets/images/missions/daily/world.png")}
+                resizeMode="contain"
+                style={{
+                  width: RW(280),
+                  height: RW(70),
                 }}
               />
             </View>

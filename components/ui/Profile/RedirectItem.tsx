@@ -18,7 +18,7 @@ export default function RedirectItem({ title, icon, onPress }: Props) {
   return (
     <TouchableOpacity onPress={onPress}>
       <Shadow
-        distance={8}
+        distance={4}
         startColor="rgba(0,0,0,0.15)"
         offset={[0, 0]}
         style={{
@@ -32,7 +32,7 @@ export default function RedirectItem({ title, icon, onPress }: Props) {
             paddingHorizontal: RS(40),
             paddingVertical: RS(24),
             gap: RS(20),
-            borderRadius: 70,
+            borderRadius: RW(70),
           }}
         >
           <Image

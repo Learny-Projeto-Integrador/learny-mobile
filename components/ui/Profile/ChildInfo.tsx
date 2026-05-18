@@ -19,7 +19,7 @@ export default function ChildInfo({ name, profilePicture, level }: Props) {
         style={{
           width: RW(120),
           height: RW(120),
-          borderRadius: 20,
+          borderRadius: RW(20),
         }}
         source={
           profilePicture

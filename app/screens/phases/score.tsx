@@ -4,16 +4,17 @@ import { usePhaseContext } from "@/contexts/PhaseContext";
 import { useTrailContext } from "@/contexts/TrailContext";
 import { RF, RS, RW } from "@/theme";
 import { useRouter } from "expo-router";
+import { useMemo } from "react";
 import { Image, View, Text, TouchableOpacity } from "react-native";
 import { Shadow } from "react-native-shadow-2";
 
 export default function ScoreScreen() {
   const router = useRouter();
 
-  const { worldCode, setTrailData } = useTrailContext();
+  const { setTrailData } = useTrailContext();
   const { stats, percentage, getDuration, restart } = usePhaseContext();
 
-  const duration = getDuration();
+  const duration = useMemo(() => getDuration(), []);
 
   return (
     <View
@@ -72,22 +73,22 @@ export default function ScoreScreen() {
         />
       </View>
 
-      <Shadow distance={8} startColor="rgba(0,0,0,0.25)" offset={[0, 0]}>
+      <Shadow distance={6} startColor="rgba(0,0,0,0.15)" offset={[0, 0]}>
         <TouchableOpacity
           onPress={() => {
-            restart();
-
+            
             setTrailData({ phaseCode: null });
 
-            router.push({
-              pathname: "/screens/world",
-              params: { worldCode },
-            });
+            router.push("/screens/world");
+            
+            setTimeout(() => {
+              restart();
+            }, 200);
           }}
           className="flex-row items-center justify-center bg-white"
           style={{
             padding: RS(14),
-            borderRadius: 60,
+            borderRadius: RW(60),
           }}
         >
           <Text

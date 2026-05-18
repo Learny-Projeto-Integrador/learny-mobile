@@ -9,6 +9,7 @@ import ExtraModeBanner from "@/components/ui/Home/ExtraModeBanner";
 import { ProgressWorld, World, WorldWithProgress } from "@/types/worlds";
 import Container from "@/components/ui/Container";
 import { useRouter } from "expo-router";
+import WorldBannerSkeleton from "@/components/ui/Home/WorldBannerSkeletion";
 
 /**
  * Página home
@@ -18,9 +19,9 @@ import { useRouter } from "expo-router";
  */
 export default function HomeScreen() {
   const router = useRouter();
-  
+
   /** Hook de comunicação com a API */
-  const { request } = useApi();
+  const { loading, request } = useApi();
 
   /** Contextos */
   const { progress, getProgress } = useProgress();
@@ -69,8 +70,11 @@ export default function HomeScreen() {
    * Efeito para carregar progresso sempre que montar a tela
    */
   useEffect(() => {
-    getProgress();
-    buscarMundos();
+    const carregar = async () => {
+      await Promise.all([getProgress(), buscarMundos()]);
+    };
+
+    carregar();
   }, []);
 
   return (
@@ -99,21 +103,30 @@ export default function HomeScreen() {
       </View>
 
       {/* Lista de mundos (banners) */}
-      {worldsCompletos.map((world, index) => {
-        return (
-          <WorldBanner
-            key={world.code}
-            image={{ uri: world.picture }}
-            name={world.name}
-            description={world.description}
-            num={index + 1}
-            percentage={world.percentage}
-            color={world.color}
-            worldCode={world.code}
-            unlocked={world.unlocked}
-          />
-        );
-      })}
+      {loading ? (
+        <>
+          <WorldBannerSkeleton />
+          <WorldBannerSkeleton />
+          <WorldBannerSkeleton />
+          <WorldBannerSkeleton />
+        </>
+      ) : (
+        worldsCompletos.map((world, index) => {
+          return (
+            <WorldBanner
+              key={world.code}
+              image={{ uri: world.picture }}
+              name={world.name}
+              description={world.description}
+              num={index + 1}
+              percentage={world.percentage}
+              color={world.color}
+              worldCode={world.code}
+              unlocked={world.unlocked}
+            />
+          );
+        })
+      )}
 
       {/* Divisor */}
       <View className="items-center" style={{ paddingVertical: RS(24) }}>

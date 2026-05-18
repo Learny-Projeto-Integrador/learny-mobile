@@ -193,7 +193,7 @@ export default function AtvSecretScreen() {
                     }
                     offset={[0, 0]}
                     style={{
-                      borderRadius: 30,
+                      borderRadius: RW(30),
                     }}
                   >
                     <View
@@ -202,7 +202,7 @@ export default function AtvSecretScreen() {
                         width: RW(90),
                         height: RH(140),
                         padding: RS(16),
-                        borderRadius: 30,
+                        borderRadius: RW(30),
                         borderWidth: isActive ? 3 : 0,
                         borderColor: "#6CD2FF",
                       }}
@@ -228,7 +228,7 @@ export default function AtvSecretScreen() {
             style={{
               padding: RS(16),
               gap: RS(10),
-              borderRadius: 20,
+              borderRadius: RW(20),
               flexWrap: "wrap",
             }}
           >
@@ -279,7 +279,7 @@ export default function AtvSecretScreen() {
                   className="bg-white items-center justify-center"
                   style={{
                     padding: RS(4),
-                    borderRadius: 24,
+                    borderRadius: RW(24),
                     borderColor: "#6CD2FF",
                   }}
                 >

@@ -22,7 +22,7 @@ const ModalFallback = ({ visible, onClose }: ModalFallbackProps) => {
             paddingVertical: RS(40),
             paddingHorizontal: RW(20),
             gap: RW(18),
-            borderRadius: 40,
+            borderRadius: RW(40),
           }}
         >
           <View

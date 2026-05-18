@@ -26,8 +26,8 @@ export default function FeelingCard({ text, color, onPress }: Props) {
           alignItems: "center",
           justifyContent: "center",
           height: RH(100),
-          borderRadius: 30,
-          elevation: 5,
+          borderRadius: RW(30),
+          elevation: 3,
         }}
       >
         <Text

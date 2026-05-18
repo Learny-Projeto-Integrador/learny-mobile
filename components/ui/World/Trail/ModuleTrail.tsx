@@ -1,6 +1,6 @@
 import { View, Image, TouchableOpacity, Text } from "react-native";
-import { RW, RH, RF } from "@/theme";
-import { Phase } from "@/types";
+import { RW, RH, RF, RS } from "@/theme";
+import { Phase } from "@/types/worlds";
 import PhaseCircle from "./PhaseCircle";
 import { useRouter } from "expo-router";
 import { useTrailContext } from "@/contexts/TrailContext";
@@ -40,7 +40,8 @@ export default function ModuleTrail({
 
   const { setTrailData } = useTrailContext();
 
-  const bossImage = bossIcon || require("@/assets/images/trail/bosses/boss.png");
+  const bossImage =
+    bossIcon || require("@/assets/images/trail/bosses/boss.png");
 
   const sortedPhases = [...phases].sort((a, b) => a.order - b.order);
 
@@ -78,8 +79,8 @@ export default function ModuleTrail({
 
   // 🔹 margens (fake arco)
   const getMarginHorizontal = (index: number) => {
-    const marginsLeft = [RW(80), RW(40), RW(80), 30];
-    const marginsRight = [RW(80), RW(30), RW(80), 0];
+    const marginsLeft = [RS(110), RS(40), RS(110), 0];
+    const marginsRight = [RS(110), RS(30), RS(110), 0];
 
     if (isLeft) {
       return { marginLeft: marginsLeft[index] || 0 };
@@ -96,7 +97,7 @@ export default function ModuleTrail({
         style={{
           position: "absolute",
           ...(isLeft ? { right: RW(50) } : { left: RW(50) }),
-          top: RW(100),
+          top: RW(160),
           width: RW(120),
           height: RW(120),
         }}
@@ -105,6 +106,17 @@ export default function ModuleTrail({
 
       {/* 🔵 TRILHA */}
       <View style={{ width: "95%", zIndex: 1 }}>
+
+        {/* Início (bandeira) */}
+        {moduleNumber == 1 && (
+          <View style={{ alignItems: "center", marginBottom: RS(10) }}>
+            <Image
+              source={require("@/assets/images/trail/start.png")}
+              style={{ width: RW(80), height: RW(80), aspectRatio: 90 / 94 }}
+            />
+          </View>
+        )}
+
         {sortedPhases.map((phase, index) => {
           let initial = initialPhase + index;
           const unlocked = isUnlocked(index);
@@ -117,7 +129,7 @@ export default function ModuleTrail({
                 //@ts-ignore
                 alignItems: getAlignment(index),
                 ...getMarginHorizontal(index),
-                marginVertical: RW(15),
+                marginVertical: RS(16)
               }}
             >
               <TouchableOpacity
@@ -132,7 +144,6 @@ export default function ModuleTrail({
                       height: RW(80),
                       opacity: 1,
                     }}
-                    resizeMode="contain"
                   />
                 ) : (
                   <PhaseCircle
@@ -173,10 +184,8 @@ export default function ModuleTrail({
             backgroundColor: colorTheme || "#EF4444",
             paddingHorizontal: 12,
             paddingVertical: 4,
-            borderRadius: 6,
-            ...(isLeft
-              ? { marginLeft: RW(50) }
-              : { marginRight: RW(50) }),
+            borderRadius: RW(6),
+            ...(isLeft ? { marginLeft: RW(50) } : { marginRight: RW(50) }),
           }}
         >
           <Text

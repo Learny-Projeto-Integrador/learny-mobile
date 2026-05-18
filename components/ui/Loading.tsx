@@ -14,8 +14,7 @@ export default function Loading({ visible }: { visible: boolean }) {
       >
         <Image
           source={require("@/assets/gifs/loading.gif")}
-          style={{ width: RW(50), height: RW(50) }}
-          contentFit="contain"
+          style={{ width: RW(100), height: RW(100) }}
         />
       </View>
     </Modal>

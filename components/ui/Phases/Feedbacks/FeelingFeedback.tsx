@@ -27,7 +27,7 @@ export default function FeelingFeedback({
           style={{
             width: RW(300),
             height: RH(200),
-            borderRadius: 30,
+            borderRadius: RW(30),
           }}
         />
         <Text
@@ -44,7 +44,7 @@ export default function FeelingFeedback({
             alignItems: "center",
             justifyContent: "center",
             height: RH(100),
-            borderRadius: 30,
+            borderRadius: RW(30),
             elevation: 5,
           }}
         >

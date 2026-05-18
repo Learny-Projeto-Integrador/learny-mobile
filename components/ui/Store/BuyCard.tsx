@@ -36,7 +36,7 @@ function ClosedCard({ image, stellarPoints, cost, onOpen }: Props) {
       style={{
         width: RW(120),
         height: RH(160),
-        borderRadius: RW(20),
+        borderRadius: RW(16),
         paddingVertical: RS(14),
         paddingHorizontal: RS(10),
         gap: RS(8),
@@ -55,7 +55,7 @@ function ClosedCard({ image, stellarPoints, cost, onOpen }: Props) {
         source={image}
         resizeMode="contain"
         style={{
-          width: RW(50),
+          width: RW(80),
           height: RW(50),
         }}
       />

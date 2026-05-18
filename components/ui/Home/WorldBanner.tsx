@@ -6,9 +6,10 @@ import {
   ImageSourcePropType,
   Animated,
 } from "react-native";
-import { RW, RH, RF } from "@/theme";
+import { RW, RH, RF, RS } from "@/theme";
 import { useRouter } from "expo-router";
 import { useState, useEffect } from "react";
+import { useTrailContext } from "@/contexts/TrailContext";
 
 interface ProgressBarProps {
   progress: number;
@@ -59,7 +60,11 @@ const ProgressBar = ({ progress, color }: ProgressBarProps) => {
         >
           <View
             className="w-full"
-            style={{ height: RH(30), backgroundColor: color }}
+            style={{
+              height: RH(30),
+              marginRight: RS(20),
+              backgroundColor: color,
+            }}
           />
         </Animated.View>
       </View>
@@ -89,15 +94,16 @@ export default function WorldBanner({
   unlocked,
 }: WorldBannerProps) {
   const router = useRouter();
+  const { setTrailData } = useTrailContext();
 
   return (
     <TouchableOpacity
-      onPress={() =>
-        router.push({
-          pathname: "/screens/world",
-          params: { worldCode: worldCode },
-        })
-      }
+      onPress={async () => {
+        setTrailData({
+          worldCode: worldCode,
+        });
+        router.push("/screens/world");
+      }}
       activeOpacity={1}
       style={{
         width: "100%",

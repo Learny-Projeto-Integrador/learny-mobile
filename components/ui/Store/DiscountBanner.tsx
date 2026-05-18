@@ -15,7 +15,7 @@ export default function DiscountBanner({ discount, characterImage }: Props) {
       style={{
         backgroundColor: "#6CD2FF",
         gap: RS(50),
-        borderRadius: 30,
+        borderRadius: RW(14),
         overflow: "hidden",
         position: "relative",
       }}
@@ -43,7 +43,7 @@ export default function DiscountBanner({ discount, characterImage }: Props) {
           style={{
             paddingHorizontal: RS(10),
             paddingVertical: RS(4),
-            borderRadius: 20,
+            borderRadius: RW(10),
           }}
         >
           <GradientText

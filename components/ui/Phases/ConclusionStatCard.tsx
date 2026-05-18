@@ -20,7 +20,7 @@ export default function ConclusionStatCard({
       style={{
         paddingVertical: RS(12),
         borderWidth: 7,
-        borderRadius: 26,
+        borderRadius: RW(26),
         borderColor: color,
       }}
     >

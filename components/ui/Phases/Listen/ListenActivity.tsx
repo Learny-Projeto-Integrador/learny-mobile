@@ -110,8 +110,8 @@ export default function ListenActivity({
 
     if (isCorrect) {
       onSuccess({
-        points: 10,
-        coins: 1,
+        points: 100,
+        coins: 100,
         correctAnswers: 1,
       });
 
@@ -225,13 +225,13 @@ export default function ListenActivity({
           {audioOptions.map((option, key) => (
             <TouchableOpacity
               key={key}
-              onPress={() =>playAudio(option.audio)}
+              onPress={() => playAudio(option.audio)}
               className="items-center justify-center"
               style={{
                 backgroundColor: option.color,
                 width: RW(95),
-                height: RH(115),
-                borderRadius: 30,
+                height: RH(100),
+                borderRadius: RW(20),
               }}
             >
               <View
@@ -239,7 +239,7 @@ export default function ListenActivity({
                 style={{
                   width: RW(64),
                   height: RW(64),
-                  borderRadius: 100,
+                  borderRadius: RW(100),
                 }}
               >
                 <Image
@@ -273,19 +273,19 @@ export default function ListenActivity({
                     style={{
                       backgroundColor: placedItem.color,
                       width: RW(95),
-                      height: RH(115),
-                      borderRadius: 30,
+                      height: RH(105),
+                      borderRadius: RW(20),
                     }}
                   />
                 ) : (
                   <View
                     className="items-center justify-center"
                     style={{
-                      borderWidth: 6,
+                      borderWidth: RW(3),
                       borderColor: option.color,
                       width: RW(95),
-                      height: RH(115),
-                      borderRadius: 30,
+                      height: RH(100),
+                      borderRadius: RW(20),
                       backgroundColor: "#FFFFFF",
                     }}
                   />
@@ -303,15 +303,7 @@ export default function ListenActivity({
             const isPlaced = placements.some((item) => item?.id === option.id);
 
             if (isPlaced) {
-              return (
-                <View
-                  key={key}
-                  style={{
-                    width: RW(100),
-                    height: RH(120),
-                  }}
-                />
-              );
+              return;
             }
 
             return (
@@ -331,7 +323,7 @@ export default function ListenActivity({
 
                     height: isSelected ? RW(105) : RW(100),
 
-                    borderRadius: 30,
+                    borderRadius: RW(20),
 
                     borderWidth: isSelected ? 6 : 0,
 

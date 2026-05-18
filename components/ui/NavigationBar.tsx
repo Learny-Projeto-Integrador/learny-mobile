@@ -7,9 +7,8 @@ export default function NavigationBar() {
   const router = useRouter();
   return (
     <View
-      className="absolute left-0 right-0"
+      className="absolute left-0 right-0 bottom-0"
       style={{
-        bottom: 0,
         height: RH(60),
       }}
     >
@@ -17,8 +16,8 @@ export default function NavigationBar() {
         className="w-full flex-row items-center justify-center bg-[#4c4c4c]"
         style={{
           height: RH(60),
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
+          borderTopLeftRadius: RW(30),
+          borderTopRightRadius: RW(30),
           gap: RS(90),
           paddingBottom: RS(50),
         }}
@@ -26,9 +25,9 @@ export default function NavigationBar() {
         {/* Perfil */}
         <TouchableOpacity onPress={() => router.push("/screens/store")}>
           <Shadow
-            distance={8}
+            distance={6}
             startColor="rgba(0,0,0,0.1)"
-            offset={[0, -2]}
+            offset={[0, -1]}
             style={{
               alignSelf: "stretch",
             }}
@@ -38,7 +37,7 @@ export default function NavigationBar() {
               style={{
                 width: RW(50),
                 height: RW(50),
-                borderRadius: 20,
+                borderRadius: RW(10),
               }}
             >
               <Image
@@ -56,9 +55,9 @@ export default function NavigationBar() {
         {/* Perfil */}
         <TouchableOpacity onPress={() => router.push("/screens/home")}>
           <Shadow
-            distance={8}
+            distance={6}
             startColor="rgba(0,0,0,0.1)"
-            offset={[0, -2]}
+            offset={[0, -1]}
             style={{
               alignSelf: "stretch",
             }}
@@ -68,7 +67,7 @@ export default function NavigationBar() {
               style={{
                 width: RW(58),
                 height: RW(58),
-                borderRadius: 100,
+                borderRadius: RW(100),
               }}
             >
               <Image
@@ -86,9 +85,9 @@ export default function NavigationBar() {
         {/* Perfil */}
         <TouchableOpacity onPress={() => router.push("/screens/menu")}>
           <Shadow
-            distance={8}
+            distance={6}
             startColor="rgba(0,0,0,0.1)"
-            offset={[0, -2]}
+            offset={[0, -1]}
             style={{
               alignSelf: "stretch",
             }}
@@ -98,7 +97,7 @@ export default function NavigationBar() {
               style={{
                 width: RW(50),
                 height: RW(50),
-                borderRadius: 20,
+                borderRadius: RW(10),
               }}
             >
               <Image

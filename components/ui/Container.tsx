@@ -2,7 +2,7 @@ import { View, ScrollView, Image } from "react-native";
 import NavigationBar from "@/components/ui/NavigationBar";
 import { LinearGradient } from "expo-linear-gradient";
 import { useProgress } from "@/contexts/ProgressContext";
-import { RH, RS } from "@/theme";
+import { RH, RS, RW } from "@/theme";
 import Header from "./Header";
 import { ReactNode } from "react";
 import { Shadow } from "react-native-shadow-2";
@@ -48,15 +48,15 @@ const Wrapper = ({ mode, colors, children, hasHeader, progress }: any) => {
           <Shadow
             distance={8}
             startColor={"rgba(0,0,0,0.15)"}
-            offset={[0, -4]}
+            offset={[0, -3]}
             style={{ alignSelf: "stretch" }}
           >
             <View
               style={{
                 flex: 1,
                 backgroundColor: "#fff",
-                borderTopLeftRadius: 30,
-                borderTopRightRadius: 30,
+                borderTopLeftRadius: RW(30),
+                borderTopRightRadius: RW(30),
                 paddingVertical: RS(50),
               }}
             >

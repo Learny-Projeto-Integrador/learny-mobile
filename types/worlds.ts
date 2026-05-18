@@ -1,4 +1,4 @@
-type Phase = {
+export type Phase = {
   code: string;
   name: string;
   order: number;

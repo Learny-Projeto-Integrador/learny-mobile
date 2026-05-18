@@ -62,7 +62,7 @@ export default function CharacterCard({ image, name, level, characterPoints, mod
         style={{
           width: RW(146),
           height: RH(160),
-          borderRadius: RS(16),
+          borderRadius: RW(16),
           overflow: "hidden",
           backgroundColor: color,
           borderWidth: 4,
@@ -92,7 +92,7 @@ export default function CharacterCard({ image, name, level, characterPoints, mod
             right: RW(10),
             paddingHorizontal: RW(10),
             paddingVertical: RH(4),
-            borderRadius: RS(20),
+            borderRadius: RW(20),
           }}
           className="bg-black"
         >

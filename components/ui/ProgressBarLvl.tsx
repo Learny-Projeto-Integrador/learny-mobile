@@ -54,7 +54,7 @@ export default function ProgressBarLvl({
       className="w-full flex-row items-center"
       style={{
         height: RH(46),
-        borderRadius: 10,
+        borderRadius: RW(10),
         overflow: "hidden",
       }}
     >
@@ -81,8 +81,8 @@ export default function ProgressBarLvl({
         style={{
           height: RH(36),
           marginRight: RS(8),
-          borderTopRightRadius: 5,
-          borderBottomRightRadius: 5,
+          borderTopRightRadius: RW(5),
+          borderBottomRightRadius: RW(5),
           overflow: "hidden",
         }}
       >

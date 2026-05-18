@@ -26,9 +26,9 @@ export default function ConnectCard({
       <Image
         source={image}
         style={{
-          width: RW(70),
-          height: RW(70),
-          borderRadius: 100,
+          width: RW(80),
+          height: RW(80),
+          borderRadius: RW(100),
         }}
       />
 
@@ -41,7 +41,7 @@ export default function ConnectCard({
             left: 0,
             right: 0,
             bottom: 0,
-            borderRadius: 100,
+            borderRadius: RW(100),
             backgroundColor: "rgba(80,80,80,0.8)",
           }}
         />

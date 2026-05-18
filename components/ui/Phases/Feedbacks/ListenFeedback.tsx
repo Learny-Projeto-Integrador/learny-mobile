@@ -51,7 +51,7 @@ export default function ListenOrderFeedback({ order }: Props) {
                 backgroundColor: item.color,
                 width: RW(95),
                 height: RH(115),
-                borderRadius: 30,
+                borderRadius: RW(30),
               }}
             >
               <View
@@ -59,7 +59,7 @@ export default function ListenOrderFeedback({ order }: Props) {
                 style={{
                   width: RW(64),
                   height: RW(64),
-                  borderRadius: 100,
+                  borderRadius: RW(100),
                 }}
               >
                 <Image
@@ -89,7 +89,7 @@ export default function ListenOrderFeedback({ order }: Props) {
               style={{
                 width: RW(95),
                 height: RW(95),
-                borderRadius: 30,
+                borderRadius: RW(30),
               }}
             />
           </View>

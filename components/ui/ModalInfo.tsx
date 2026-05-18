@@ -23,7 +23,7 @@ export default function ModalInfo({ title, message, visible, onClose }: Props) {
             paddingVertical: RS(24),
             paddingHorizontal: RW(20),
             gap: RW(20),
-            borderRadius: 20,
+            borderRadius: RW(20),
           }}
         >
           <View className="flex-row w-full items-end justify-between">

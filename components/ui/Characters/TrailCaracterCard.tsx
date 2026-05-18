@@ -66,7 +66,7 @@ export default function TrailCharacterCard({
         startColor={"rgba(0,0,0,0.20)"}
         offset={[0, 0]}
         style={{
-          borderRadius: 100,
+          borderRadius: RW(100),
         }}
       >
         <View
@@ -75,7 +75,7 @@ export default function TrailCharacterCard({
             width: RW(40),
             height: RW(40),
             padding: RS(10),
-            borderRadius: 100,
+            borderRadius: RW(100),
           }}
         >
           <Image

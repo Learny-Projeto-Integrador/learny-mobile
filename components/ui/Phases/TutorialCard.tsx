@@ -34,8 +34,8 @@ export default function TutorialCard({ audio, image, label, color }: Props) {
         style={{
           width: RW(80),
           height: RH(10),
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
+          borderTopLeftRadius: RW(20),
+          borderTopRightRadius: RW(20),
           backgroundColor: color,
         }}
       />
@@ -51,8 +51,7 @@ export default function TutorialCard({ audio, image, label, color }: Props) {
             style={{
               width: RW(130),
               height: RW(130),
-              borderRadius: 30,
-              aspectRatio: 1 / 1,
+              borderRadius: RW(30),
             }}
           />
 
@@ -65,7 +64,7 @@ export default function TutorialCard({ audio, image, label, color }: Props) {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                borderRadius: 30,
+                borderRadius: RW(30),
                 backgroundColor: "rgba(80,80,80,0.7)",
               }}
             />

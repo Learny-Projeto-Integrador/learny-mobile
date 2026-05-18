@@ -140,7 +140,7 @@ export default function ConnectFeedback({
                   style={{
                     width: RW(70),
                     height: RW(70),
-                    borderRadius: 100,
+                    borderRadius: RW(100),
                   }}
                 />
               </View>
@@ -173,7 +173,7 @@ export default function ConnectFeedback({
                   style={{
                     width: RW(70),
                     height: RW(70),
-                    borderRadius: 100,
+                    borderRadius: RW(100),
                   }}
                 />
               </View>

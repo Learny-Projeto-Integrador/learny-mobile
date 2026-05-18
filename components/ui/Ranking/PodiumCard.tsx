@@ -21,8 +21,8 @@ export default function PodiumCard({ rank, name, points, image }: Props) {
         }
         style={{
           width: RS(80),
-          borderRadius: 100,
-          borderWidth: 6,
+          borderRadius: RW(100),
+          borderWidth: RW(4),
           aspectRatio: 1 / 1,
           borderColor: borderColor,
         }}
@@ -31,10 +31,10 @@ export default function PodiumCard({ rank, name, points, image }: Props) {
         className="flex-row items-center justify-between"
         style={{
           width: RW(200),
-          borderWidth: 6,
-          borderRadius: 20,
-          paddingVertical: RS(16),
-          paddingHorizontal: RS(15),
+          borderWidth: RW(4),
+          borderRadius: RW(20),
+          paddingVertical: RS(20),
+          paddingHorizontal: RS(16),
           borderColor: borderColor,
         }}
       >

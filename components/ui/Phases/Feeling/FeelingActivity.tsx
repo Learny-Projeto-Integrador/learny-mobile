@@ -13,6 +13,7 @@ import FeelingCard from "@/components/ui/Phases/Feeling/FeelingCard";
 import FeelingFeedback from "@/components/ui/Phases/Feedbacks/FeelingFeedback";
 import { shuffleArray } from "@/utils/emotions";
 import { useAudio } from "@/contexts/AudioContext";
+import { emotionTranslations } from "@/constants/phases/dinos";
 
 interface Props {
   phaseOptions: EmotionOption[];
@@ -69,20 +70,15 @@ export default function FeelingActivity({
 
     if (isCorrect) {
       onSuccess({
-        points: 10,
-        coins: 1,
+        points: 100,
+        coins: 100,
         correctAnswers: 1,
       });
 
       return;
     }
 
-    const emotionTranslate =
-      correctOption?.emotion === "Sad"
-        ? "triste"
-        : correctOption?.emotion === "Happy"
-          ? "feliz"
-          : "bravo";
+    const emotionTranslate = emotionTranslations[correctOption?.emotion || ""] || "";
 
     onError({
       stats: {
@@ -170,7 +166,7 @@ export default function FeelingActivity({
             style={{
               width: RS(300),
               height: RH(217),
-              borderRadius: 30,
+              borderRadius: RW(30),
             }}
           />
         )}

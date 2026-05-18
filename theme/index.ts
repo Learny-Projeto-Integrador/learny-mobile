@@ -10,9 +10,9 @@ const getSize = (size: number) => {
 };
 
 const getFontSize = (size: number) => {
-  if (width < 360) return size * 0.85;
-  if (width < 400) return size * 0.9;
-  if (width < 500) return size * 0.95;
+  if (width < 360) return size * 0.8;
+  if (width < 400) return size * 0.95;
+  if (width < 500) return size * 0.9;
   return size * 1.25;
 };
 
@@ -24,9 +24,9 @@ const getHeight = (size: number) => {
 };
 
 const getSpacing = (size: number) => {
-  if (width < 360) return size * 0.85;
-  if (width < 400) return size * 0.9;
-  if (width < 500) return size * 0.95;
+  if (width < 360) return size * 0.75;
+  if (width < 400) return size * 0.8;
+  if (width < 500) return size * 0.85;
   return size * 1.1;
 };
 

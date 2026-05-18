@@ -24,7 +24,7 @@ export default function OtherRanking ({ rank, name, points }: Props) {
       <View
         className="flex-row items-center"
         style={{
-          borderRadius: 15,
+          borderRadius: RW(15),
           paddingVertical: RS(10),
           width: RW(200)
         }}

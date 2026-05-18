@@ -95,7 +95,7 @@ export default function AcessibilityScreen() {
           style={{
             gap: RS(30),
             padding: RS(30),
-            borderRadius: 20,
+            borderRadius: RW(20),
           }}
         >
           <View className="w-full flex-row items-center justify-between">
