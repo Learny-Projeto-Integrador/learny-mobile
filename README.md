@@ -11,6 +11,7 @@ O projeto Learny é dividido em três repositórios independentes:
 | **learny-mobile** | Aplicativo mobile (Expo / React Native) usado pelas crianças — *você está aqui* | — |
 | **learny-mobile-api** | API REST (Flask + MongoDB) que atende mobile e dashboard | [github.com/Learny-Projeto-Integrador/learny-mobile-api](https://github.com/Learny-Projeto-Integrador/learny-mobile-api) |
 | **dashboard-learny** | Dashboard web (Next.js) usado pelos pais e responsáveis | [github.com/jmkirimis/dashboard-learny](https://github.com/jmkirimis/dashboard-learny) |
+| **site-kastle** | Site institucional da equipe Kastle (Next.js) | [github.com/jmkirimis/site-kastle](https://github.com/jmkirimis/site-kastle) |
 
 ## Stack
 
