@@ -30,7 +30,7 @@ export default function ErrorFeedbackScreen() {
             textAlign: "center",
           }}
         >
-          Let's
+          Let&apos;s
         </GradientText>
         <GradientText
           color1="#EF5B6A"

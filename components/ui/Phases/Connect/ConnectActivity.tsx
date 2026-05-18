@@ -52,7 +52,7 @@ export default function ConnectActivity({
 
   const { playAudio } = useAudio();
 
-  const { useHint } = usePhaseContext();
+  const { consumeHint } = usePhaseContext();
 
   /*
    * ---------------------------------------
@@ -213,7 +213,7 @@ export default function ConnectActivity({
   const handleHint = async () => {
     showLoadingModal();
 
-    const canUseHint = await useHint();
+    const canUseHint = await consumeHint();
 
     hideLoadingModal();
 

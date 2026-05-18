@@ -15,7 +15,7 @@ import { EmotionOption, BossPhaseStats, Feedback } from "@/types/phases";
 import { RF, RS } from "@/theme";
 
 import { dinosEmotions } from "@/constants/phases/dinos";
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 
 import { shuffleArray } from "@/utils/emotions";
 

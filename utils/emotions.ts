@@ -1,4 +1,4 @@
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 import { dinosEmotions } from "@/constants/phases/dinos";
 import { EmotionOption } from "@/types/phases";
 

@@ -122,7 +122,7 @@ export function usePhase() {
     return true;
   };
 
-  const useHint = async () => {
+  const consumeHint = async () => {
     const canUse = await checkHint();
 
     if (!canUse) return false;
@@ -251,7 +251,7 @@ export function usePhase() {
      * HINT
      */
     checkHint,
-    useHint,
+    consumeHint,
 
     /*
      * TIMER

@@ -53,7 +53,7 @@ export default function ListenActivity({
 
   const { user } = useUser();
 
-  const { useHint } = usePhaseContext();
+  const { consumeHint } = usePhaseContext();
 
   /*
    * AUDIO
@@ -136,7 +136,7 @@ export default function ListenActivity({
   const handleHint = async () => {
     showLoadingModal();
 
-    const canUseHint = await useHint();
+    const canUseHint = await consumeHint();
 
     hideLoadingModal();
 

@@ -36,7 +36,7 @@ export default function FeelingActivity({
 
   const { showLoadingModal, hideLoadingModal } = useLoading();
 
-  const { useHint } = usePhaseContext();
+  const { consumeHint } = usePhaseContext();
 
   /*
    * INITIALIZATION
@@ -104,7 +104,7 @@ export default function FeelingActivity({
   const handleHint = async () => {
     showLoadingModal();
 
-    const canUseHint = await useHint();
+    const canUseHint = await consumeHint();
 
     hideLoadingModal();
 
