@@ -18,7 +18,7 @@ import { useAudio } from "@/contexts/AudioContext";
 
 interface Props {
   phaseOptions: EmotionOption[];
-
+  type?: string;
   onSuccess: (stats: Partial<PhaseStats>) => void;
 
   onError: (feedbackData: Feedback) => void;
@@ -26,6 +26,7 @@ interface Props {
 
 export default function ListenActivity({
   phaseOptions,
+  type,
   onSuccess,
   onError,
 }: Props) {
@@ -93,10 +94,10 @@ export default function ListenActivity({
     }
 
     setCorrectOption(randomCorrect);
-
-    setAudioOptions(finalAudioOptions);
-
-    setImageOptions(finalImageOptions);
+    (setAudioOptions(finalAudioOptions),
+      type == "boss"
+        ? setImageOptions(generatedOptions)
+        : setImageOptions(finalImageOptions));
   };
 
   /*
@@ -234,24 +235,36 @@ export default function ListenActivity({
                 borderRadius: RW(20),
               }}
             >
-              <View
-                className="bg-white items-center justify-center"
-                style={{
-                  width: RW(64),
-                  height: RW(64),
-                  borderRadius: RW(100),
-                }}
-              >
-                <Image
-                  source={require("@/assets/images/phases/listen/speaker.png")}
+              {user?.audioActive ? (
+                <View
+                  className="bg-white items-center justify-center"
                   style={{
-                    width: RW(30),
-                    height: RW(30),
-                    aspectRatio: 43 / 35,
-                    tintColor: option.color,
+                    width: RW(64),
+                    height: RW(64),
+                    borderRadius: RW(100),
                   }}
-                />
-              </View>
+                >
+                  <Image
+                    source={require("@/assets/images/phases/listen/speaker.png")}
+                    style={{
+                      width: RW(30),
+                      height: RW(30),
+                      aspectRatio: 43 / 35,
+                      tintColor: option.color,
+                    }}
+                  />
+                </View>
+              ) : (
+                <Text
+                  className="text-center font-montserratBold"
+                  style={{
+                    color: "#fff",
+                    fontSize: RF(24),
+                  }}
+                >
+                  {option.emotion}
+                </Text>
+              )}
             </TouchableOpacity>
           ))}
         </View>
@@ -296,7 +309,10 @@ export default function ListenActivity({
         </View>
 
         {/* IMAGENS */}
-        <View className="flex-row" style={{ gap: RS(20) }}>
+        <View
+          className="flex-row flex-wrap items-center justify-center"
+          style={{ gap: RS(16) }}
+        >
           {imageOptions.map((option, key) => {
             const isSelected = selectedOption?.id === option.id;
 

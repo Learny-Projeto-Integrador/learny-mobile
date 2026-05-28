@@ -37,12 +37,17 @@ export default function HeaderPhase({
           }}
         >
           <View
-            className="bg-[#4c4c4c] items-center justify-center"
-            style={{ width: RW(110), height: RW(110), borderRadius: RW(30) }}
+            className="items-center justify-center"
+            style={{
+              backgroundColor: title == "Review Phase" ? "#4C4C4C" : color,
+              width: RW(110),
+              height: RW(110),
+              borderRadius: RW(30),
+            }}
           >
             <Image
               source={image && image}
-              style={{}}
+              style={{ tintColor: "#fff", transform: [{ scale: 1.3 }] }}
             />
           </View>
         </Shadow>
@@ -99,12 +104,13 @@ export default function HeaderPhase({
 
       {question && (
         <View
-          className="items-center justify-center bg-[#80D25B]"
+          className="items-center justify-center"
           style={{
+            backgroundColor: color,
             marginHorizontal: RS(80),
             padding: RS(10),
-            borderBottomLeftRadius: 20,
-            borderBottomRightRadius: 20,
+            borderBottomLeftRadius: RW(10),
+            borderBottomRightRadius: RW(10),
           }}
         >
           <Text

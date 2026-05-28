@@ -90,7 +90,7 @@ export default function NotificationsScreen() {
               }
               label={notification.parent?.name || "Responsável"}
               description={notification?.description}
-              isReaction={notification?.type !== "comment"}
+              isReaction={true}
             />
           ))}
         </View>

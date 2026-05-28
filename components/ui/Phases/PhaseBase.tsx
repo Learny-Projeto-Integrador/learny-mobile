@@ -52,7 +52,7 @@ export default function PhaseBase({
         flexGrow: 1,
         justifyContent: "center",
         alignItems: "center",
-        paddingHorizontal: RS(50),
+        paddingHorizontal: RS(40),
         paddingBottom: RS(50),
       }}
     >

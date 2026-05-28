@@ -33,7 +33,7 @@ export default function AtvConnectScreen() {
 
   return (
     <PhaseBase
-      title="Watch & match"
+      title="Watch & Match"
       description={started ? "Ligue as emoções" : "How are you?"}
       question={started ? "The dinousaur is" : "I am"}
       color="#6CD2FF"

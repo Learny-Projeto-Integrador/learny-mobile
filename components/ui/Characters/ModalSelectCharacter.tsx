@@ -6,7 +6,7 @@ interface Props {
   name: string;
   image: string;
   level: number;
-  characterPoints: number; // %
+  progressLevel: number; // %
   effect: string;
   visible?: boolean;
   onSelect?: () => void;
@@ -17,7 +17,7 @@ export default function ModalSelectCharacter({
   name,
   image,
   level,
-  characterPoints,
+  progressLevel,
   effect,
   visible,
   onSelect,
@@ -81,8 +81,8 @@ export default function ModalSelectCharacter({
               <View style={{ flex: 1, gap: RS(6) }}>
                 {/* PROGRESS BAR */}
                 <ProgressBarCharacter
-                  label={`${characterPoints}%`}
-                  progress={characterPoints}
+                  label={`${progressLevel < 100 ? progressLevel : "100"}%`}
+                  progress={progressLevel}
                 />
               </View>
             </View>

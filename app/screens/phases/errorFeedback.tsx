@@ -17,10 +17,17 @@ export default function ErrorFeedbackScreen() {
   return (
     <ScrollView
       className="flex-1 bg-white"
-      style={{ gap: RS(30), paddingHorizontal: RS(50) }}
+      contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        gap: RS(10),
+        paddingHorizontal: RS(40),
+        paddingVertical: RS(70),
+      }}
     >
 
-      <View style={{ marginTop: RS(70) }}>
+      <View>
         <GradientText
           color1="#EF5B6A"
           color2="#6CD2FF"
@@ -82,52 +89,52 @@ export default function ErrorFeedbackScreen() {
 
       {feedback?.content}
 
-      <Text
-        className="font-montserratSemiBold text-center"
-        style={{
-          fontSize: RF(22),
-          marginTop: RS(30),
-          color: "#4c4c4c",
-        }}
-      >
-        Você está indo bem, continue e tente novamente
-      </Text>
-
-      <View
-        className="w-full"
-        style={{
-          paddingHorizontal: RS(60),
-          marginTop: RS(40),
-        }}
-      >
-        <Shadow
-          distance={8}
-          startColor="rgba(0,0,0,0.25)"
-          offset={[0, 0]}
+      <View style={{ marginTop: RS(34), gap: RS(26) }}>
+        <Text
+          className="font-montserratBold text-center"
           style={{
-            alignSelf: "stretch",
+            fontSize: RF(22),
+            color: "#4c4c4c",
           }}
         >
-          <TouchableOpacity
-            onPress={handleConfirm}
-            className="flex-row items-center justify-center bg-white"
+          Você está indo bem, continue e tente novamente
+        </Text>
+
+        <View
+          className="w-full"
+          style={{
+            paddingHorizontal: RS(60),
+          }}
+        >
+          <Shadow
+            distance={8}
+            startColor="rgba(0,0,0,0.25)"
+            offset={[0, 0]}
             style={{
-              padding: RS(14),
-              borderRadius: RW(60),
+              alignSelf: "stretch",
             }}
           >
-            <Text
-              className="font-montserratSemiBold text-center"
+            <TouchableOpacity
+              onPress={handleConfirm}
+              className="flex-row items-center justify-center bg-white"
               style={{
-                width: RW(200),
-                fontSize: RF(22),
-                color: "#4c4c4c",
+                padding: RS(14),
+                borderRadius: RW(60),
               }}
             >
-              Continuar
-            </Text>
-          </TouchableOpacity>
-        </Shadow>
+              <Text
+                className="font-montserratSemiBold text-center"
+                style={{
+                  width: RW(200),
+                  fontSize: RF(22),
+                  color: "#4c4c4c",
+                }}
+              >
+                Continuar
+              </Text>
+            </TouchableOpacity>
+          </Shadow>
+        </View>
       </View>
     </ScrollView>
   );

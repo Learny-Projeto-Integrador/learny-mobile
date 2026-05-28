@@ -26,10 +26,7 @@ const DiagonalRectangle = ({ name }: DiagonalRectangleProps) => {
         preserveAspectRatio="none"
         style={{ position: "absolute" }}
       >
-        <Polygon
-          points="0,40 100,0 100,100 0,100"
-          fill="rgba(0,0,0,0.80)"
-        />
+        <Polygon points="0,40 100,0 100,100 0,100" fill="rgba(0,0,0,0.80)" />
       </Svg>
 
       {/* Texto central REAL */}
@@ -41,23 +38,33 @@ const DiagonalRectangle = ({ name }: DiagonalRectangleProps) => {
       </Text>
     </View>
   );
-}
+};
 
 interface Props {
   image: any;
   name: string;
   level: number;
   color: string;
-  characterPoints?: number;
-  mode?: "normal" | "upgrade"
+  progressLevel: number;
+  mode?: "normal" | "upgrade";
   onPress?: () => void;
 }
 
-export default function CharacterCard({ image, name, level, characterPoints, mode, color, onPress }: Props) {
+export default function CharacterCard({
+  image,
+  name,
+  level,
+  progressLevel,
+  mode,
+  color,
+  onPress,
+}: Props) {
   return (
-    <View style={{
-      gap: RS(10)
-    }}>
+    <View
+      style={{
+        gap: RS(10),
+      }}
+    >
       <TouchableOpacity
         style={{
           width: RW(146),
@@ -73,7 +80,7 @@ export default function CharacterCard({ image, name, level, characterPoints, mod
       >
         {/* Personagem */}
         <Image
-          source={{uri: image}}
+          source={{ uri: image }}
           resizeMode="contain"
           style={{
             width: RW(140),
@@ -110,8 +117,8 @@ export default function CharacterCard({ image, name, level, characterPoints, mod
       {/* PROGRESS BAR */}
       {mode == "upgrade" && (
         <ProgressBarCharacter
-          label={`${characterPoints}%`}
-          progress={characterPoints ? characterPoints : 0}
+          label={`${progressLevel < 100 ? progressLevel : "100"}%`}
+          progress={progressLevel}
         />
       )}
     </View>

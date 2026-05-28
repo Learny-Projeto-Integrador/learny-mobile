@@ -110,9 +110,9 @@ export default function ConnectFeedback({
       </Svg>
 
       <View
-        className="flex-row justify-between"
+        className="w-full flex-row justify-between"
         style={{
-          paddingHorizontal: RS(30),
+          paddingHorizontal: RS(10),
         }}
       >
         {/* LEFT COLUMN */}
@@ -163,7 +163,7 @@ export default function ConnectFeedback({
                   updateCardPosition(
                     card.uniqueId,
                     "right",
-                    x + width / 2 + RW(220),
+                    x + width / 2 + RW(230),
                     y + height / 2,
                   );
                 }}

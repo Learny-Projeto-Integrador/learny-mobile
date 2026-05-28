@@ -19,17 +19,6 @@ export default function ListenOrderFeedback({ order }: Props) {
         marginTop: RS(30),
       }}
     >
-      <Text
-        className="font-montserratBold"
-        style={{
-          fontSize: RS(26),
-          color: "#4C4C4C",
-          marginBottom: RS(20),
-        }}
-      >
-        Ordem correta
-      </Text>
-
       <View
         className="flex-row items-end"
         style={{

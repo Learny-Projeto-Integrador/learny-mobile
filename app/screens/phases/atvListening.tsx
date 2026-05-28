@@ -38,7 +38,7 @@ export default function AtvListenScreen() {
       title="Listen & Answer"
       description={started ? "Ouça o nome e encontre ele escrito" : "How are you?"}
       question={started ? "The dinousaur is" : "I am"}
-      color="#94ECA5"
+      color="#EF5B6A"
       headerImage={require("@/assets/images/phases/listen/intro.png")}
       tutorialTitle="Como Jogar"
       tutorialMessage={`

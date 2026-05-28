@@ -17,12 +17,14 @@ import { emotionTranslations } from "@/constants/phases/dinos";
 
 interface Props {
   phaseOptions: EmotionOption[];
+  type?: string;
   onSuccess: (stats: Partial<PhaseStats>) => void;
   onError: (feedbackData: Feedback) => void;
 }
 
 export default function FeelingActivity({
   phaseOptions,
+  type,
   onSuccess,
   onError,
 }: Props) {
@@ -58,7 +60,7 @@ export default function FeelingActivity({
 
     setCorrectOption(randomCorrect);
 
-    setShuffledOptions(finalOptions);
+    type == "boss" ? setShuffledOptions(generatedOptions) : setShuffledOptions(finalOptions);
   };
 
   /*
@@ -171,7 +173,7 @@ export default function FeelingActivity({
           />
         )}
 
-        <View className="flex-row" style={{ gap: RS(10) }}>
+        <View className="flex-row flex-wrap" style={{ gap: RS(10) }}>
           {shuffledOptions.map((option, key) => (
             <FeelingCard
               key={key}

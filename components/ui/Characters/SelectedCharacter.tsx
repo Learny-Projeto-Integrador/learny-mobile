@@ -6,7 +6,7 @@ interface Props {
   name: string;
   image: string;
   level: number;
-  characterPoints: number; // %
+  progressLevel: number;
   effect: string;
   tags: string[];
   onPress?: () => void;
@@ -16,7 +16,7 @@ export default function SelectedCharacter({
   name,
   image,
   level,
-  characterPoints,
+  progressLevel,
   effect,
   tags,
   onPress,
@@ -82,8 +82,8 @@ export default function SelectedCharacter({
           <View style={{ flex: 1, gap: RS(6) }}>
             {/* PROGRESS BAR */}
             <ProgressBarCharacter
-              label={`${characterPoints}%`}
-              progress={characterPoints}
+              label={`${progressLevel < 100 ? progressLevel : "100"}%`}
+              progress={progressLevel}
             />
           </View>
         </View>

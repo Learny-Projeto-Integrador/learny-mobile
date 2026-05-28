@@ -2,16 +2,17 @@ import { View, Text, Image, Modal, TouchableOpacity } from "react-native";
 import { RW, RH, RF, RS } from "@/theme";
 import ProgressBarCharacter from "./ProgressBarCharacter";
 import { LinearGradient } from "expo-linear-gradient";
+import { useProgress } from "@/contexts/ProgressContext";
 
 interface Props {
   name: string;
   image: string;
   level: number;
-  characterPoints: number; // %
+  progressLevel: number; // %
   costUpgrade: number;
   effect: string;
   visible?: boolean;
-  onSelect?: () => void;
+  onUpgrade?: () => void;
   onClose?: () => void;
 }
 
@@ -19,13 +20,27 @@ export default function ModalUpgradeCharacter({
   name,
   image,
   level,
-  characterPoints,
+  progressLevel,
   costUpgrade,
   effect,
   visible,
-  onSelect,
+  onUpgrade,
   onClose,
 }: Props) {
+  const { progress } = useProgress();
+
+  const hasEnoughStellarPoints = (progress?.stellarPoints || 0) >= costUpgrade;
+
+  const hasEnoughProgress = progressLevel >= 100;
+
+  const gradientColors = hasEnoughProgress
+    ? ["#973e4a", "#4b85a1"]
+    : ["#EF5B6A", "#EF5B6A"];
+
+  const costColor = hasEnoughStellarPoints ? "#4C4C4C" : "#EF4444";
+
+  const canUpgrade = hasEnoughProgress && hasEnoughStellarPoints;
+
   return (
     <Modal transparent visible={visible} animationType="fade">
       <TouchableOpacity
@@ -93,8 +108,8 @@ export default function ModalUpgradeCharacter({
               <View style={{ flex: 1, gap: RS(6) }}>
                 {/* PROGRESS BAR */}
                 <ProgressBarCharacter
-                  label={`${characterPoints}%`}
-                  progress={characterPoints}
+                  label={`${progressLevel < 100 ? progressLevel : "100"}%`}
+                  progress={progressLevel}
                 />
               </View>
             </View>
@@ -111,9 +126,16 @@ export default function ModalUpgradeCharacter({
                 {effect}
               </Text>
               {/* Upgreade */}
-              <View className="flex-row" style={{ gap: RS(8) }}>
+              <TouchableOpacity
+                onPress={onUpgrade}
+                className="flex-row"
+                style={{
+                  gap: RS(8),
+                }}
+              >
                 <LinearGradient
-                  colors={["#973e4a", "#4b85a1"]}
+                  //@ts-ignore
+                  colors={gradientColors}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={{
@@ -143,9 +165,10 @@ export default function ModalUpgradeCharacter({
                       }}
                     />
                     <Text
-                      className="font-montserratMedium text-[#4C4C4C]"
+                      className="font-montserratMedium"
                       style={{
                         fontSize: RF(18),
+                        color: costColor,
                       }}
                     >
                       {costUpgrade}
@@ -158,7 +181,7 @@ export default function ModalUpgradeCharacter({
                     Upgrade to Lv. {level + 1}
                   </Text>
                 </LinearGradient>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         </View>

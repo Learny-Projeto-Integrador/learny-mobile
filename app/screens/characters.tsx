@@ -14,6 +14,7 @@ import { CharacterWithProgress } from "@/types/characters";
 import { useApi } from "@/hooks/useApi";
 import { useProgress } from "@/contexts/ProgressContext";
 import { useCustomAlert } from "@/contexts/AlertContext";
+import { getCharacterXpToNext } from "@/utils/characterFormulas";
 
 export default function CharactersScreen() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function CharactersScreen() {
     useState<CharacterWithProgress | null>(null);
 
   const { request } = useApi();
-  const { progress, setProgress } = useProgress();
+  const { progress, getProgress, setProgress } = useProgress();
   const { showAlert } = useCustomAlert();
 
   const {
@@ -61,6 +62,35 @@ export default function CharactersScreen() {
     }
   };
 
+  const handleUpgradeCharacter = async (code: string, spsUsed: number) => {
+    const result = await request({
+      endpoint: "/child/progress",
+      method: "PUT",
+      body: {
+        upgradeCharacter: code,
+        stellarPoints: -spsUsed,
+      },
+    });
+
+    if (result && !result.error) {
+      showAlert({
+        icon: require("@/assets/icons/custom-alert/check-gradient.png"),
+        title: "Personagem evoluído!",
+        message: "O upgrade do nível foi efetuado com sucesso",
+      });
+      setUpgradeCharacter(null);
+      getProgress();
+    } else {
+      if (result.status != 401) {
+        showAlert({
+          icon: require("@/assets/icons/custom-alert/alert.png"),
+          title: "Erro ao evoluir personagem!",
+          message: result.message,
+        });
+      }
+    }
+  };
+
   useEffect(() => {
     getCharacters();
   }, []);
@@ -72,7 +102,7 @@ export default function CharactersScreen() {
           name={previewCharacter.name}
           image={previewCharacter.image}
           level={previewCharacter.level}
-          characterPoints={previewCharacter.characterPoints}
+          progressLevel={(previewCharacter.characterPoints / getCharacterXpToNext(previewCharacter.level)) * 100}
           effect={previewCharacter.effect}
           visible={!!previewCharacter}
           onSelect={() => handleChangeCharacter(previewCharacter?.code)}
@@ -83,12 +113,13 @@ export default function CharactersScreen() {
       {upgradeCharacter && (
         <ModalUpgradeCharacter
           level={upgradeCharacter.level}
-          characterPoints={upgradeCharacter.characterPoints}
+          progressLevel={(upgradeCharacter.characterPoints / getCharacterXpToNext(upgradeCharacter.level)) * 100}
           name={upgradeCharacter.name}
           image={upgradeCharacter.image}
           effect={upgradeCharacter.effect}
           costUpgrade={50}
           visible={!!upgradeCharacter}
+          onUpgrade={() => handleUpgradeCharacter(upgradeCharacter.code, 50)}
           onClose={() => setUpgradeCharacter(null)}
         />
       )}
@@ -120,7 +151,7 @@ export default function CharactersScreen() {
         {selectedCharacter && (
           <SelectedCharacter
             level={selectedCharacter.level}
-            characterPoints={selectedCharacter.characterPoints}
+            progressLevel={(selectedCharacter.characterPoints / getCharacterXpToNext(selectedCharacter.level)) * 100}
             name={selectedCharacter.name}
             image={selectedCharacter.image}
             effect={selectedCharacter.effect}
@@ -136,6 +167,7 @@ export default function CharactersScreen() {
               image={character.image}
               name={character.name}
               level={character.level}
+              progressLevel={(character.characterPoints / getCharacterXpToNext(character.level)) * 100}
               color="#FFFC58"
               onPress={() => setPreviewCharacter(character)}
             />

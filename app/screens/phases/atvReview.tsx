@@ -24,7 +24,7 @@ import ConnectActivity from "@/components/ui/Phases/Connect/ConnectActivity";
 import ListenActivity from "@/components/ui/Phases/Listen/ListenActivity";
 import { useAudio } from "@/contexts/AudioContext";
 
-export default function AtvBossScreen() {
+export default function AtvReview() {
   const router = useRouter();
 
   const [phaseOptions, setPhaseOptions] = useState<EmotionOption[]>([]);
@@ -88,7 +88,7 @@ export default function AtvBossScreen() {
    */
 
   const initializeBoss = () => {
-    const generatedOptions = generatePhaseOptions(6);
+    const generatedOptions = generatePhaseOptions(4);
 
     setPhaseOptions(generatedOptions);
   };
@@ -157,21 +157,21 @@ export default function AtvBossScreen() {
 
   return (
     <PhaseBase
-      title="Boss Challenge"
+      title="Review Phase"
       description={
         started
           ? `Atividade ${currentStep + 1} de ${activities.length}`
           : "Complete todas as atividades"
       }
-      question={started ? "Derrote o boss!" : "Boss Battle"}
+      question={started ? "Conclua a fase!" : "Review Challenge"}
       color="#EF5B6A"
-      headerImage={require("@/assets/images/phases/boss/intro.png")}
+      headerImage={require("@/assets/images/phases/review/intro.png")}
       tutorialTitle="Como Jogar"
       tutorialMessage={`
-        Essa é a fase boss.
+        Essa é a fase de revisão.
 
         Você deverá completar uma sequência de desafios
-        para derrotar o boss final.
+        para revisar o que você aprendeu.
 
         Cada atividade concluída soma pontos,
         moedas e progresso.
@@ -222,7 +222,6 @@ export default function AtvBossScreen() {
 
       <CurrentActivity
         phaseOptions={phaseOptions}
-        type={"boss"}
         onSuccess={handleActivitySuccess}
         onError={handleActivityError}
       />

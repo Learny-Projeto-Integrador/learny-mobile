@@ -10,6 +10,7 @@ import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
 import SelectedCharacter from "@/components/ui/Characters/SelectedCharacter";
 import { useEffect, useState } from "react";
 import { useCharacters } from "@/hooks/useCharacters";
+import { getCharacterXpToNext } from "@/utils/characterFormulas";
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -43,6 +44,11 @@ export default function ProfileScreen() {
   const { progress } = useProgress();
   const { selectedCharacter, getCharacters } = useCharacters();
 
+  const levelData = progress && getLevelFromXp(progress.points);
+  const progressPercentage = levelData
+    ? (levelData.currentLevelXp / levelData.xpToNextLevel) * 100
+    : 0;
+
   /**
    * Exibe alerta de confirmação para encerrar sessão
    */
@@ -57,6 +63,30 @@ export default function ProfileScreen() {
       onRedirect: () => logout(),
     });
   };
+
+  function getLevelFromXp(totalXp: number) {
+    let level = 1;
+
+    let accumulatedXp = 0;
+
+    while (true) {
+      const xpToNext = Math.floor(80 + 35 * Math.pow(level, 1.28));
+
+      if (accumulatedXp + xpToNext > totalXp) {
+        break;
+      }
+
+      accumulatedXp += xpToNext;
+
+      level++;
+    }
+
+    return {
+      level,
+      currentLevelXp: totalXp - accumulatedXp,
+      xpToNextLevel: Math.floor(80 + 35 * Math.pow(level, 1.28)),
+    };
+  }
 
   useEffect(() => {
     getCharacters();
@@ -73,14 +103,14 @@ export default function ProfileScreen() {
           <ChildInfo
             name={user?.name || "Usuário"}
             profilePicture={user?.profilePicture}
-            level={progress ? Math.floor(progress.points / 100) : 0}
+            level={levelData?.level || 0}
           />
         )}
 
         {progress && (
           <ProgressBarLvl
-            points={(progress.points % 100).toString() || "0"}
-            progress={progress.points % 100 || 0}
+            points={levelData?.currentLevelXp.toString() || "0"}
+            progress={progressPercentage}
           />
         )}
       </View>
@@ -92,7 +122,7 @@ export default function ProfileScreen() {
         {selectedCharacter && (
           <SelectedCharacter
             level={selectedCharacter?.level}
-            characterPoints={selectedCharacter?.characterPoints}
+            progressLevel={(selectedCharacter.characterPoints / getCharacterXpToNext(selectedCharacter.level)) * 100}
             name={selectedCharacter?.name}
             image={selectedCharacter?.image}
             effect={selectedCharacter?.effect}
