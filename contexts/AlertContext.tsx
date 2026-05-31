@@ -3,6 +3,8 @@ import {
   useContext,
   useState,
   useEffect,
+  useCallback,
+  useMemo,
   ReactNode,
 } from "react";
 import CustomAlert from "@/components/ui/CustomAlert";
@@ -27,9 +29,9 @@ export function AlertProvider({ children }: Props) {
   const [current, setCurrent] = useState<CustomAlertType | null>(null);
   const [visible, setVisible] = useState(false);
 
-  const showAlert = (data: CustomAlertType) => {
+  const showAlert = useCallback((data: CustomAlertType) => {
     setQueue((prev) => [...prev, data]);
-  };
+  }, []);
 
   // quando não há alerta atual e a fila tem itens, pega o próximo
   useEffect(() => {
@@ -61,8 +63,10 @@ export function AlertProvider({ children }: Props) {
       />
     ) : null;
 
+  const value = useMemo(() => ({ showAlert }), [showAlert]);
+
   return (
-    <AlertContext.Provider value={{ showAlert }}>
+    <AlertContext.Provider value={value}>
       {children}
       <AlertComponent />
     </AlertContext.Provider>

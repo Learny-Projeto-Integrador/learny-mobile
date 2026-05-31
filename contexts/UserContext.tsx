@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from "react";
 import type { User } from "@/types/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -50,7 +50,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   // 🚪 Logout
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       setUser(null);
       await AsyncStorage.multiRemove(["user", "token"]);
@@ -58,10 +58,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }
-  };
+  }, [router]);
+
+  const value = useMemo(
+    () => ({ user, setUser, logout }),
+    [user, logout],
+  );
 
   return (
-    <UserContext.Provider value={{ user, setUser, logout }}>
+    <UserContext.Provider value={value}>
       {children}
     </UserContext.Provider>
   );

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { useCustomAlert } from "@/contexts/AlertContext";
@@ -43,21 +43,24 @@ export function usePhase() {
       ? 0
       : Math.round((stats.correctAnswers / totalAnswers) * 100);
 
-  const incrementStats = (values: Partial<PhaseStats>) => {
-    const nextStats = {
-      points: stats.points + (values.points ?? 0),
+  const incrementStats = useCallback(
+    (values: Partial<PhaseStats>) => {
+      const nextStats = {
+        points: stats.points + (values.points ?? 0),
 
-      coins: stats.coins + (values.coins ?? 0),
+        coins: stats.coins + (values.coins ?? 0),
 
-      correctAnswers: stats.correctAnswers + (values.correctAnswers ?? 0),
+        correctAnswers: stats.correctAnswers + (values.correctAnswers ?? 0),
 
-      wrongAnswers: stats.wrongAnswers + (values.wrongAnswers ?? 0),
-    };
+        wrongAnswers: stats.wrongAnswers + (values.wrongAnswers ?? 0),
+      };
 
-    setStats(nextStats);
+      setStats(nextStats);
 
-    return nextStats;
-  };
+      return nextStats;
+    },
+    [stats],
+  );
 
   const [hintUsed, setHintUsed] = useState(false);
 
@@ -108,7 +111,7 @@ export function usePhase() {
    * ---------------------------------------
    */
 
-  const checkHint = async (): Promise<boolean> => {
+  const checkHint = useCallback(async (): Promise<boolean> => {
     if (hintUsed) {
       showAlert({
         icon: require("@/assets/icons/custom-alert/alert.png"),
@@ -120,9 +123,9 @@ export function usePhase() {
     }
 
     return true;
-  };
+  }, [hintUsed, showAlert]);
 
-  const consumeHint = async () => {
+  const consumeHint = useCallback(async () => {
     const canUse = await checkHint();
 
     if (!canUse) return false;
@@ -130,7 +133,7 @@ export function usePhase() {
     setHintUsed(true);
 
     return true;
-  };
+  }, [checkHint]);
 
   /*
    * ---------------------------------------
@@ -138,7 +141,7 @@ export function usePhase() {
    * ---------------------------------------
    */
 
-  const finish = async (customStats?: PhaseStats) => {
+  const finish = useCallback(async (customStats?: PhaseStats) => {
     const duration = getDuration();
 
     const finalStats = customStats ?? stats;
@@ -201,7 +204,16 @@ export function usePhase() {
         error: "Não foi possível conectar ao servidor.",
       };
     }
-  };
+  }, [
+    getDuration,
+    stats,
+    request,
+    worldCode,
+    moduleCode,
+    phaseCode,
+    setUser,
+    showAlert,
+  ]);
 
   /*
    * ---------------------------------------
@@ -209,7 +221,7 @@ export function usePhase() {
    * ---------------------------------------
    */
 
-  const restart = () => {
+  const restart = useCallback(() => {
     setStarted(false);
     setFinished(false);
 
@@ -223,39 +235,55 @@ export function usePhase() {
     setHintUsed(false);
 
     resetDuration();
-  };
+  }, [resetDuration]);
 
-  return {
-    /*
-     * STATES
-     */
-    started,
-    finished,
-    hintUsed,
+  return useMemo(
+    () => ({
+      /*
+       * STATES
+       */
+      started,
+      finished,
+      hintUsed,
 
-    /*
-     * ACTIONS
-     */
-    start,
-    finish,
-    restart,
+      /*
+       * ACTIONS
+       */
+      start,
+      finish,
+      restart,
 
-    /*
-     * STATS
-     */
-    stats,
-    percentage,
-    incrementStats,
+      /*
+       * STATS
+       */
+      stats,
+      percentage,
+      incrementStats,
 
-    /*
-     * HINT
-     */
-    checkHint,
-    consumeHint,
+      /*
+       * HINT
+       */
+      checkHint,
+      consumeHint,
 
-    /*
-     * TIMER
-     */
-    getDuration,
-  };
+      /*
+       * TIMER
+       */
+      getDuration,
+    }),
+    [
+      started,
+      finished,
+      hintUsed,
+      start,
+      finish,
+      restart,
+      stats,
+      percentage,
+      incrementStats,
+      checkHint,
+      consumeHint,
+      getDuration,
+    ],
+  );
 }

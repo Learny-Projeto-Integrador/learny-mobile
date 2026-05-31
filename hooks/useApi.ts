@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "@/contexts/UserContext";
@@ -30,16 +30,16 @@ export function useApi<T = any>(
   const [loading, setLoading] = useState(false);
   const { setUser } = useUser();
 
-  const getToken = async () => {
+  const getToken = useCallback(async () => {
     try {
       const token = await AsyncStorage.getItem("token");
       return token;
     } catch (e) {
       console.error("Erro ao buscar o token", e);
     }
-  };
+  }, []);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     try {
       setUser(null);
       await AsyncStorage.multiRemove(["user", "token"]);
@@ -47,9 +47,9 @@ export function useApi<T = any>(
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }
-  };
+  }, [setUser]);
 
-  const request = async ({
+  const request = useCallback(async ({
     endpoint,
     method = "GET",
     body,
@@ -95,7 +95,7 @@ export function useApi<T = any>(
     } finally {
       setLoading(false);
     }
-  };
+  }, [baseUrl, getToken, handleLogout]);
 
   return { loading, request };
 }

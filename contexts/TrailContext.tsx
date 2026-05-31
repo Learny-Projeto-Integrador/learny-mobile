@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useCallback, useMemo, useState } from "react";
 
 type TrailData = {
   worldCode: string | null;
@@ -18,7 +18,7 @@ export function TrailProvider({ children }: any) {
   const [moduleCode, setModuleCode] = useState<string | null>(null);
   const [phaseCode, setPhaseCode] = useState<string | null>(null);
 
-  const setTrailData = (data: Partial<TrailData>) => {
+  const setTrailData = useCallback((data: Partial<TrailData>) => {
     if ("worldCode" in data) {
       setWorldCode(data.worldCode ?? null);
     }
@@ -30,24 +30,27 @@ export function TrailProvider({ children }: any) {
     if ("phaseCode" in data) {
       setPhaseCode(data.phaseCode ?? null);
     }
-  };
+  }, []);
 
-  const resetTrailData = () => {
+  const resetTrailData = useCallback(() => {
     setWorldCode(null);
     setModuleCode(null);
     setPhaseCode(null);
-  };
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      worldCode,
+      moduleCode,
+      phaseCode,
+      setTrailData,
+      resetTrailData,
+    }),
+    [worldCode, moduleCode, phaseCode, setTrailData, resetTrailData],
+  );
 
   return (
-    <TrailContext.Provider
-      value={{
-        worldCode,
-        moduleCode,
-        phaseCode,
-        setTrailData,
-        resetTrailData,
-      }}
-    >
+    <TrailContext.Provider value={value}>
       {children}
     </TrailContext.Provider>
   );

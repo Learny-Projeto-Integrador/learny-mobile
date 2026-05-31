@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from "react";
 import type { Progress } from "@/types/progress";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useApi } from "@/hooks/useApi";
@@ -17,7 +17,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const { showAlert } = useCustomAlert();
   const [progress, setProgress] = useState<Progress | null>(null);
 
-  const getProgress = async () => {
+  const getProgress = useCallback(async () => {
     const result = await request({
       endpoint: `/child/progress`,
       method: "GET",
@@ -43,7 +43,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         message: result.message || "Erro desconhecido ao carregar filho",
       });
     }
-  }
+  }, [request, showAlert])
 
   // 🔁 Recupera usuário salvo ao iniciar
   useEffect(() => {
@@ -78,8 +78,13 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     persistProgress();
   }, [progress]);
 
+  const value = useMemo(
+    () => ({ progress, setProgress, getProgress }),
+    [progress, getProgress],
+  );
+
   return (
-    <ProgressContext.Provider value={{ progress, setProgress, getProgress }}>
+    <ProgressContext.Provider value={value}>
       {children}
     </ProgressContext.Provider>
   );

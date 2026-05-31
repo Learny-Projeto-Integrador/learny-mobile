@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 
 type Feedback = {
   label: string | null;
@@ -20,13 +20,13 @@ export function FeedbackProvider({ children }: any) {
   const [feedback, setFeedback] =
     useState<Feedback | null>(null);
 
+  const value = useMemo(
+    () => ({ feedback, setFeedback }),
+    [feedback],
+  );
+
   return (
-    <FeedbackContext.Provider
-      value={{
-        feedback,
-        setFeedback,
-      }}
-    >
+    <FeedbackContext.Provider value={value}>
       {children}
     </FeedbackContext.Provider>
   );

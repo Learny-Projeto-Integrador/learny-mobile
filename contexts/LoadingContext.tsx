@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+  ReactNode,
+} from "react";
 import Loading from "@/components/ui/Loading";
 
 type LoadingContextType = {
@@ -11,11 +18,16 @@ const LoadingContext = createContext<LoadingContextType | undefined>(undefined);
 export function LoadingProvider({ children }: { children: ReactNode }) {
   const [visible, setVisible] = useState(false);
 
-  const showLoadingModal = () => setVisible(true);
-  const hideLoadingModal = () => setVisible(false);
+  const showLoadingModal = useCallback(() => setVisible(true), []);
+  const hideLoadingModal = useCallback(() => setVisible(false), []);
+
+  const value = useMemo(
+    () => ({ showLoadingModal, hideLoadingModal }),
+    [showLoadingModal, hideLoadingModal],
+  );
 
   return (
-    <LoadingContext.Provider value={{ showLoadingModal, hideLoadingModal }}>
+    <LoadingContext.Provider value={value}>
       {children}
       <Loading visible={visible} />
     </LoadingContext.Provider>

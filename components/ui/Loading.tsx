@@ -13,7 +13,7 @@ export default function Loading({ visible }: { visible: boolean }) {
         style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
       >
         <Image
-          source={require("@/assets/gifs/loading.gif")}
+          source={require("@/assets/gifs/loading.webp")}
           style={{ width: RW(100), height: RW(100) }}
         />
       </View>

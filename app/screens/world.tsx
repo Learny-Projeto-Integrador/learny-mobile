@@ -8,6 +8,7 @@ import WorldTrail from "@/components/ui/World/Trail/WorldTrail";
 import { useCharacters } from "@/hooks/useCharacters";
 import { useTrailContext } from "@/contexts/TrailContext";
 import { View, Image, Text } from "react-native";
+import { Image as ExpoImage } from "expo-image";
 import { RF, RH, RS, RW } from "@/theme";
 import TrailCharacterCard from "@/components/ui/Characters/TrailCaracterCard";
 import { useRouter } from "expo-router";
@@ -99,8 +100,8 @@ export default function WorldScreen() {
 
       {loading || !worldData ? (
         <View className="flex-1 items-center justify-center">
-          <Image
-            source={require("@/assets/gifs/loading.gif")}
+          <ExpoImage
+            source={require("@/assets/gifs/loading.webp")}
             style={{ width: RW(100), height: RW(100) }}
           />
         </View>
