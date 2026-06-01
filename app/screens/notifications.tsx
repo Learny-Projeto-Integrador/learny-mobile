@@ -6,6 +6,7 @@ import NotificationCard from "@/components/ui/Notifications/NotificationCard";
 import { useApi } from "@/hooks/useApi";
 import { useEffect, useState } from "react";
 import { useCustomAlert } from "@/contexts/AlertContext";
+import { Image as ExpoImage } from "expo-image";
 
 type Notification = {
   _id: string;
@@ -26,7 +27,7 @@ const iconNotificationMap = {
 export default function NotificationsScreen() {
   const router = useRouter();
 
-  const { request } = useApi();
+  const { request, loading } = useApi();
   const { showAlert } = useCustomAlert();
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -79,21 +80,30 @@ export default function NotificationsScreen() {
         </View>
 
         {/* Lista */}
-        <View style={{ gap: RS(26) }}>
-          {notifications.map((notification, index) => (
-            <NotificationCard
-              key={index}
-              icon={
-                iconNotificationMap[
-                  notification.type as keyof typeof iconNotificationMap
-                ] || require("@/assets/icons/notifications/start.png")
-              }
-              label={notification.parent?.name || "Responsável"}
-              description={notification?.description}
-              isReaction={true}
+        {loading ? (
+          <View className="flex-1 items-center justify-center">
+            <ExpoImage
+              source={require("@/assets/gifs/loading.webp")}
+              style={{ width: RW(100), height: RW(100) }}
             />
-          ))}
-        </View>
+          </View>
+        ) : (
+          <View style={{ gap: RS(26) }}>
+            {notifications.map((notification, index) => (
+              <NotificationCard
+                key={index}
+                icon={
+                  iconNotificationMap[
+                    notification.type as keyof typeof iconNotificationMap
+                  ] || require("@/assets/icons/notifications/start.png")
+                }
+                label={notification.parent?.name || "Responsável"}
+                description={notification?.description}
+                isReaction={true}
+              />
+            ))}
+          </View>
+        )}
       </View>
     </Container>
   );
