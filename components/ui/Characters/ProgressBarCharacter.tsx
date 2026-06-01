@@ -11,13 +11,15 @@ interface Props {
 export default function ProgressBarCharacter({ label, progress }: Props) {
   const widthAnim = useRef(new Animated.Value(0)).current;
 
+  const clampedProgress = Math.min(100, Math.max(0, progress));
+
   useEffect(() => {
     Animated.timing(widthAnim, {
-      toValue: progress,
+      toValue: clampedProgress,
       duration: 500,
       useNativeDriver: false,
     }).start();
-  }, [progress]);
+  }, [clampedProgress]);
 
   return (
     <View

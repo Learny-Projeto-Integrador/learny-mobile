@@ -14,7 +14,10 @@ import { CharacterWithProgress } from "@/types/characters";
 import { useApi } from "@/hooks/useApi";
 import { useProgress } from "@/contexts/ProgressContext";
 import { useCustomAlert } from "@/contexts/AlertContext";
-import { getCharacterXpToNext } from "@/utils/characterFormulas";
+import {
+  getCharacterXpToNext,
+  getCharacterProgressLevel,
+} from "@/utils/characterFormulas";
 
 export default function CharactersScreen() {
   const router = useRouter();
@@ -102,7 +105,10 @@ export default function CharactersScreen() {
           name={previewCharacter.name}
           image={previewCharacter.image}
           level={previewCharacter.level}
-          progressLevel={(previewCharacter.characterPoints / getCharacterXpToNext(previewCharacter.level)) * 100}
+          progressLevel={getCharacterProgressLevel(
+            previewCharacter.characterPoints,
+            previewCharacter.level,
+          )}
           effect={previewCharacter.effect}
           visible={!!previewCharacter}
           onSelect={() => handleChangeCharacter(previewCharacter?.code)}
@@ -113,7 +119,10 @@ export default function CharactersScreen() {
       {upgradeCharacter && (
         <ModalUpgradeCharacter
           level={upgradeCharacter.level}
-          progressLevel={(upgradeCharacter.characterPoints / getCharacterXpToNext(upgradeCharacter.level)) * 100}
+          progressLevel={getCharacterProgressLevel(
+            upgradeCharacter.characterPoints,
+            upgradeCharacter.level,
+          )}
           name={upgradeCharacter.name}
           image={upgradeCharacter.image}
           effect={upgradeCharacter.effect}
@@ -151,7 +160,10 @@ export default function CharactersScreen() {
         {selectedCharacter && (
           <SelectedCharacter
             level={selectedCharacter.level}
-            progressLevel={(selectedCharacter.characterPoints / getCharacterXpToNext(selectedCharacter.level)) * 100}
+            progressLevel={getCharacterProgressLevel(
+              selectedCharacter.characterPoints,
+              selectedCharacter.level,
+            )}
             name={selectedCharacter.name}
             image={selectedCharacter.image}
             effect={selectedCharacter.effect}
@@ -167,7 +179,10 @@ export default function CharactersScreen() {
               image={character.image}
               name={character.name}
               level={character.level}
-              progressLevel={(character.characterPoints / getCharacterXpToNext(character.level)) * 100}
+              progressLevel={getCharacterProgressLevel(
+                character.characterPoints,
+                character.level,
+              )}
               color="#FFFC58"
               onPress={() => setPreviewCharacter(character)}
             />

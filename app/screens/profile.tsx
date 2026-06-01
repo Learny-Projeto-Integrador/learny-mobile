@@ -10,7 +10,10 @@ import ProgressBarLvl from "@/components/ui/ProgressBarLvl";
 import SelectedCharacter from "@/components/ui/Characters/SelectedCharacter";
 import { useEffect, useState } from "react";
 import { useCharacters } from "@/hooks/useCharacters";
-import { getCharacterXpToNext } from "@/utils/characterFormulas";
+import {
+  getCharacterXpToNext,
+  getCharacterProgressLevel,
+} from "@/utils/characterFormulas";
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -122,7 +125,10 @@ export default function ProfileScreen() {
         {selectedCharacter && (
           <SelectedCharacter
             level={selectedCharacter?.level}
-            progressLevel={(selectedCharacter.characterPoints / getCharacterXpToNext(selectedCharacter.level)) * 100}
+            progressLevel={getCharacterProgressLevel(
+              selectedCharacter.characterPoints,
+              selectedCharacter.level,
+            )}
             name={selectedCharacter?.name}
             image={selectedCharacter?.image}
             effect={selectedCharacter?.effect}

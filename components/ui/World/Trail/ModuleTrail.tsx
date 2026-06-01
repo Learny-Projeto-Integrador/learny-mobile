@@ -93,16 +93,24 @@ export default function ModuleTrail({
   return (
     <View style={{ width: "100%" }}>
       {/* 🖼️ ILUSTRAÇÃO */}
-      <Image
-        source={illustration}
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => router.push("/screens/phases/extras/balloon")}
         style={{
           position: "absolute",
-          ...(isLeft ? { right: RW(50), top: RW(110) } : { left: RW(50), top: RW(160) }),
-          width: RW(120),
-          height: RW(120),
+          zIndex: 2,
+          ...(isLeft ? { right: RW(50), top: RW(110) } : { left: RW(50), top: RW(170) }),
         }}
-        resizeMode="contain"
-      />
+      >
+        <Image
+          source={illustration}
+          style={{
+            width: RW(120),
+            height: RW(120),
+          }}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
 
       {/* 🔵 TRILHA */}
       <View style={{ width: "95%", zIndex: 1 }}>
